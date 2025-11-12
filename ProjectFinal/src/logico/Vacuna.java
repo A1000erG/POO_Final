@@ -1,19 +1,18 @@
 package logico;
 
-import java.time.LocalDate;
+import java.io.Serializable;
+import java.util.Date;
 
-public class Vacuna {
+public class Vacuna implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private int id;
 	private String nombre;
-	private LocalDate fechaAplicacion;
+	private Date fechaAplicacion;
 	private int numDosis;
 
-	public Vacuna(int id, String nombre, LocalDate fechaAplicacion, int numDosis) {
-		this.id = id;
-		this.nombre = nombre;
-		this.fechaAplicacion = fechaAplicacion;
-		this.numDosis = numDosis;
+	public Vacuna() {
 	}
 
 	public int getId() {
@@ -32,11 +31,11 @@ public class Vacuna {
 		this.nombre = nombre;
 	}
 
-	public LocalDate getFechaAplicacion() {
+	public Date getFechaAplicacion() {
 		return fechaAplicacion;
 	}
 
-	public void setFechaAplicacion(LocalDate fechaAplicacion) {
+	public void setFechaAplicacion(Date fechaAplicacion) {
 		this.fechaAplicacion = fechaAplicacion;
 	}
 

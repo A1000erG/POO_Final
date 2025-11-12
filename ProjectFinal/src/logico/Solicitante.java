@@ -1,10 +1,12 @@
 package logico;
 
-import java.time.LocalDate;
+import java.io.Serializable;
 
-public class Solicitante extends Persona {
+public class Solicitante extends Persona implements Serializable {
 
-	public Solicitante(String nombre, String sexo, LocalDate fechaNacimiento, String telefono, String cedula) {
-		super(nombre, sexo, fechaNacimiento, telefono, cedula);
+	private static final long serialVersionUID = 1L;
+
+	public Solicitante() {
+		super();
 	}
 }

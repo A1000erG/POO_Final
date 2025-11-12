@@ -1,37 +1,47 @@
 package logico;
 
-import java.time.LocalDate;
+import java.io.Serializable;
+import java.util.Date;
 
-public class Consulta {
+public class Consulta implements Serializable {
 
-	private int id;
-	private LocalDate fecha;
+	private static final long serialVersionUID = 1L;
+
+	private int idConsulta;
+	private Cita citaAsociada;
+	private Doctor doctor;
 	private String sintomas;
 	private String diagnostico;
-	private int agregarAlHistorial;
+	private boolean agregarAlHistorial;
+	private boolean transferida;
 
-	public Consulta(int id, LocalDate fecha, String sintomas, String diagnostico, int agregarAlHistorial) {
-		this.id = id;
-		this.fecha = fecha;
-		this.sintomas = sintomas;
-		this.diagnostico = diagnostico;
-		this.agregarAlHistorial = agregarAlHistorial;
+	private Date fecha;
+
+	public Consulta() {
 	}
 
-	public int getId() {
-		return id;
+	public int getIdConsulta() {
+		return idConsulta;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setIdConsulta(int idConsulta) {
+		this.idConsulta = idConsulta;
 	}
 
-	public LocalDate getFecha() {
-		return fecha;
+	public Cita getCitaAsociada() {
+		return citaAsociada;
 	}
 
-	public void setFecha(LocalDate fecha) {
-		this.fecha = fecha;
+	public void setCitaAsociada(Cita citaAsociada) {
+		this.citaAsociada = citaAsociada;
+	}
+
+	public Doctor getDoctor() {
+		return doctor;
+	}
+
+	public void setDoctor(Doctor doctor) {
+		this.doctor = doctor;
 	}
 
 	public String getSintomas() {
@@ -50,11 +60,27 @@ public class Consulta {
 		this.diagnostico = diagnostico;
 	}
 
-	public int getAgregarAlHistorial() {
+	public boolean isAgregarAlHistorial() {
 		return agregarAlHistorial;
 	}
 
-	public void setAgregarAlHistorial(int agregarAlHistorial) {
+	public void setAgregarAlHistorial(boolean agregarAlHistorial) {
 		this.agregarAlHistorial = agregarAlHistorial;
+	}
+
+	public boolean isTransferida() {
+		return transferida;
+	}
+
+	public void setTransferida(boolean transferida) {
+		this.transferida = transferida;
+	}
+
+	public Date getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(Date fecha) {
+		this.fecha = fecha;
 	}
 }
