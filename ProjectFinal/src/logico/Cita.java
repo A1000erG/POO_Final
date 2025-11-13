@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Clase Cita (Modelo). Implementa Serializable.
+ Clase Cita (Modelo). Implementa Serializable.
  */
 public class Cita implements Serializable {
 
