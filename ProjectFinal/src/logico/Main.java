@@ -20,7 +20,7 @@ public class Main {
 		admin.setNombre("Admin Principal");
 		admin.setCargo("Gerente");
 		admin.setUsuario("admin");
-		admin.setContraseña("123");
+		admin.setContrasenna("123");
 		clinica.registrarAdministrativo(admin);
 		System.out.println("Administrativo registrado: " + admin.getNombre());
 
@@ -29,7 +29,7 @@ public class Main {
 		drHouse.setEspecialidad("Diagnóstico");
 		drHouse.setCupoDia(1);
 		drHouse.setUsuario("ghouse");
-		drHouse.setContraseña("vicodin");
+		drHouse.setContrasenna("vicodin");
 		clinica.registrarDoctor(drHouse);
 		System.out.println("Doctor registrado: " + drHouse.getNombre());
 
@@ -38,7 +38,7 @@ public class Main {
 		drWilson.setEspecialidad("Oncología");
 		drWilson.setCupoDia(10);
 		drWilson.setUsuario("jwilson");
-		drWilson.setContraseña("friend");
+		drWilson.setContrasenna("friend");
 		clinica.registrarDoctor(drWilson);
 		System.out.println("Doctor registrado: " + drWilson.getNombre());
 

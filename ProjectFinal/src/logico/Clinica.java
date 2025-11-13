@@ -63,12 +63,12 @@ public class Clinica implements Serializable {
 
 	public Personal login(String usuario, String password) {
 		for (Doctor d : this.doctores) {
-			if (d.getUsuario().equals(usuario) && d.getContraseña().equals(password)) {
+			if (d.getUsuario().equals(usuario) && d.getContrasenna().equals(password)) {
 				return d;
 			}
 		}
 		for (Administrativo a : this.administrativos) {
-			if (a.getUsuario().equals(usuario) && a.getContraseña().equals(password)) {
+			if (a.getUsuario().equals(usuario) && a.getContrasenna().equals(password)) {
 				return a;
 			}
 		}
