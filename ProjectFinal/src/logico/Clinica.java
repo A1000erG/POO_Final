@@ -63,12 +63,20 @@ public class Clinica implements Serializable {
 
 	public Personal login(String usuario, String password) {
 		for (Doctor d : this.doctores) {
+<<<<<<< HEAD
 			if (d.getUsuario().equals(usuario) && d.getContrasenia().equals(password)) {
+=======
+			if (d.getUsuario().equals(usuario) && d.getContrasenna().equals(password)) {
+>>>>>>> branch 'main' of https://github.com/A1000erG/POO_Final.git
 				return d;
 			}
 		}
 		for (Administrativo a : this.administrativos) {
+<<<<<<< HEAD
 			if (a.getUsuario().equals(usuario) && a.getContrasenia().equals(password)) {
+=======
+			if (a.getUsuario().equals(usuario) && a.getContrasenna().equals(password)) {
+>>>>>>> branch 'main' of https://github.com/A1000erG/POO_Final.git
 				return a;
 			}
 		}

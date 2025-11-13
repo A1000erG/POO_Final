@@ -20,7 +20,11 @@ public class Main {
 		admin.setNombre("Admin Principal");
 		admin.setCargo("Gerente");
 		admin.setUsuario("admin");
+<<<<<<< HEAD
 		admin.setContrasenia("123");
+=======
+		admin.setContrasenna("123");
+>>>>>>> branch 'main' of https://github.com/A1000erG/POO_Final.git
 		clinica.registrarAdministrativo(admin);
 		System.out.println("Administrativo registrado: " + admin.getNombre());
 
@@ -29,7 +33,11 @@ public class Main {
 		drHouse.setEspecialidad("Diagnóstico");
 		drHouse.setCupoDia(1);
 		drHouse.setUsuario("ghouse");
+<<<<<<< HEAD
 		drHouse.setContrasenia("vicodin");
+=======
+		drHouse.setContrasenna("vicodin");
+>>>>>>> branch 'main' of https://github.com/A1000erG/POO_Final.git
 		clinica.registrarDoctor(drHouse);
 		System.out.println("Doctor registrado: " + drHouse.getNombre());
 
@@ -38,7 +46,11 @@ public class Main {
 		drWilson.setEspecialidad("Oncología");
 		drWilson.setCupoDia(10);
 		drWilson.setUsuario("jwilson");
+<<<<<<< HEAD
 		drWilson.setContrasenia("friend");
+=======
+		drWilson.setContrasenna("friend");
+>>>>>>> branch 'main' of https://github.com/A1000erG/POO_Final.git
 		clinica.registrarDoctor(drWilson);
 		System.out.println("Doctor registrado: " + drWilson.getNombre());
 
