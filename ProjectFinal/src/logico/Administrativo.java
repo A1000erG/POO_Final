@@ -3,9 +3,9 @@ package logico;
 import java.io.Serializable;
 
 /**
-	Clase Administrativo (Modelo). Hereda de Personal e implementa Serializable.
-	Representa al usuario administrativo.
-*/
+ * Clase Administrativo (Modelo). Hereda de Personal e implementa Serializable.
+ * Representa al usuario administrativo.
+ */
 public class Administrativo extends Personal implements Serializable {
 
 	private static final long serialVersionUID = 1L;
