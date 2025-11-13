@@ -1,34 +1,18 @@
 package logico;
 
-public abstract class Personal {
+import java.io.Serializable;
 
-	private int id;
-	private String nombre;
+public abstract class Personal implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	private String usuario;
-	private String contrasena;
+	private String contraseña;
 
-	public Personal(int id, String nombre, String usuario, String contrasena) {
-		this.id = id;
-		this.nombre = nombre;
-		this.usuario = usuario;
-		this.contrasena = contrasena;
+	public Personal() {
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+	public abstract String getNombre();
 
 	public String getUsuario() {
 		return usuario;
@@ -38,11 +22,11 @@ public abstract class Personal {
 		this.usuario = usuario;
 	}
 
-	public String getContrasena() {
-		return contrasena;
+	public String getContraseña() {
+		return contraseña;
 	}
 
-	public void setContrasena(String contrasena) {
-		this.contrasena = contrasena;
+	public void setContraseña(String contraseña) {
+		this.contraseña = contraseña;
 	}
 }
