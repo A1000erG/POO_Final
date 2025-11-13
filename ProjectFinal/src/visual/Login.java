@@ -48,8 +48,8 @@ public class Login extends JFrame {
 
 	    // ------------------ PANEL DERECHO (IMAGEN / LOGO) -------------------
 	    JPanel panelDerecho = new JPanel();
-	    panelDerecho.setBackground(new Color(0, 155, 198)); // Azul tipo login de tu imagen
-	    panelDerecho.setPreferredSize(new Dimension(420, 0)); // Ancho fijo
+	    panelDerecho.setBackground(new Color(0, 155, 198));
+	    panelDerecho.setPreferredSize(new Dimension(420, 0));
 	    contentPane.add(panelDerecho, BorderLayout.EAST);
 		
 	}
