@@ -1,24 +1,25 @@
 package logico;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
-/**
- * Clase Cita (Modelo). Implementa Serializable.
- */
 public class Cita implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-
+	private static final long serialVersionUID = 8L;
 	private int idCita;
-	private Date fecha;
+	private LocalDate fecha;
 	private String hora;
-	private String estado;
-
+	private String estado; // Ej: "Pendiente", "Realizada", "Cancelada"
 	private Paciente paciente;
 	private Doctor doctor;
 
 	public Cita() {
+		this.idCita = 0;
+		this.fecha = null;
+		this.hora = null;
+		this.estado = null;
+		this.paciente = null;
+		this.doctor = null;
 	}
 
 	public int getIdCita() {
@@ -29,11 +30,11 @@ public class Cita implements Serializable {
 		this.idCita = idCita;
 	}
 
-	public Date getFecha() {
+	public LocalDate getFecha() {
 		return fecha;
 	}
 
-	public void setFecha(Date fecha) {
+	public void setFecha(LocalDate fecha) {
 		this.fecha = fecha;
 	}
 

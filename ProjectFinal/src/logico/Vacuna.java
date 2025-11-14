@@ -1,7 +1,7 @@
 package logico;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Vacuna implements Serializable {
 
@@ -9,7 +9,7 @@ public class Vacuna implements Serializable {
 
 	private int id;
 	private String nombre;
-	private Date fechaAplicacion;
+	private LocalDate fechaAplicacion;
 	private int numDosis;
 
 	public Vacuna() {
@@ -31,12 +31,12 @@ public class Vacuna implements Serializable {
 		this.nombre = nombre;
 	}
 
-	public Date getFechaAplicacion() {
+	public LocalDate getFechaAplicacion() {
 		return fechaAplicacion;
 	}
 
-	public void setFechaAplicacion(Date fechaAplicacion) {
-		this.fechaAplicacion = fechaAplicacion;
+	public void setFechaAplicacion(LocalDate localDate) {
+		this.fechaAplicacion = localDate;
 	}
 
 	public int getNumDosis() {

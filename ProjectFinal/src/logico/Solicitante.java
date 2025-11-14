@@ -1,12 +1,11 @@
 package logico;
 
-import java.io.Serializable;
+public class Solicitante extends Persona {
 
-public class Solicitante extends Persona implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 5L;
 
 	public Solicitante() {
 		super();
+		// Esta clase no añade atributos propios, actúa como un "marcador" de tipo.
 	}
 }

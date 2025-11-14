@@ -1,19 +1,23 @@
 package logico;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 public abstract class Persona implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
 	private String cedula;
 	private String nombre;
 	private char sexo;
-	private Date fechaNacimiento;
+	private LocalDate fechaNacimiento;
 	private String telefono;
 
 	public Persona() {
+		this.cedula = null;
+		this.nombre = null;
+		this.sexo = ' ';
+		this.fechaNacimiento = null;
+		this.telefono = null;
 	}
 
 	public String getCedula() {
@@ -40,11 +44,11 @@ public abstract class Persona implements Serializable {
 		this.sexo = sexo;
 	}
 
-	public Date getFechaNacimiento() {
+	public LocalDate getFechaNacimiento() {
 		return fechaNacimiento;
 	}
 
-	public void setFechaNacimiento(Date fechaNacimiento) {
+	public void setFechaNacimiento(LocalDate fechaNacimiento) {
 		this.fechaNacimiento = fechaNacimiento;
 	}
 

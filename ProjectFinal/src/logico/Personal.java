@@ -4,15 +4,20 @@ import java.io.Serializable;
 
 public abstract class Personal implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-
+	private static final long serialVersionUID = 2L;
 	private String usuario;
 	private String contrasenia;
-	private String contrasenna;
 
 	public Personal() {
+		this.usuario = null;
+		this.contrasenia = null;
 	}
 
+	/*
+	 * Función: getNombre (Abstracta) Argumentos: Ninguno. Objetivo: Método
+	 * abstracto para forzar a las clases hijas a implementar la obtención del
+	 * nombre. Retorno: (String): El nombre del personal.
+	 */
 	public abstract String getNombre();
 
 	public String getUsuario() {
@@ -27,15 +32,15 @@ public abstract class Personal implements Serializable {
 		return contrasenia;
 	}
 
-	public String getContrasenna() {
-		return contrasenna;
-	}
-
 	public void setContrasenia(String contrasenia) {
 		this.contrasenia = contrasenia;
 	}
 
+	public String getContrasenna() {
+		return getContrasenia();
+	}
+
 	public void setContrasenna(String contrasenna) {
-		this.contrasenna = contrasenna;
+		setContrasenia(contrasenna);
 	}
 }

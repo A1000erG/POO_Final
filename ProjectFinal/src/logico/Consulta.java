@@ -1,12 +1,11 @@
 package logico;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Consulta implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-
+	private static final long serialVersionUID = 9L;
 	private int idConsulta;
 	private Cita citaAsociada;
 	private Doctor doctor;
@@ -14,10 +13,17 @@ public class Consulta implements Serializable {
 	private String diagnostico;
 	private boolean agregarAlHistorial;
 	private boolean transferida;
-
-	private Date fecha;
+	private LocalDate fecha;
 
 	public Consulta() {
+		this.idConsulta = 0;
+		this.citaAsociada = null;
+		this.doctor = null;
+		this.sintomas = null;
+		this.diagnostico = null;
+		this.agregarAlHistorial = true; // Por defecto, se agrega
+		this.transferida = false;
+		this.fecha = LocalDate.now(); // Por defecto, la fecha actual
 	}
 
 	public int getIdConsulta() {
@@ -76,11 +82,11 @@ public class Consulta implements Serializable {
 		this.transferida = transferida;
 	}
 
-	public Date getFecha() {
+	public LocalDate getFecha() {
 		return fecha;
 	}
 
-	public void setFecha(Date fecha) {
+	public void setFecha(LocalDate fecha) {
 		this.fecha = fecha;
 	}
 }
