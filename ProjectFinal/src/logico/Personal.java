@@ -8,9 +8,9 @@ public abstract class Personal implements Serializable {
 	private String usuario;
 	private String contrasenia;
 
-	public Personal() {
-		this.usuario = null;
-		this.contrasenia = null;
+	public Personal(String usuario, String contrasenia) {
+		this.usuario = usuario;
+		this.contrasenia = contrasenia;
 	}
 
 	/*

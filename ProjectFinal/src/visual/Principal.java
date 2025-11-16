@@ -2,7 +2,6 @@ package visual;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -21,7 +20,6 @@ public class Principal extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private Dimension dimPrincipal;
 	private static Color paleteBlue = new Color(55,65,81);
 	private static Color paleteDarkGreen = new Color(22,163, 74);
 	//private static Color paleteLightGreen = new Color(74, 222, 128);
@@ -30,29 +28,34 @@ public class Principal extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Principal frame = new Principal();
+					Principal frame = new Principal(1);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Create the frame.
+	 * @param tipo 
 	 */
-	public Principal() {
-		dimPrincipal = getToolkit().getScreenSize();
-		setResizable(false);
+	public Principal(int tipo) {
+		//dimPrincipal = getToolkit().getScreenSize();
+		//setResizable(false);
 		setTitle("Ventana principal");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
-		setSize(dimPrincipal.width+10,dimPrincipal.height-38);
+		
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
+		setResizable(false);
+		
+		//setBounds(100, 100, 450, 300);
+		//setSize(dimPrincipal.width+10,dimPrincipal.height-38);
 		setLocationRelativeTo(null);
 		
 		

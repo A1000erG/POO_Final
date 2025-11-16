@@ -7,10 +7,10 @@ public class Administrativo extends Personal {
 	private String cargo;
 
 	
-	public Administrativo() {
-		super(); // Llama al constructor de Personal
-		this.nombre = null;
-		this.cargo = null;
+	public Administrativo(String usuario, String contrasenia, String nombre, String cargo) {
+		super(usuario, contrasenia);
+		this.nombre = nombre;
+		this.cargo = cargo;
 	}
 
 	public String getCargo() {

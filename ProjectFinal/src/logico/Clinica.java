@@ -54,6 +54,8 @@ public class Clinica implements Serializable {
 			} else {
 				System.out.println("Instancia de Clinica cargada desde " + ARCHIVO_DATOS);
 			}
+			
+			instance.crearAdminPorDefecto();
 		}
 		return instance;
 	}
@@ -356,7 +358,7 @@ public class Clinica implements Serializable {
 			archivoEntrada.close();
 			return instanciaCargada;
 		} catch (IOException excepcionIO) {
-			System.out.println("No se encontró el archivo " + ARCHIVO_DATOS + ". Se creará uno nuevo.");
+			System.out.println("No se encontra el archivo " + ARCHIVO_DATOS + ". Se crea uno nuevo.");
 			return null;
 		} catch (ClassNotFoundException excepcionClase) {
 			System.err.println("Error al cargar los datos (Clase no encontrada): " + excepcionClase.getMessage());
@@ -371,32 +373,37 @@ public class Clinica implements Serializable {
 	 */
 	public void crearAdminPorDefecto() {
 	    if (administrativos.isEmpty() && doctores.isEmpty()) {
-	        Administrativo admin = new Administrativo(/*"admin", "admin", "Administrador General"*/);
+	        Administrativo admin = new Administrativo("admi", "admi","Administrador", "Administrador General");
 	        administrativos.add(admin);
-	        System.out.println(">>> Usuario admin/admin creado por defecto.");
+	        System.out.println("Usuario admin/admin creado por defecto.");
 	    }
 	}
 	
 	
+	
 	/*
-	 Recorre doctores y administrativos, si usuario/conrasenna coinciden returna personal, sino null.
+	Retorna 1 = admin
+			2 = doctor
+			0 = error
 	*/
-	public Personal login(String usuario, String password) {
-		// Doctores
-		for (Doctor doctorActual : doctores) {
-			if (doctorActual.getUsuario().equals(usuario) && doctorActual.getContrasenia().equals(password)) {
-				return doctorActual;
-			}
-		}
-		// Administrativo
-		for (Administrativo adminActual : administrativos) {
-			if (adminActual.getUsuario().equals(usuario) && adminActual.getContrasenia().equals(password)) {
-				return adminActual;
-			}
-		}
-		return null;
+	
+	public int loginTipo(String usuario, String password) {
+
+	    for (Doctor doc : doctores) {
+	        if (doc.getUsuario().equalsIgnoreCase(usuario)
+	                && doc.getContrasenia().equals(password)) {
+	            return 2; // doctor
+	        }
+	    }
+
+	    for (Administrativo admin : administrativos) {
+	        if (admin.getUsuario().equalsIgnoreCase(usuario)
+	                && admin.getContrasenia().equals(password)) {
+	            return 1; // administrativo
+	        }
+	    }
+
+	    return 0;
 	}
-	
-	
 	
 }
