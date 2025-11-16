@@ -9,9 +9,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import logico.Clinica;
 import logico.Personal;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
@@ -26,7 +29,6 @@ public class Principal extends JFrame {
 	private JPanel contentPane;
 	private Dimension dimPrincipal;
 	//Colores de la paleta seleccionada para el programa
-	private static Personal user = null;
 	private static Color paleteBlue = new Color(55,65,81);
 	private static Color paleteDarkGreen = new Color(22,163, 74);
 	//private static Color paleteLightGreen = new Color(74, 222, 128);
@@ -39,10 +41,11 @@ public class Principal extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Principal frame = new Principal();
+					Principal frame = new Principal(0,"");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Error inesperado al abrir la ventana. Por favor, reinicie la aplicación", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -51,7 +54,7 @@ public class Principal extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Principal() {
+	public Principal(int mode, String idUser) {
 		dimPrincipal = getToolkit().getScreenSize();
 		setResizable(false);
 		setTitle("Ventana principal");
@@ -68,13 +71,13 @@ public class Principal extends JFrame {
 		
 		JPanel optionPanel = new JPanel();
 		optionPanel.setBounds(0, 0, 240, 701);
-		optionPanel.setBackground(new Color(55,65,81));
+		optionPanel.setBackground(paleteBlue);
 		contentPane.add(optionPanel);
 		optionPanel.setLayout(null);
 		
 		JLabel lbLogo = new JLabel("");
 		lbLogo.setBounds(82, 26, 76, 76);
-		lbLogo.setIcon(new ImageIcon("images/logoP.png"));
+		lbLogo.setIcon(new ImageIcon("Recursos/Imagenes/logoP.png"));
 		optionPanel.add(lbLogo);
 		
 		JButton btnRegPaciente = new JButton("New button");
@@ -165,8 +168,10 @@ public class Principal extends JFrame {
 		infoUserPanel.setBounds(0, 0, 1131, 120);
 		bkgPanel.add(infoUserPanel);
 		infoUserPanel.setLayout(null);
-				
-		JLabel lblNombreUser = new JLabel("Nombre de Usuario");
+		JLabel lblNombreUser = new JLabel("");
+		if(mode==0) {
+			lblNombreUser.setText(Clinica.getInstance().getDoctorPorUsuario(idUser).getNombre());
+		}
 		lblNombreUser.setFont(new Font("Tahoma", Font.BOLD, 13));
 		lblNombreUser.setBounds(846, 37, 153, 14);
 		infoUserPanel.add(lblNombreUser);
@@ -177,7 +182,7 @@ public class Principal extends JFrame {
 		
 		JLabel lblFotoUser = new JLabel("");
 		lblFotoUser.setBounds(1020, 11, 90, 90);
-		lblFotoUser.setIcon(new ImageIcon("images/useResi.png"));
+		lblFotoUser.setIcon(new ImageIcon("Recursos/Imagenes/useResi.png"));
 		infoUserPanel.add(lblFotoUser);
 	}
 }
