@@ -44,12 +44,7 @@ public class Clinica implements Serializable {
 		this.proximoIdVacuna = 1;
 	}
 
-	/*
-	 * Función: getInstance (Singleton) Argumentos: Ninguno. Objetivo: Obtener la
-	 * instancia única de la Clínica. Si la instancia no existe, intenta cargarla
-	 * desde el archivo binario. Si no puede cargarla (archivo no existe), crea una
-	 * nueva instancia. Retorno: (Clinica): La instancia única del sistema.
-	 */
+
 	public static Clinica getInstance() {
 		if (instance == null) {
 			instance = cargarDatos();
@@ -63,25 +58,6 @@ public class Clinica implements Serializable {
 		return instance;
 	}
 
-	/*
-	 * Función: login Argumentos: (String) usuario: El nombre de usuario. (String)
-	 * password: La contraseña. Objetivo: Autenticar a un miembro del personal
-	 * (Doctor o Administrativo). Retorno: (Personal): El objeto Personal (Doctor o
-	 * Admin) si el login es exitoso, o null si las credenciales son incorrectas.
-	 */
-	public Personal login(String usuario, String password) {
-		for (Doctor doctorActual : doctores) {
-			if (doctorActual.getUsuario().equals(usuario) && doctorActual.getContrasenia().equals(password)) {
-				return doctorActual;
-			}
-		}
-		for (Administrativo adminActual : administrativos) {
-			if (adminActual.getUsuario().equals(usuario) && adminActual.getContrasenia().equals(password)) {
-				return adminActual;
-			}
-		}
-		return null;
-	}
 
 	public void registrarDoctor(Doctor doctor) {
 		this.doctores.add(doctor);
@@ -387,4 +363,40 @@ public class Clinica implements Serializable {
 			return null;
 		}
 	}
+	
+	// ------------- LOGIN / AUTENTICACION -------------
+	/*
+	 Crear usuario ADMIN por defecto si la clinica esta completamente vacia.
+	 Se ejecuta cuando se carga o inicia el programa.
+	 */
+	public void crearAdminPorDefecto() {
+	    if (administrativos.isEmpty() && doctores.isEmpty()) {
+	        Administrativo admin = new Administrativo(/*"admin", "admin", "Administrador General"*/);
+	        administrativos.add(admin);
+	        System.out.println(">>> Usuario admin/admin creado por defecto.");
+	    }
+	}
+	
+	
+	/*
+	 Recorre doctores y administrativos, si usuario/conrasenna coinciden returna personal, sino null.
+	*/
+	public Personal login(String usuario, String password) {
+		// Doctores
+		for (Doctor doctorActual : doctores) {
+			if (doctorActual.getUsuario().equals(usuario) && doctorActual.getContrasenia().equals(password)) {
+				return doctorActual;
+			}
+		}
+		// Administrativo
+		for (Administrativo adminActual : administrativos) {
+			if (adminActual.getUsuario().equals(usuario) && adminActual.getContrasenia().equals(password)) {
+				return adminActual;
+			}
+		}
+		return null;
+	}
+	
+	
+	
 }
