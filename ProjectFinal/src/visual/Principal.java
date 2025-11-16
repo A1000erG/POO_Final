@@ -9,6 +9,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import logico.Personal;
+
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -25,6 +28,8 @@ public class Principal extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private Dimension dimPrincipal;
+	//Colores de la paleta seleccionada para el programa
+	private static Personal user = null;
 	private static Color paleteBlue = new Color(55,65,81);
 	private static Color paleteDarkGreen = new Color(22,163, 74);
 	private static Color paleteLightGreen = new Color(74, 222, 128);
@@ -76,6 +81,7 @@ public class Principal extends JFrame {
 		optionPanel.add(lbLogo);
 		
 		JButton btnRegPaciente = new JButton("New button");
+		//Efecto de cambio de de color de botones
 		btnRegPaciente.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -94,6 +100,7 @@ public class Principal extends JFrame {
 		optionPanel.add(btnRegPaciente);
 		
 		JButton btnRegDoctor = new JButton("New button");
+		//Efecto de cambio de de color de botones
 		btnRegDoctor.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -112,6 +119,7 @@ public class Principal extends JFrame {
 		optionPanel.add(btnRegDoctor);
 		
 		JButton btnConsultas = new JButton("New button");
+		//Efecto de cambio de de color de botones
 		btnConsultas.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -130,6 +138,7 @@ public class Principal extends JFrame {
 		optionPanel.add(btnConsultas);
 		
 		JButton btnReportes = new JButton("New button");
+		//Efecto de cambio de de color de botones
 		btnReportes.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -142,7 +151,8 @@ public class Principal extends JFrame {
 		});
 		btnReportes.setForeground(Color.WHITE);
 		btnReportes.setBounds(0, 318, 240, 47);
-		btnReportes.setBackground(paleteBlue);
+		btnReportes.setBackground(paleteBlue); //las variables palete corresponden a instancias 
+		//de clase Color con los colores de la paleta utilizada para el programa
 		btnReportes.setBorderPainted(false);
 		btnReportes.setFocusPainted(false);
 		optionPanel.add(btnReportes);
