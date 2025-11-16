@@ -236,7 +236,7 @@ public class Login extends JFrame {
 	        	ad.setVisible(true);
 	            this.dispose();
 
-	        } else if (tipo == 2) { // DOCTOR
+	        } else if (tipo == 2) { // DOCTORr
 	        	timerError.stop();
 	        	Principal doc = new Principal(tipo);
 	            doc.setVisible(true);
