@@ -1,6 +1,5 @@
 package visual;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -14,8 +13,6 @@ import logico.Personal;
 
 import javax.swing.JLabel;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -32,7 +29,7 @@ public class Principal extends JFrame {
 	private static Personal user = null;
 	private static Color paleteBlue = new Color(55,65,81);
 	private static Color paleteDarkGreen = new Color(22,163, 74);
-	private static Color paleteLightGreen = new Color(74, 222, 128);
+	//private static Color paleteLightGreen = new Color(74, 222, 128);
 	private static Color paleteRareWhite = new Color(247, 250, 252);
 	
 	/**
