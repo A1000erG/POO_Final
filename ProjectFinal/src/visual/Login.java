@@ -46,7 +46,11 @@ public class Login extends JFrame {
 	public Login() {
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+		// TAMANIO PARA EL LOGIN
+		setSize(930, 650);
+		setResizable(false);
+		setLocationRelativeTo(null);
         
 		contentPane = new JPanel();
 		contentPane.setLayout(new BorderLayout());

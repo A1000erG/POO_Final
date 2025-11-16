@@ -24,7 +24,7 @@ public class Principal extends JFrame {
 	private Dimension dimPrincipal;
 	private static Color paleteBlue = new Color(55,65,81);
 	private static Color paleteDarkGreen = new Color(22,163, 74);
-	private static Color paleteLightGreen = new Color(74, 222, 128);
+	//private static Color paleteLightGreen = new Color(74, 222, 128);
 	private static Color paleteRareWhite = new Color(247, 250, 252);
 	
 	/**
