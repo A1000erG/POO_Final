@@ -1,7 +1,6 @@
 package visual;
 
 import java.awt.Color;
-import java.awt.Dimension;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -20,7 +19,7 @@ public class Principal extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private Dimension dimPrincipal;
+	//private Dimension dimPrincipal;
 	private static Color paleteBlue = new Color(55,65,81);
 	private static Color paleteDarkGreen = new Color(22,163, 74);
 	//private static Color paleteLightGreen = new Color(74, 222, 128);
