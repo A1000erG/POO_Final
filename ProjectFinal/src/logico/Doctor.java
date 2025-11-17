@@ -7,10 +7,10 @@ public class Doctor extends Personal {
 	private String especialidad;
 	private int cupoDia;
 
-	public Doctor() {
-		super();
-		this.nombre = null;
-		this.especialidad = null;
+	public Doctor(String usuario, String contrasenia, String nombre, String especialidad, int cupoDia) {
+		super(usuario, contrasenia);
+		this.nombre = nombre;
+		this.especialidad = especialidad;
 		this.cupoDia = 0;
 	}
 

@@ -19,6 +19,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import Utilidades.FuenteUtil;
+import logico.Clinica;
 
 public class Login extends JFrame {
 
@@ -44,6 +45,7 @@ public class Login extends JFrame {
 
 
 	public Login() {
+	    Clinica controlador = Clinica.getInstance();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -172,9 +174,25 @@ public class Login extends JFrame {
 	    });
 	    
 	    
+	    
+	    // MENSAJE DE ERROR
+	    JLabel lblError = new JLabel("");
+	    lblError.setForeground(new Color(220, 38, 38)); // rojo bonito
+	    lblError.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f));
+	    lblError.setBounds(80, 420, 350, 25);
+	    panelIzquierdo.add(lblError);
+	    
+	    // TIMER PARA OCULTAR EL MENSAJE DE ERROR
+	    javax.swing.Timer timerError = new javax.swing.Timer(3000, e -> {
+	        lblError.setText("");
+	    });
+	    timerError.setRepeats(false);
+	    
+	    
+	    
 	    // BOTON INICIAR SESION
 	    JButton btnLogin = new JButton("INICIAR SESIÓN");
-	    btnLogin.setBounds(80, 450, 200, 40);
+	    btnLogin.setBounds(80, 470, 200, 40);
 	    
 	    Color verdeBtn = new Color(22, 163, 74);
 	    Color verdeHover = new Color(18, 140, 64);
@@ -184,7 +202,7 @@ public class Login extends JFrame {
 	    
 	    btnLogin.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 16f));
 	    
-	    // Quitar bordes feos
+	    	// Quitar bordes feos
 	    btnLogin.setFocusPainted(false);
 	    btnLogin.setBorderPainted(false);
 	    btnLogin.setContentAreaFilled(true);
@@ -201,6 +219,32 @@ public class Login extends JFrame {
 	        @Override
 	        public void mouseExited(MouseEvent e) {
 	            btnLogin.setBackground(verdeBtn);
+	        }
+	    });
+	    
+	    
+	    // COMPROBAR AUTENTICACION
+	    btnLogin.addActionListener(e -> {
+	        String usuario = txtUsuario.getText().trim();
+	        String pass = new String(txtContrasenia.getPassword());
+
+	        int tipo = controlador.loginTipo(usuario, pass);
+
+	        if (tipo == 1) { //ADMINISTRATIVO
+	        	timerError.stop();
+	        	Principal ad = new Principal(tipo, usuario);
+	        	ad.setVisible(true);
+	            this.dispose();
+
+	        } else if (tipo == 2) { // DOCTORr
+	        	timerError.stop();
+	        	Principal doc = new Principal(tipo, usuario);
+	            doc.setVisible(true);
+	            this.dispose();
+
+	        } else {
+	        	lblError.setText("Credenciales incorrectas. Verifica tus datos.");
+	        	timerError.restart();
 	        }
 	    });
 

@@ -6,15 +6,11 @@ public class Administrativo extends Personal {
 	private String nombre;
 	private String cargo;
 
-	/*
-	 * Función: Administrativo (Constructor) Argumentos: Ninguno. Objetivo:
-	 * Inicializar un objeto Administrativo con valores por defecto. Retorno:
-	 * Ninguno (es un constructor).
-	 */
-	public Administrativo() {
-		super(); // Llama al constructor de Personal
-		this.nombre = null;
-		this.cargo = null;
+	
+	public Administrativo(String usuario, String contrasenia, String nombre, String cargo) {
+		super(usuario, contrasenia);
+		this.nombre = nombre;
+		this.cargo = cargo;
 	}
 
 	public String getCargo() {

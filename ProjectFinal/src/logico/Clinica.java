@@ -44,12 +44,7 @@ public class Clinica implements Serializable {
 		this.proximoIdVacuna = 1;
 	}
 
-	/*
-	 * Función: getInstance (Singleton) Argumentos: Ninguno. Objetivo: Obtener la
-	 * instancia única de la Clínica. Si la instancia no existe, intenta cargarla
-	 * desde el archivo binario. Si no puede cargarla (archivo no existe), crea una
-	 * nueva instancia. Retorno: (Clinica): La instancia única del sistema.
-	 */
+
 	public static Clinica getInstance() {
 		if (instance == null) {
 			instance = cargarDatos();
@@ -59,29 +54,12 @@ public class Clinica implements Serializable {
 			} else {
 				System.out.println("Instancia de Clinica cargada desde " + ARCHIVO_DATOS);
 			}
+			
+			instance.crearAdminPorDefecto();
 		}
 		return instance;
 	}
 
-	/*
-	 * Función: login Argumentos: (String) usuario: El nombre de usuario. (String)
-	 * password: La contraseña. Objetivo: Autenticar a un miembro del personal
-	 * (Doctor o Administrativo). Retorno: (Personal): El objeto Personal (Doctor o
-	 * Admin) si el login es exitoso, o null si las credenciales son incorrectas.
-	 */
-	public Personal login(String usuario, String password) {
-		for (Doctor doctorActual : doctores) {
-			if (doctorActual.getUsuario().equals(usuario) && doctorActual.getContrasenia().equals(password)) {
-				return doctorActual;
-			}
-		}
-		for (Administrativo adminActual : administrativos) {
-			if (adminActual.getUsuario().equals(usuario) && adminActual.getContrasenia().equals(password)) {
-				return adminActual;
-			}
-		}
-		return null;
-	}
 
 	public void registrarDoctor(Doctor doctor) {
 		this.doctores.add(doctor);
@@ -380,11 +358,52 @@ public class Clinica implements Serializable {
 			archivoEntrada.close();
 			return instanciaCargada;
 		} catch (IOException excepcionIO) {
-			System.out.println("No se encontró el archivo " + ARCHIVO_DATOS + ". Se creará uno nuevo.");
+			System.out.println("No se encontra el archivo " + ARCHIVO_DATOS + ". Se crea uno nuevo.");
 			return null;
 		} catch (ClassNotFoundException excepcionClase) {
 			System.err.println("Error al cargar los datos (Clase no encontrada): " + excepcionClase.getMessage());
 			return null;
 		}
 	}
+	
+	// ------------- LOGIN / AUTENTICACION -------------
+	/*
+	 Crear usuario ADMIN por defecto si la clinica esta completamente vacia.
+	 Se ejecuta cuando se carga o inicia el programa.
+	 */
+	public void crearAdminPorDefecto() {
+	    if (administrativos.isEmpty() && doctores.isEmpty()) {
+	        Administrativo admin = new Administrativo("admi", "admi","Administrador", "Administrador General");
+	        administrativos.add(admin);
+	        System.out.println("Usuario admin/admin creado por defecto.");
+	    }
+	}
+	
+	
+	
+	/*
+	Retorna 1 = admin
+			2 = doctor
+			0 = error
+	*/
+	
+	public int loginTipo(String usuario, String password) {
+
+	    for (Doctor doc : doctores) {
+	        if (doc.getUsuario().equalsIgnoreCase(usuario)
+	                && doc.getContrasenia().equals(password)) {
+	            return 2; // doctor
+	        }
+	    }
+
+	    for (Administrativo admin : administrativos) {
+	        if (admin.getUsuario().equalsIgnoreCase(usuario)
+	                && admin.getContrasenia().equals(password)) {
+	            return 1; // administrativo
+	        }
+	    }
+
+	    return 0;
+	}
+	
 }
