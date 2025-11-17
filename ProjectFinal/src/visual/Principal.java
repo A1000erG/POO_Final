@@ -16,9 +16,15 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.SwingConstants;
 
 public class Principal extends JFrame {
 
@@ -28,10 +34,13 @@ public class Principal extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private Dimension dimPrincipal;
+	//Variables de prueba, se eliminarán más adelante
+	private static int mode=0;
+	private static String idUser="";
 	//Colores de la paleta seleccionada para el programa
 	private static Color paleteBlue = new Color(55,65,81);
 	private static Color paleteDarkGreen = new Color(22,163, 74);
-	//private static Color paleteLightGreen = new Color(74, 222, 128);
+	private static Color paleteLightGreen = new Color(74, 222, 128);
 	private static Color paleteRareWhite = new Color(247, 250, 252);
 	
 	/**
@@ -168,10 +177,10 @@ public class Principal extends JFrame {
 		infoUserPanel.setBounds(0, 0, 1131, 120);
 		bkgPanel.add(infoUserPanel);
 		infoUserPanel.setLayout(null);
-		JLabel lblNombreUser = new JLabel("");
-		if(mode==0) {
+		JLabel lblNombreUser = new JLabel("Nombre Usuario");
+		/*if(mode==0) {
 			lblNombreUser.setText(Clinica.getInstance().getDoctorPorUsuario(idUser).getNombre());
-		}
+		}*/
 		lblNombreUser.setFont(new Font("Tahoma", Font.BOLD, 13));
 		lblNombreUser.setBounds(846, 37, 153, 14);
 		infoUserPanel.add(lblNombreUser);
@@ -184,5 +193,111 @@ public class Principal extends JFrame {
 		lblFotoUser.setBounds(1020, 11, 90, 90);
 		lblFotoUser.setIcon(new ImageIcon("Recursos/Imagenes/useResi.png"));
 		infoUserPanel.add(lblFotoUser);
+		
+		JPanel cantEnfermPanel = new JPanel(){
+			@Override
+			protected void paintComponent(Graphics g) {
+			    Graphics2D g2 = (Graphics2D) g;
+			    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+			                       RenderingHints.VALUE_ANTIALIAS_ON);
+			    g2.setColor(getBackground());
+			    g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
+			}
+		};
+		cantEnfermPanel.setBackground(Color.WHITE);
+		cantEnfermPanel.setBounds(57, 177, 300, 130);
+		bkgPanel.add(cantEnfermPanel);
+		cantEnfermPanel.setLayout(null);
+		
+		ImageIcon enfermedadIcon = new ImageIcon(getClass().getResource("/Imagenes/thermometer.png"));
+		//Escalando imagen
+		Image enfermedadEscalada = enfermedadIcon.getImage().getScaledInstance(108, 108, Image.SCALE_SMOOTH);
+		JLabel lblEnfermedades = new JLabel(new ImageIcon(enfermedadEscalada));
+		lblEnfermedades.setBounds(171, 11, 108, 108);
+		cantEnfermPanel.add(lblEnfermedades);
+		
+		JLabel lblDescripEnf = new JLabel("Enfermedades Controladas");
+		lblDescripEnf.setBounds(10, 105, 151, 14);
+		cantEnfermPanel.add(lblDescripEnf);
+		
+		JLabel lblCountEnf = new JLabel("25");
+		lblCountEnf.setBounds(10, 11, 80, 50);
+		cantEnfermPanel.add(lblCountEnf);
+		
+		JPanel cantVacunasPanel = new JPanel(){
+			@Override
+			protected void paintComponent(Graphics g) {
+			    Graphics2D g2 = (Graphics2D) g;
+			    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+			                       RenderingHints.VALUE_ANTIALIAS_ON);
+			    g2.setColor(getBackground());
+			    g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
+			}
+		};
+		cantVacunasPanel.setBackground(Color.WHITE);
+		cantVacunasPanel.setBounds(414, 177, 300, 130);
+		bkgPanel.add(cantVacunasPanel);
+		cantVacunasPanel.setLayout(null);
+		
+		ImageIcon vacunaIcon = new ImageIcon(getClass().getResource("/Imagenes/syringe.png"));
+		//Escalando imagen
+		Image vacunaEscalada = vacunaIcon.getImage().getScaledInstance(108, 108, Image.SCALE_SMOOTH);
+		JLabel lblVacuna = new JLabel(new ImageIcon(vacunaEscalada));
+		lblVacuna.setBounds(171, 11, 108, 108);
+		cantVacunasPanel.add(lblVacuna);
+		
+		JLabel lblNewLabel = new JLabel("Vacunas Existenetes");
+		lblNewLabel.setBounds(10, 105, 151, 14);
+		cantVacunasPanel.add(lblNewLabel);
+		
+		JLabel lblCountVac = new JLabel("13");
+		lblCountVac.setBounds(10, 11, 80, 50);
+		cantVacunasPanel.add(lblCountVac);
+		
+		JPanel cantCitasHoyPanel = new JPanel() {
+			@Override
+			protected void paintComponent(Graphics g) {
+			    Graphics2D g2 = (Graphics2D) g;
+			    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+			                       RenderingHints.VALUE_ANTIALIAS_ON);
+			    g2.setColor(getBackground());
+			    g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
+			}
+		};
+		cantCitasHoyPanel.setBackground(Color.WHITE);
+		cantCitasHoyPanel.setBounds(771, 177, 300, 130);
+		
+		bkgPanel.add(cantCitasHoyPanel);
+		cantCitasHoyPanel.setLayout(null);
+		
+		ImageIcon citasHoyIcon = new ImageIcon(getClass().getResource("/Imagenes/stethoscope.png"));
+		//Escalando imagen
+		Image citasEscalada = citasHoyIcon.getImage().getScaledInstance(108, 108, Image.SCALE_SMOOTH);
+		JLabel lblCitas = new JLabel(new ImageIcon(citasEscalada));
+		lblCitas.setBounds(171, 11, 108, 108);
+		cantCitasHoyPanel.add(lblCitas);
+		
+		JLabel lblNewLabel_1 = new JLabel("Citas para hoy");
+		lblNewLabel_1.setBounds(10, 105, 151, 14);
+		cantCitasHoyPanel.add(lblNewLabel_1);
+		
+		JLabel lblCountCitas = new JLabel("34");
+		lblCountCitas.setBounds(10, 11, 80, 50);
+		cantCitasHoyPanel.add(lblCountCitas);
+		
+		JPanel barGraphSickPanel = new JPanel(){
+			@Override
+			protected void paintComponent(Graphics g) {
+			    Graphics2D g2 = (Graphics2D) g;
+			    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+			                       RenderingHints.VALUE_ANTIALIAS_ON);
+			    g2.setColor(getBackground());
+			    g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
+			}
+		};
+		barGraphSickPanel.setBackground(Color.WHITE);
+		barGraphSickPanel.setBounds(57, 355, 1014, 318);
+		bkgPanel.add(barGraphSickPanel);
+		barGraphSickPanel.setLayout(null);
 	}
 }
