@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 
 import Utilidades.FuenteUtil;
 import logico.Clinica;
+import logico.ClinicaException;
 
 public class Login extends JFrame {
 
@@ -228,26 +229,34 @@ public class Login extends JFrame {
 	        String usuario = txtUsuario.getText().trim();
 	        String pass = new String(txtContrasenia.getPassword());
 
-	        int tipo = controlador.loginTipo(usuario, pass);
+	        try {
+	            // 1. Llamamos a loginTipo, que ahora devuelve un String
+	            //    y puede lanzar una ClinicaException.
+	            String tipo = controlador.loginTipo(usuario, pass);
 
-	        if (tipo == 1) { //ADMINISTRATIVO
-	        	timerError.stop();
-	        	Principal ad = new Principal(tipo);
-	        	ad.setVisible(true);
-	            this.dispose();
+	            // 2. Comparamos el String
+	            if (tipo.equals("Administrativo")) { //ADMINISTRATIVO
+	                timerError.stop();
+	                Principal ad = new Principal(1); // Pasamos el '1' que tu Principal espera
+	                ad.setVisible(true);
+	                this.dispose();
 
-	        } else if (tipo == 2) { // DOCTORr
-	        	timerError.stop();
-	        	Principal doc = new Principal(tipo);
-	            doc.setVisible(true);
-	            this.dispose();
+	            } else if (tipo.equals("Doctor")) { // DOCTOR
+	                timerError.stop();
+	                Principal doc = new Principal(2); // Pasamos el '2' que tu Principal espera
+	                doc.setVisible(true);
+	                this.dispose();
 
-	        } else {
-	        	lblError.setText("Credenciales incorrectas. Verifica tus datos.");
-	        	timerError.restart();
+	            }
+
+	        } catch (ClinicaException ex) {
+	            // 3. Si loginTipo lanza la excepción (login falla),
+	            //    caerá aquí.
+	            lblError.setText(ex.getMessage()); // Muestra el mensaje de la excepción
+	            timerError.restart();
 	        }
 	    });
-
+	    
 	    // ------------------ PANEL DERECHO (IMAGEN / LOGO) -------------------
 	    
 	    // IMAGEL DEL PANEL DERECHO

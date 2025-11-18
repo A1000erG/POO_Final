@@ -17,9 +17,18 @@ public class Cita implements Serializable {
 		this.idCita = 0;
 		this.fecha = null;
 		this.hora = null;
-		this.estado = null;
+		this.estado = "Pendiente";
 		this.paciente = null;
 		this.doctor = null;
+	}
+
+	public Cita(LocalDate fecha, String hora, Paciente paciente, Doctor doctor) {
+		this.idCita = 0;
+		this.fecha = fecha;
+		this.hora = hora;
+		this.estado = "Pendiente";
+		this.paciente = paciente;
+		this.doctor = doctor;
 	}
 
 	public int getIdCita() {

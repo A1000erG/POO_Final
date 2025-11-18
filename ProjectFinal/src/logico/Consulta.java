@@ -21,9 +21,9 @@ public class Consulta implements Serializable {
 		this.doctor = null;
 		this.sintomas = null;
 		this.diagnostico = null;
-		this.agregarAlHistorial = true; // Por defecto, se agrega
+		this.agregarAlHistorial = true;
 		this.transferida = false;
-		this.fecha = LocalDate.now(); // Por defecto, la fecha actual
+		this.fecha = LocalDate.now();
 	}
 
 	public int getIdConsulta() {
@@ -66,6 +66,11 @@ public class Consulta implements Serializable {
 		this.diagnostico = diagnostico;
 	}
 
+	/*
+	 * Función: isAgregarAlHistorial Argumentos: Ninguno. Objetivo: Verificar si
+	 * esta consulta debe ser visible en el historial del paciente. Retorno:
+	 * (boolean): true si se agrega, false si no.
+	 */
 	public boolean isAgregarAlHistorial() {
 		return agregarAlHistorial;
 	}
@@ -74,6 +79,11 @@ public class Consulta implements Serializable {
 		this.agregarAlHistorial = agregarAlHistorial;
 	}
 
+	/*
+	 * Función: isTransferida Argumentos: Ninguno. Objetivo: Verificar si el
+	 * paciente fue referido (transferido) a otro especialista. Retorno: (boolean):
+	 * true si fue transferido, false si no.
+	 */
 	public boolean isTransferida() {
 		return transferida;
 	}

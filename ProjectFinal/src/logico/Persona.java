@@ -20,6 +20,14 @@ public abstract class Persona implements Serializable {
 		this.telefono = null;
 	}
 
+	public Persona(String cedula, String nombre, char sexo, LocalDate fechaNacimiento, String telefono) {
+		this.cedula = cedula;
+		this.nombre = nombre;
+		this.sexo = sexo;
+		this.fechaNacimiento = fechaNacimiento;
+		this.telefono = telefono;
+	}
+
 	public String getCedula() {
 		return cedula;
 	}
