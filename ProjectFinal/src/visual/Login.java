@@ -79,14 +79,14 @@ public class Login extends JFrame {
 		// NOMBRE DE LA CLINICA
 		JLabel lblEmpresa = new JLabel("COMPILE SALUD");
 		lblEmpresa.setForeground(new Color(22,163, 74)); // color VERDE OSCURO
-		lblEmpresa.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 24f)); // Descomentado
+		lblEmpresa.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 24f));
 		lblEmpresa.setBounds(130, 55, 700, 50);
 		panelIzquierdo.add(lblEmpresa);
 		
 		// TÍTULO "INICIAR SESIÓN"
 		JLabel lblTitulo = new JLabel("INICIAR SESIÓN");
 		lblTitulo.setForeground(new Color(55,65,81)); // color NEGRO SUAVE
-		lblTitulo.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 32f)); // Descomentado
+		lblTitulo.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 32f));
 		lblTitulo.setBounds(80, 180, 400, 40);
 		panelIzquierdo.add(lblTitulo);
 		
@@ -94,7 +94,7 @@ public class Login extends JFrame {
 		// LABEL USUARIO
 		JLabel lblUsuario = new JLabel("USUARIO");
 		lblUsuario.setForeground(new Color(55,65,81)); // gris oscuro bonito
-		lblUsuario.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f)); // Descomentado
+		lblUsuario.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
 		lblUsuario.setBounds(80, 250, 200, 25);
 		panelIzquierdo.add(lblUsuario);
 		
@@ -105,7 +105,7 @@ public class Login extends JFrame {
 			BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(209, 213, 219))
 		); 
 		txtUsuario.setForeground(new Color(55,65,81));
-		txtUsuario.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f)); // Descomentado
+		txtUsuario.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
 		txtUsuario.setBounds(80, 280, 350, 30);
 		panelIzquierdo.add(txtUsuario);
 		
@@ -113,7 +113,7 @@ public class Login extends JFrame {
 		// LABEL CONTRASENIA
 		JLabel lblContrasenia = new JLabel("CONTRASEÑA");
 		lblContrasenia.setForeground(new Color(55,65,81)); // gris oscuro bonito
-		lblContrasenia.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f)); // Descomentado
+		lblContrasenia.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
 		lblContrasenia.setBounds(80, 350, 200, 25);
 		panelIzquierdo.add(lblContrasenia);
 		
@@ -124,7 +124,7 @@ public class Login extends JFrame {
 			BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(209, 213, 219))
 		); 
 		txtContrasenia.setForeground(new Color(55,65,81));
-		txtContrasenia.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f)); // Descomentado
+		txtContrasenia.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
 		txtContrasenia.setBounds(80, 380, 350, 30);
 		panelIzquierdo.add(txtContrasenia);
 		
@@ -165,8 +165,6 @@ public class Login extends JFrame {
 			}
 		});
 		
-		
-		
 		// MENSAJE DE ERROR
 		JLabel lblError = new JLabel("");
 		lblError.setForeground(new Color(220, 38, 38)); // rojo bonito
@@ -191,7 +189,7 @@ public class Login extends JFrame {
 		
 		btnLogin.setBackground(verdeBtn);
 		btnLogin.setForeground(Color.WHITE);
-		btnLogin.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 16f)); // Descomentado
+		btnLogin.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 16f));
 		
 		// Quitar bordes feos
 		btnLogin.setFocusPainted(false);
@@ -279,7 +277,7 @@ public class Login extends JFrame {
 		JLabel lblNombreDer = new JLabel("COMPILE SALUD");
 
 		lblNombreDer.setForeground(Color.WHITE);
-		lblNombreDer.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 36f)); // Descomentado
+		lblNombreDer.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 36f));
 		lblNombreDer.setBounds(0, 210, 420, 40);
 		lblNombreDer.setHorizontalAlignment(JLabel.CENTER);
 
