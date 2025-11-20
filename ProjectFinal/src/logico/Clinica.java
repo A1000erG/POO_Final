@@ -44,12 +44,7 @@ public class Clinica implements Serializable {
 		this.proximoIdVacuna = 1;
 	}
 
-	/*
-	 * Función: getInstance (Singleton) Argumentos: Ninguno. Objetivo: Obtener la
-	 * instancia única de la Clínica. Si la instancia no existe, intenta cargarla
-	 * desde el archivo binario. Si no puede cargarla (archivo no existe), crea una
-	 * nueva instancia. Retorno: (Clinica): La instancia única del sistema.
-	 */
+
 	public static Clinica getInstance() {
 		if (instance == null) {
 			instance = cargarDatos();
