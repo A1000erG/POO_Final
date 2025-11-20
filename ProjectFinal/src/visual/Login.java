@@ -20,7 +20,6 @@ import javax.swing.JTextField;
 
 import Utilidades.FuenteUtil; // Descomentado
 import logico.Clinica;
-import logico.ClinicaException;
 
 public class Login extends JFrame {
 
@@ -219,25 +218,28 @@ public class Login extends JFrame {
 			String usuario = txtUsuario.getText().trim();
 			String pass = new String(txtContrasenia.getPassword());
 
-			try {
-				String tipoString = controlador.loginTipo(usuario, pass);
+			String tipoString = controlador.loginTipo(usuario, pass);
 
+			// 2. Verificamos si devolvió NULL (Error)
+			if (tipoString == null) {
+				// Recuperamos el mensaje de error guardado en la clase Clinica
+				lblError.setText(Clinica.getInstance().getUltimoMensajeError());
+				timerError.restart();
+			} 
+			// 3. Si no es NULL, procedemos con el acceso
+			else {
 				if (tipoString.equals("Administrativo")) {
 					timerError.stop();
-					Principal ad = new Principal(1, usuario); 
+					Principal ad = new Principal(1, usuario);
 					ad.setVisible(true);
 					this.dispose();
 					
 				} else if (tipoString.equals("Doctor")) {
 					timerError.stop();
-					Principal doc = new Principal(2, usuario); 
+					Principal doc = new Principal(2, usuario);
 					doc.setVisible(true);
 					this.dispose();
 				}
-				
-			} catch (ClinicaException ex) {
-				lblError.setText(ex.getMessage());
-				timerError.restart();
 			}
 		});
 		

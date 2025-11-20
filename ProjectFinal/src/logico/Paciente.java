@@ -3,7 +3,6 @@ package logico;
 import java.util.ArrayList;
 import java.util.Objects;
 
-
 public class Paciente extends Persona {
 
     private static final long serialVersionUID = 6L;
@@ -11,15 +10,20 @@ public class Paciente extends Persona {
     private ArrayList<Consulta> historialClinico;
     private ArrayList<Vacuna> vacunasAplicadas;
 
- 
     public Paciente() {
         super();
-        this.idPaciente = 0; // Se asignará un ID real en la clase Clinica
+        this.idPaciente = 0;
         this.historialClinico = new ArrayList<Consulta>();
-		this.vacunasAplicadas = new ArrayList<Vacuna>(); // <-- Se llama Vacuna
+        this.vacunasAplicadas = new ArrayList<Vacuna>();
     }
 
-    public ArrayList<Consulta> consultarHistorial() {
+    /*
+    Función: getHistorialClinico
+    Argumentos: Ninguno.
+    Objetivo: Obtener la lista de consultas pasadas.
+    Retorno: (ArrayList<Consulta>): La lista de consultas.
+    */
+    public ArrayList<Consulta> getHistorialClinico() {
         return historialClinico;
     }
 
@@ -29,10 +33,6 @@ public class Paciente extends Persona {
 
     public void setIdPaciente(int idPaciente) {
         this.idPaciente = idPaciente;
-    }
-
-    public ArrayList<Consulta> getHistorialClinico() {
-        return historialClinico;
     }
 
     public void setHistorialClinico(ArrayList<Consulta> historialClinico) {
@@ -46,35 +46,18 @@ public class Paciente extends Persona {
     public void setVacunasAplicadas(ArrayList<Vacuna> vacunasAplicadas) {
         this.vacunasAplicadas = vacunasAplicadas;
     }
-
+    
     /*
-     * Función: equals
-     * Argumentos: (Object) obj: El objeto a comparar.
-     * Objetivo: Compara si dos pacientes son iguales basándose en su cédula.
-     * Retorno: (boolean): true si son iguales, false si no.
-     */
+    Función: equals
+    Argumentos: (Object) obj: Objeto a verificar.
+    Objetivo: Comparar pacientes por Cédula (Regla de Negocio).
+    Retorno: (boolean): Verdadero si tienen la misma cédula.
+    */
     @Override
-    public boolean equals(Object objeto) {
-        if (this == objeto) {
-            return true;
-        }
-        if (objeto == null || getClass() != objeto.getClass()) {
-            return false;
-        }
-        Paciente paciente = (Paciente) objeto;
-        // La lógica de negocio indica que un paciente es único por su cédula
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Paciente paciente = (Paciente) obj;
         return Objects.equals(getCedula(), paciente.getCedula());
-    }
-
-    /*
-     * Función: hashCode
-     * Argumentos: Ninguno.
-     * Objetivo: Generar un código hash basado en la cédula.
-     * Retorno: (int): El código hash.
-     */
-    @Override
-    public int hashCode() {
-        // Se usa el hashCode de la cédula (String)
-        return Objects.hash(getCedula());
     }
 }

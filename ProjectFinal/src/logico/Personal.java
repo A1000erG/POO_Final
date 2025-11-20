@@ -13,27 +13,33 @@ public abstract class Personal implements Serializable {
         this.contrasenia = null;
     }
 
+    /*
+    Función: Personal (Constructor)
+    Argumentos: 
+        (String) usuario: Credencial de acceso (login).
+        (String) contrasenia: Contraseña de acceso.
+    Objetivo: Inicializar las credenciales del personal.
+    Retorno: (Ninguno): Es un constructor.
+    */
     public Personal(String usuario, String contrasenia) {
         this.usuario = usuario;
         this.contrasenia = contrasenia;
     }
 
     /*
-     * Función: getNombre (Abstracta)
-     * Argumentos: Ninguno.
-     * Objetivo: Método abstracto para forzar a las clases hijas a implementar la
-     * obtención del nombre.
-     * Retorno: (String): El nombre del personal.
-     */
+    Función: getNombre (Abstracto)
+    Argumentos: Ninguno.
+    Objetivo: Obligar a las clases hijas a devolver el nombre real del personal.
+    Retorno: (String): El nombre.
+    */
     public abstract String getNombre();
 
     /*
-     * Función: getId (Abstracta)
-     * Argumentos: Ninguno.
-     * Objetivo: Método abstracto para forzar a las clases hijas a implementar la
-     * obtención de su ID único.
-     * Retorno: (int): El ID del personal.
-     */
+    Función: getId (Abstracto)
+    Argumentos: Ninguno.
+    Objetivo: Obligar a las clases hijas a devolver el ID numérico.
+    Retorno: (int): El identificador único.
+    */
     public abstract int getId();
 
     public String getUsuario() {
@@ -50,13 +56,5 @@ public abstract class Personal implements Serializable {
 
     public void setContrasenia(String contrasenia) {
         this.contrasenia = contrasenia;
-    }
-
-    public String getContrasenna() {
-        return getContrasenia();
-    }
-
-    public void setContrasenna(String contrasenna) {
-        setContrasenia(contrasenna);
     }
 }

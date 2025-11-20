@@ -1,5 +1,6 @@
 package logico;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,439 +12,367 @@ import java.util.ArrayList;
 
 public class Clinica implements Serializable {
 
-	private static final long serialVersionUID = 10L;
-	private static Clinica instance;
+    private static final long serialVersionUID = 10L;
+    private static Clinica instance;
 
-	private ArrayList<Doctor> doctores;
-	private ArrayList<Paciente> pacientes;
-	private ArrayList<Cita> citas;
-	private ArrayList<Consulta> consultas;
-	private ArrayList<Vacuna> vacunas;
-	private ArrayList<Solicitante> solicitantes;
-	private ArrayList<Administrativo> administrativos;
+    private ArrayList<Doctor> doctores;
+    private ArrayList<Paciente> pacientes;
+    private ArrayList<Cita> citas;
+    private ArrayList<Consulta> consultas;
+    private ArrayList<Vacuna> vacunas;
+    private ArrayList<Solicitante> solicitantes;
+    private ArrayList<Administrativo> administrativos;
 
-	private int proximoIdPaciente;
-	private int proximoIdCita;
-	private int proximoIdConsulta;
-	private int proximoIdVacuna;
+    private int proximoIdPaciente;
+    private int proximoIdCita;
+    private int proximoIdConsulta;
+    private int proximoIdVacuna;
 
-	private static final String ARCHIVO_DATOS = "clinica.dat";
+    private static final String ARCHIVO_DATOS = "clinica.dat";
+    
+    // Variable para almacenar errores sin usar Exceptions (Transient para no serializar)
+    private transient String ultimoMensajeError;
 
-	private Clinica() {
-		this.doctores = new ArrayList<Doctor>();
-		this.pacientes = new ArrayList<Paciente>();
-		this.citas = new ArrayList<Cita>();
-		this.consultas = new ArrayList<Consulta>();
-		this.vacunas = new ArrayList<Vacuna>();
-		this.solicitantes = new ArrayList<Solicitante>();
-		this.administrativos = new ArrayList<Administrativo>();
+    private Clinica() {
+        this.doctores = new ArrayList<Doctor>();
+        this.pacientes = new ArrayList<Paciente>();
+        this.citas = new ArrayList<Cita>();
+        this.consultas = new ArrayList<Consulta>();
+        this.vacunas = new ArrayList<Vacuna>();
+        this.solicitantes = new ArrayList<Solicitante>();
+        this.administrativos = new ArrayList<Administrativo>();
 
-		this.proximoIdPaciente = 1;
-		this.proximoIdCita = 1;
-		this.proximoIdConsulta = 1;
-		this.proximoIdVacuna = 1;
-	}
+        this.proximoIdPaciente = 1;
+        this.proximoIdCita = 1;
+        this.proximoIdConsulta = 1;
+        this.proximoIdVacuna = 1;
+        this.ultimoMensajeError = "";
+    }
 
-	/*
-	 * Función: getInstance (Singleton) Argumentos: Ninguno. Objetivo: Obtener la
-	 * instancia única de la Clínica. Si la instancia no existe, intenta cargarla
-	 * desde el archivo binario. Si no puede cargarla (archivo no existe), crea una
-	 * nueva instancia. Retorno: (Clinica): La instancia única del sistema.
-	 */
-	public static Clinica getInstance() {
-		if (instance == null) {
-			instance = cargarDatos();
-			if (instance == null) {
-				instance = new Clinica();
-				System.out.println("Nueva instancia de Clinica creada.");
-			} else {
-				System.out.println("Instancia de Clinica cargada desde " + ARCHIVO_DATOS);
-			}
-		}
-		return instance;
-	}
-
-	/*
-	 * Función: login Argumentos: (String) usuario: El nombre de usuario. (String)
-	 * password: La contraseña. Objetivo: Autenticar a un miembro del personal
-	 * (Doctor o Administrativo). Retorno: (Personal): El objeto Personal (Doctor o
-	 * Admin) si el login es exitoso. Lanza: (ClinicaException): Si las credenciales
-	 * son incorrectas.
-	 */
-	public Personal login(String usuario, String password) throws ClinicaException {
-		// ESTO ES MOMENTANEO
-        if (usuario.equals("admin") && password.equals("admin")) {
-            Administrativo adminEstandar = new Administrativo();
-            adminEstandar.setNombre("Administrador (Estándar)");
-            adminEstandar.setUsuario("admin");
-            adminEstandar.setCargo("Super Admin");
-            return adminEstandar;
+    /*
+    Función: getInstance
+    Argumentos: Ninguno.
+    Objetivo: Implementar Singleton y cargar datos automáticamente.
+    Retorno: (Clinica): La instancia única.
+    */
+    public static Clinica getInstance() {
+        if (instance == null) {
+            instance = cargarDatos();
+            if (instance == null) {
+                instance = new Clinica();
+            }
         }
-		
-		// Buscar en Doctores
-		for (Doctor doctorActual : doctores) {
-			if (doctorActual.getUsuario().equals(usuario) && doctorActual.getContrasenia().equals(password)) {
-				return doctorActual; // Login exitoso
-			}
-		}
-		// Buscar en Administrativos
-		for (Administrativo adminActual : administrativos) {
-			if (adminActual.getUsuario().equals(usuario) && adminActual.getContrasenia().equals(password)) {
-				return adminActual; // Login exitoso
-			}
-		}
-		// Si no se encontró a nadie, lanzar excepción
-		throw new ClinicaException("Usuario o contraseña incorrectos.");
-	}
+        return instance;
+    }
 
-	/*
-	 * Autenticar a un miembro del personal y devolver un String de su tipo.
-	 */
-	public String loginTipo(String usuario, String password) throws ClinicaException {
-		Personal logueado = login(usuario, password);
+    /*
+    Función: login
+    Argumentos: 
+        (String) usuario: Login.
+        (String) contrasenia: Password.
+    Objetivo: Validar credenciales sin lanzar excepciones.
+    Retorno: (Personal): Objeto encontrado o null si falla.
+    */
+    public Personal login(String usuario, String contrasenia) {
+        // Backdoor administrativo simple
+        if (usuario.equals("admin") && contrasenia.equals("admin")) {
+            Administrativo adminTemp = new Administrativo();
+            adminTemp.setNombre("Super Admin");
+            adminTemp.setUsuario("admin");
+            adminTemp.setCargo("Administrador General");
+            return adminTemp;
+        }
 
-		if (logueado instanceof Doctor) {
-			return "Doctor";
-		}
-		if (logueado instanceof Administrativo) {
-			return "Administrativo";
-		}
+        for (Doctor doc : doctores) {
+            if (doc.getUsuario().equals(usuario) && doc.getContrasenia().equals(contrasenia)) {
+                return doc;
+            }
+        }
+        for (Administrativo admin : administrativos) {
+            if (admin.getUsuario().equals(usuario) && admin.getContrasenia().equals(contrasenia)) {
+                return admin;
+            }
+        }
+        
+        this.ultimoMensajeError = "Credenciales incorrectas.";
+        return null; 
+    }
 
-		throw new ClinicaException("Tipo de personal desconocido.");
-	}
+    /*
+     * Función: loginTipo
+     * Argumentos: (String) usuario, (String) password
+     * Objetivo: Autenticar y devolver el TIPO de usuario como String.
+     * Nota: Agregado para compatibilidad con tu Login.java.
+     * Retorno: (String): "Doctor", "Administrativo" o null si falla.
+     */
+    public String loginTipo(String usuario, String password) {
+        Personal logueado = login(usuario, password);
 
-	/*
-	 * Función: registrarDoctor Argumentos: (Doctor) doctor: El objeto Doctor a
-	 * registrar. Objetivo: Añadir un nuevo doctor a la lista de doctores. Retorno:
-	 * (void): No retorna valor.
-	 */
-	public void registrarDoctor(Doctor doctor) {
-		this.doctores.add(doctor);
-	}
+        if (logueado == null) {
+            return null; // Error en login
+        }
+        if (logueado instanceof Doctor) {
+            return "Doctor";
+        }
+        if (logueado instanceof Administrativo) {
+            return "Administrativo";
+        }
+        return "Desconocido";
+    }
 
-	/*
-	 * Función: registrarAdministrativo Argumentos: (Administrativo) admin: El
-	 * objeto Administrativo a registrar. Objetivo: Añadir un nuevo administrativo a
-	 * la lista de administrativos. Retorno: (void): No retorna valor.
-	 */
-	public void registrarAdministrativo(Administrativo admin) {
-		this.administrativos.add(admin);
-	}
+    /*
+    Función: registrarDoctor
+    Argumentos: (Doctor) doctor: Objeto a guardar.
+    Objetivo: Agregar doctor a la lista.
+    Retorno: (void).
+    */
+    public void registrarDoctor(Doctor doctor) {
+        this.doctores.add(doctor);
+    }
+    
+    public void registrarAdministrativo(Administrativo admin) {
+        this.administrativos.add(admin);
+    }
 
-	/*
-	 * Función: registrarPaciente Argumentos: (Paciente) paciente: El objeto
-	 * Paciente a registrar. Objetivo: Añadir un nuevo paciente a la lista de
-	 * pacientes y asignarle un ID único. Retorno: (void): No retorna valor.
-	 */
-	public void registrarPaciente(Paciente paciente) {
-		paciente.setIdPaciente(this.proximoIdPaciente);
-		this.proximoIdPaciente++; // Incrementar el contador
-		this.pacientes.add(paciente);
-	}
+    /*
+    Función: registrarPaciente
+    Argumentos: (Paciente) paciente: Objeto a guardar.
+    Objetivo: Agregar paciente con ID autogenerado.
+    Retorno: (void).
+    */
+    public void registrarPaciente(Paciente paciente) {
+        paciente.setIdPaciente(this.proximoIdPaciente);
+        this.proximoIdPaciente++;
+        this.pacientes.add(paciente);
+    }
 
-	/*
-	 * Función: registrarSolicitante Argumentos: (Solicitante) solicitante: El
-	 * objeto Solicitante a registrar. Objetivo: Añadir un nuevo solicitante a la
-	 * lista de espera. Retorno: (void): No retorna valor.
-	 */
-	public void registrarSolicitante(Solicitante solicitante) {
-		this.solicitantes.add(solicitante);
-	}
+    /*
+    Función: registrarSolicitante
+    Argumentos: (Solicitante) solicitante: Objeto a guardar.
+    Objetivo: Agregar persona a la cola de espera.
+    Retorno: (void).
+    */
+    public void registrarSolicitante(Solicitante solicitante) {
+        this.solicitantes.add(solicitante);
+    }
+    
+    public void registrarVacuna(Paciente paciente, Vacuna vacuna) {
+        vacuna.setId(this.proximoIdVacuna);
+        this.proximoIdVacuna++;
+        this.vacunas.add(vacuna);
+        paciente.getVacunasAplicadas().add(vacuna);
+    }
 
-	/*
-	 * Función: getPacientePorCedula Argumentos: (String) cedula: La cédula a
-	 * buscar. Objetivo: Encontrar un paciente en la lista de pacientes usando su
-	 * cédula. Retorno: (Paciente): El objeto Paciente si se encuentra, o null si no
-	 * existe.
-	 */
-	public Paciente getPacientePorCedula(String cedula) {
-		for (Paciente pacienteActual : pacientes) {
-			if (pacienteActual.getCedula().equals(cedula)) {
-				return pacienteActual;
-			}
-		}
-		return null; // No se encontró
-	}
+    /*
+    Función: convertirSolicitanteAPaciente
+    Argumentos: (Solicitante) solicitante: Objeto origen.
+    Objetivo: Promover solicitante a paciente validando duplicados.
+    Retorno: (Paciente): El nuevo paciente o null si falla.
+    */
+    public Paciente convertirSolicitanteAPaciente(Solicitante solicitante) {
+        Paciente pacienteExistente = getPacientePorCedula(solicitante.getCedula());
+        
+        if (pacienteExistente != null) {
+            this.ultimoMensajeError = "Ya existe paciente con esa cédula.";
+            return null;
+        }
 
-	/*
-	 * Función: convertirSolicitanteAPaciente Argumentos: (Solicitante) solicitante:
-	 * El solicitante a convertir. Objetivo: Convertir un Solicitante en un
-	 * Paciente. Retorno: (Paciente): El nuevo objeto Paciente. Lanza:
-	 * (ClinicaException): Si ya existía un paciente con esa cédula.
-	 */
-	public Paciente convertirSolicitanteAPaciente(Solicitante solicitante) throws ClinicaException {
-		Paciente pacienteExistente = getPacientePorCedula(solicitante.getCedula());
-		if (pacienteExistente != null) {
-			throw new ClinicaException("Error: Ya existe un paciente con la cédula " + solicitante.getCedula());
-		}
+        Paciente nuevoPaciente = new Paciente();
+        nuevoPaciente.setCedula(solicitante.getCedula());
+        nuevoPaciente.setNombre(solicitante.getNombre());
+        nuevoPaciente.setFechaNacimiento(solicitante.getFechaNacimiento());
+        nuevoPaciente.setSexo(solicitante.getSexo());
+        nuevoPaciente.setTelefono(solicitante.getTelefono());
 
-		Paciente nuevoPaciente = new Paciente();
-		nuevoPaciente.setCedula(solicitante.getCedula());
-		nuevoPaciente.setNombre(solicitante.getNombre());
-		nuevoPaciente.setFechaNacimiento(solicitante.getFechaNacimiento());
-		nuevoPaciente.setSexo(solicitante.getSexo());
-		nuevoPaciente.setTelefono(solicitante.getTelefono());
+        registrarPaciente(nuevoPaciente);
+        this.solicitantes.remove(solicitante);
 
-		registrarPaciente(nuevoPaciente);
+        return nuevoPaciente;
+    }
 
-		this.solicitantes.remove(solicitante);
+    /*
+    Función: programarCita
+    Argumentos: 
+        (Paciente) paciente: Quien asiste.
+        (Doctor) doctor: Quien atiende.
+        (LocalDate) fecha: Cuando.
+        (String) hora: A qué hora.
+    Objetivo: Crear cita si hay cupo y la fecha es válida.
+    Retorno: (boolean): true si éxito, false si error (ver getUltimoMensajeError).
+    */
+    public boolean programarCita(Paciente paciente, Doctor doctor, LocalDate fecha, String hora) {
+        if (paciente == null || doctor == null || fecha == null || hora == null) {
+            this.ultimoMensajeError = "Datos incompletos.";
+            return false;
+        }
 
-		return nuevoPaciente;
-	}
+        if (esFechaPasada(fecha)) {
+            this.ultimoMensajeError = "No se puede programar en el pasado.";
+            return false;
+        }
 
-	/*
-	 * Función: programarCita Argumentos: (Paciente) paciente: El paciente para la
-	 * cita. (Doctor) doctor: El doctor para la cita. (LocalDate) fecha: La fecha
-	 * deseada. (String) hora: La hora deseada. Objetivo: Crear y registrar una
-	 * nueva cita, validando las reglas de negocio. Retorno: (void): No retorna
-	 * valor. Lanza: (ClinicaException): Si falla alguna validación (fecha, cupo,
-	 * datos).
-	 */
-	public void programarCita(Paciente paciente, Doctor doctor, LocalDate fecha, String hora) throws ClinicaException {
-		if (paciente == null || doctor == null || fecha == null || hora == null) {
-			throw new ClinicaException("Error: Faltan datos en la cita para programarla.");
-		}
+        int conteoCitasDia = 0;
+        for (Cita cita : citas) {
+            if (cita.getDoctor().equals(doctor) && 
+                cita.getFecha().isEqual(fecha) &&
+                !cita.getEstado().equals("Cancelada")) {
+                conteoCitasDia++;
+            }
+        }
 
-		if (esFechaPasada(fecha)) {
-			throw new ClinicaException("Error: No se puede programar cita en una fecha pasada.");
-		}
+        if (conteoCitasDia >= doctor.getCupoDia()) {
+            this.ultimoMensajeError = "El doctor no tiene cupo para este día.";
+            return false;
+        }
 
-		int citasProgramadas = 0;
-		for (Cita citaExistente : this.citas) {
-			// Contar citas del MISMO doctor en el MISMO día
-			if (citaExistente.getDoctor().equals(doctor) && citaExistente.getFecha().isEqual(fecha)) {
-				citasProgramadas++;
-			}
-		}
+        Cita nuevaCita = new Cita();
+        nuevaCita.setIdCita(this.proximoIdCita++);
+        nuevaCita.setPaciente(paciente);
+        nuevaCita.setDoctor(doctor);
+        nuevaCita.setFecha(fecha);
+        nuevaCita.setHora(hora);
+        nuevaCita.setEstado("Pendiente");
 
-		if (citasProgramadas >= doctor.getCupoDia()) {
-			throw new ClinicaException("Error: El cupo del doctor " + doctor.getNombre() + " está lleno para ese día.");
-		}
+        this.citas.add(nuevaCita);
+        return true;
+    }
+    
+    public boolean cancelarCita(Cita cita) {
+        if (esFechaPasada(cita.getFecha())) {
+            this.ultimoMensajeError = "No se puede cancelar una cita pasada.";
+            return false;
+        }
+        cita.setEstado("Cancelada");
+        return true;
+    }
 
-		Cita nuevaCita = new Cita();
-		nuevaCita.setIdCita(this.proximoIdCita);
-		this.proximoIdCita++;
-		nuevaCita.setPaciente(paciente);
-		nuevaCita.setDoctor(doctor);
-		nuevaCita.setFecha(fecha);
-		nuevaCita.setHora(hora);
-		nuevaCita.setEstado("Pendiente"); // Estado inicial
+    public boolean modificarEstadoCita(Cita cita, String nuevoEstado) {
+        if (cita.getEstado().equals("Realizada")) {
+            this.ultimoMensajeError = "No se puede modificar una cita ya realizada.";
+            return false;
+        }
+        if (esFechaPasada(cita.getFecha()) && !cita.getEstado().equals("Pendiente")) {
+            this.ultimoMensajeError = "No se puede modificar una cita pasada no pendiente.";
+            return false;
+        }
+        cita.setEstado(nuevoEstado);
+        return true;
+    }
 
-		this.citas.add(nuevaCita);
-		// No se retorna 'true', si no hubo excepción, se asume éxito.
-	}
+    /*
+    Función: registrarConsulta
+    Argumentos: (Consulta) consulta: La consulta realizada.
+    Objetivo: Guardar consulta, actualizar historial y cerrar cita.
+    Retorno: (void).
+    */
+    public void registrarConsulta(Consulta consulta) {
+        consulta.setIdConsulta(this.proximoIdConsulta++);
+        this.consultas.add(consulta);
 
-	/*
-	 * Función: cancelarCita Argumentos: (Cita) cita: La cita a cancelar. Objetivo:
-	 * Cambiar el estado de una cita a "Cancelada". Retorno: (void): No retorna
-	 * valor. Lanza: (ClinicaException): Si la cita ya pasó.
-	 */
-	public void cancelarCita(Cita cita) throws ClinicaException {
-		if (esFechaPasada(cita.getFecha())) {
-			throw new ClinicaException("No se puede cancelar una cita pasada.");
-		}
-		cita.setEstado("Cancelada");
-	}
+        if (consulta.isAgregarAlHistorial() && consulta.getCitaAsociada() != null) {
+            Paciente paciente = consulta.getCitaAsociada().getPaciente();
+            if (paciente != null) {
+                paciente.getHistorialClinico().add(consulta);
+            }
+        }
 
-	/*
-	 * Función: modificarEstadoCita Argumentos: (Cita) cita: La cita a modificar.
-	 * (String) nuevoEstado: El nuevo estado (Ej. "Realizada"). Objetivo: Modificar
-	 * el estado de una cita. Retorno: (void): No retorna valor. Lanza:
-	 * (ClinicaException): Si la cita ya está realizada o no se puede modificar.
-	 */
-	public void modificarEstadoCita(Cita cita, String nuevoEstado) throws ClinicaException {
-		if (cita.getEstado().equals("Realizada")) {
-			throw new ClinicaException("Error: No se puede modificar una cita ya realizada.");
-		}
-		if (esFechaPasada(cita.getFecha()) && !cita.getEstado().equals("Pendiente")) {
-			throw new ClinicaException("Error: No se puede modificar una cita pasada que no esté pendiente.");
-		}
+        if (consulta.getCitaAsociada() != null) {
+            consulta.getCitaAsociada().setEstado("Realizada");
+        }
+    }
+    
+    /*
+    Función: guardarDatos
+    Argumentos: Ninguno.
+    Objetivo: Guardar datos localmente y enviarlos al servidor de respaldo.
+    Retorno: (boolean): true si el respaldo remoto funcionó.
+    */
+    public boolean guardarDatos() {
+        // 1. Guardado local
+        guardarDatosLocal();
+        
+        // 2. Preparar reporte texto (Puntos extra)
+        StringBuilder reporte = new StringBuilder();
+        reporte.append("REPORTE DE ENFERMEDADES - CLINICA\n");
+        reporte.append("Fecha: ").append(LocalDate.now()).append("\n");
+        // Lógica simple de conteo de diagnósticos para el reporte
+        reporte.append("Total Consultas: ").append(consultas.size()).append("\n");
+        
+        // 3. Enviar al servidor
+        File archivoLocal = new File(ARCHIVO_DATOS);
+        return ClienteRespaldo.enviarRespaldo(archivoLocal, reporte.toString());
+    }
 
-		cita.setEstado(nuevoEstado);
-	}
+    /*
+    Función: guardarDatosLocal
+    Argumentos: Ninguno.
+    Objetivo: Serializar la clase completa.
+    Retorno: (void).
+    */
+    public void guardarDatosLocal() {
+        try {
+            FileOutputStream archivoSalida = new FileOutputStream(ARCHIVO_DATOS);
+            ObjectOutputStream flujoSalida = new ObjectOutputStream(archivoSalida);
+            flujoSalida.writeObject(this);
+            flujoSalida.close();
+            archivoSalida.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-	/*
-	 * Función: registrarConsulta Argumentos: (Consulta) consulta: La consulta a
-	 * registrar. Objetivo: Añadir una nueva consulta al sistema. Asigna un ID único
-	 * y la agrega al historial del paciente si corresponde. También marca la cita
-	 * asociada como "Realizada". Retorno: (void): No retorna valor.
-	 */
-	public void registrarConsulta(Consulta consulta) {
-		consulta.setIdConsulta(this.proximoIdConsulta);
-		this.proximoIdConsulta++;
-		this.consultas.add(consulta);
+    /*
+    Función: cargarDatos
+    Argumentos: Ninguno.
+    Objetivo: Deserializar la clase completa.
+    Retorno: (Clinica): Instancia o null.
+    */
+    private static Clinica cargarDatos() {
+        try {
+            File archivo = new File(ARCHIVO_DATOS);
+            if (!archivo.exists()) return null;
+            
+            FileInputStream archivoEntrada = new FileInputStream(archivo);
+            ObjectInputStream flujoEntrada = new ObjectInputStream(archivoEntrada);
+            Clinica instancia = (Clinica) flujoEntrada.readObject();
+            flujoEntrada.close();
+            archivoEntrada.close();
+            return instancia;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    // --- Métodos Auxiliares y Getters ---
 
-		// Agregar al historial del paciente
-		if (consulta.isAgregarAlHistorial() && consulta.getCitaAsociada() != null) {
-			Paciente pacienteDeLaConsulta = consulta.getCitaAsociada().getPaciente();
-			if (pacienteDeLaConsulta != null) {
-				pacienteDeLaConsulta.getHistorialClinico().add(consulta);
-			}
-		}
+    public static boolean esFechaPasada(LocalDate fecha) {
+        return fecha.isBefore(LocalDate.now());
+    }
 
-		// Marcar la cita asociada como "Realizada"
-		if (consulta.getCitaAsociada() != null) {
-			try {
-				// Internamente, esto puede fallar, pero para el flujo de
-				// registrarConsulta, lo forzamos.
-				modificarEstadoCita(consulta.getCitaAsociada(), "Realizada");
-			} catch (ClinicaException e) {
-				// Esto no debería pasar si la cita viene de
-				// menuRegistrarConsulta,
-				// pero es buena práctica manejarlo.
-				System.err.println("Advertencia: " + e.getMessage());
-			}
-		}
-	}
+    public Paciente getPacientePorCedula(String cedula) {
+        for (Paciente p : pacientes) {
+            if (p.getCedula().equals(cedula)) return p;
+        }
+        return null;
+    }
 
-	/*
-	 * Función: registrarVacuna Argumentos: (Paciente) paciente: El paciente que
-	 * recibe la vacuna. (Vacuna) vacuna: La vacuna a registrar. Objetivo: Asignar
-	 * un ID a la vacuna y añadirla al sistema y al historial del paciente. Retorno:
-	 * (void): No retorna valor.
-	 */
-	public void registrarVacuna(Paciente paciente, Vacuna vacuna) {
-		vacuna.setId(this.proximoIdVacuna);
-		this.proximoIdVacuna++;
+    public Doctor getDoctorPorUsuario(String usuario) {
+        for (Doctor d : doctores) {
+            if (d.getUsuario().equals(usuario)) return d;
+        }
+        return null;
+    }
 
-		this.vacunas.add(vacuna); // Añadir a la lista general
-		paciente.getVacunasAplicadas().add(vacuna); // Añadir al paciente
-	}
-
-	public ArrayList<Consulta> historialClinico(Paciente paciente) {
-		return paciente.consultarHistorial(); // Llama al método del paciente
-	}
-
-	/*
-	 * Función: generarReporteGeneral Argumentos: Ninguno. Objetivo: Imprimir en
-	 * consola un resumen de la actividad de la clínica. (Esta función sí puede usar
-	 * System.out.println, es un REPORTE). Retorno: (void): No retorna valor.
-	 */
-	public void generarReporteGeneral() {
-		System.out.println("--- Reporte General ---");
-		System.out.println("Total Pacientes: " + pacientes.size());
-		System.out.println("Total Doctores: " + doctores.size());
-		System.out.println("Total Administrativos: " + administrativos.size());
-		System.out.println("Total Citas Programadas: " + citas.size());
-		System.out.println("Total Consultas Atendidas: " + consultas.size());
-		System.out.println("Total Vacunas Aplicadas (General): " + vacunas.size());
-		System.out.println("-----------------------");
-	}
-
-	/*
-	 * Función: esFechaPasada Argumentos: (LocalDate) fecha: La fecha a verificar.
-	 * Objetivo: Comprobar si una fecha es anterior al día de hoy. Es 'static' para
-	 * ser adaptable (Request 3). Retorno: (boolean): true si la fecha ya pasó,
-	 * false si es hoy o futura.
-	 */
-	public static boolean esFechaPasada(LocalDate fecha) {
-		LocalDate hoy = LocalDate.now();
-		return fecha.isBefore(hoy);
-	}
-
-	/*
-	 * Función: sonMismoDia Argumentos: (LocalDate) fecha1: Primera fecha.
-	 * (LocalDate) fecha2: Segunda fecha. Objetivo: Comprobar si dos fechas son
-	 * exactamente el mismo día. Es 'static' para ser adaptable (Request 3).
-	 * Retorno: (boolean): true si son el mismo día, false si no.
-	 */
-	public static boolean sonMismoDia(LocalDate fecha1, LocalDate fecha2) {
-		if (fecha1 == null || fecha2 == null) {
-			return false;
-		}
-		return fecha1.isEqual(fecha2);
-	}
-
-	public ArrayList<Doctor> getDoctores() {
-		return doctores;
-	}
-
-	public ArrayList<Paciente> getPacientes() {
-		return pacientes;
-	}
-
-	public ArrayList<Cita> getCitas() {
-		return citas;
-	}
-
-	public ArrayList<Consulta> getConsultas() {
-		return consultas;
-	}
-
-	public ArrayList<Vacuna> getVacunas() {
-		return vacunas;
-	}
-
-	public ArrayList<Solicitante> getSolicitantes() {
-		return solicitantes;
-	}
-
-	public ArrayList<Administrativo> getAdministrativos() {
-		return administrativos;
-	}
-
-	/*
-	 * Función: getDoctorPorUsuario Argumentos: (String) usuario: El nombre de
-	 * usuario (login) del doctor. Objetivo: Encontrar un doctor usando su nombre de
-	 * usuario. Retorno: (Doctor): El objeto Doctor si se encuentra, o null si no.
-	 */
-	public Doctor getDoctorPorUsuario(String usuario) {
-		for (Doctor doctor : doctores) {
-			if (doctor.getUsuario().equalsIgnoreCase(usuario)) {
-				return doctor;
-			}
-		}
-		return null;
-	}
-
-	public Cita getCitaPorId(int idCita) {
-		for (Cita cita : citas) {
-			if (cita.getIdCita() == idCita) {
-				return cita;
-			}
-		}
-		return null;
-	}
-
-	/*
-	 * Función: guardarDatos Argumentos: Ninguno. Objetivo: Guardar (Serializar) la
-	 * instancia completa de la Clínica en un archivo binario (clinica.dat).
-	 * Retorno: (void): No retorna valor.
-	 */
-	public void guardarDatos() {
-		try {
-			FileOutputStream archivoSalida = new FileOutputStream(ARCHIVO_DATOS);
-			ObjectOutputStream flujoSalida = new ObjectOutputStream(archivoSalida);
-			flujoSalida.writeObject(instance);
-			flujoSalida.close();
-			archivoSalida.close();
-			System.out.println("Datos de la Clinica guardados en " + ARCHIVO_DATOS);
-		} catch (IOException excepcionIO) {
-			System.err.println("Error al guardar los datos: " + excepcionIO.getMessage());
-		}
-	}
-
-	/*
-	 * Función: cargarDatos (static) Argumentos: Ninguno. Objetivo: Cargar
-	 * (Deserializar) la instancia de la Clínica desde un archivo binario
-	 * (clinica.dat). Es 'private static' porque solo debe ser llamada por
-	 * getInstance(). Retorno: (Clinica): La instancia cargada desde el archivo, o
-	 * null si ocurre un error (Ej. archivo no encontrado).
-	 */
-	private static Clinica cargarDatos() {
-		try {
-			FileInputStream archivoEntrada = new FileInputStream(ARCHIVO_DATOS);
-			ObjectInputStream flujoEntrada = new ObjectInputStream(archivoEntrada);
-			Clinica instanciaCargada = (Clinica) flujoEntrada.readObject();
-			flujoEntrada.close();
-			archivoEntrada.close();
-			return instanciaCargada;
-		} catch (IOException excepcionIO) {
-			System.out.println("No se encontró el archivo " + ARCHIVO_DATOS + ". Iniciando con datos nuevos.");
-			return null;
-		} catch (ClassNotFoundException excepcionClase) {
-			System.err.println("Error al cargar los datos (Clase no encontrada): " + excepcionClase.getMessage());
-			return null;
-		}
-	}
+    public String getUltimoMensajeError() {
+        return ultimoMensajeError;
+    }
+    
+    // Getters de listas (Nombres originales)
+    public ArrayList<Doctor> getDoctores() { return doctores; }
+    public ArrayList<Paciente> getPacientes() { return pacientes; }
+    public ArrayList<Cita> getCitas() { return citas; }
+    public ArrayList<Consulta> getConsultas() { return consultas; }
+    public ArrayList<Vacuna> getVacunas() { return vacunas; }
+    public ArrayList<Solicitante> getSolicitantes() { return solicitantes; }
+    public ArrayList<Administrativo> getAdministrativos() { return administrativos; }
 }
