@@ -170,7 +170,7 @@ public class Login extends JFrame {
 		// MENSAJE DE ERROR
 		JLabel lblError = new JLabel("");
 		lblError.setForeground(new Color(220, 38, 38)); // rojo bonito
-		lblError.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f)); // Descomentado
+		lblError.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f));
 		lblError.setBounds(80, 420, 350, 25);
 		panelIzquierdo.add(lblError);
 		
@@ -214,41 +214,32 @@ public class Login extends JFrame {
 		});
 		
 		
-		// --- INICIO DE LA SECCIÓN CORREGIDA (LIMPIA Y FUNCIONAL) ---
 		// COMPROBAR AUTENTICACION
 		btnLogin.addActionListener(e -> {
 			String usuario = txtUsuario.getText().trim();
 			String pass = new String(txtContrasenia.getPassword());
 
 			try {
-				// 1. Llamamos a loginTipo, que devuelve un String
-				// ("Administrativo" o "Doctor")
 				String tipoString = controlador.loginTipo(usuario, pass);
 
-				// 2. Comparamos el String para abrir la ventana Principal
 				if (tipoString.equals("Administrativo")) {
 					timerError.stop();
-					// Asumimos que tu constructor es new Principal(int tipo, String usuario)
 					Principal ad = new Principal(1, usuario); 
 					ad.setVisible(true);
 					this.dispose();
 					
 				} else if (tipoString.equals("Doctor")) {
 					timerError.stop();
-					// Asumimos que tu constructor es new Principal(int tipo, String usuario)
 					Principal doc = new Principal(2, usuario); 
 					doc.setVisible(true);
 					this.dispose();
 				}
 				
 			} catch (ClinicaException ex) {
-				// 3. Si loginTipo lanza la excepción (login falla),
-				// se captura aquí.
-				lblError.setText(ex.getMessage()); // Muestra el error
+				lblError.setText(ex.getMessage());
 				timerError.restart();
 			}
 		});
-		// --- FIN DE LA SECCIÓN CORREGIDA ---
 		
 		
 		// ------------------ PANEL DERECHO (IMAGEN / LOGO) -------------------

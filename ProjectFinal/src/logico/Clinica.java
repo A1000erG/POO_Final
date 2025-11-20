@@ -97,11 +97,7 @@ public class Clinica implements Serializable {
 	}
 
 	/*
-	 * Función: loginTipo (Función personalizada para tu Login.java visual)
-	 * Argumentos: (String) usuario: El nombre de usuario. (String) password: La
-	 * contraseña. Objetivo: Autenticar a un miembro del personal y devolver un
-	 * String de su tipo. Retorno: (String): "Doctor", "Administrativo". Lanza:
-	 * (ClinicaException): Si las credenciales son incorrectas.
+	 * Autenticar a un miembro del personal y devolver un String de su tipo.
 	 */
 	public String loginTipo(String usuario, String password) throws ClinicaException {
 		Personal logueado = login(usuario, password);
