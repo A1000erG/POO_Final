@@ -88,7 +88,7 @@ public class Clinica implements Serializable {
 			}
 		}
 		// Si no se encontró a nadie, lanzar excepción
-		throw new ClinicaException("Usuario o contraseña incorrectos.");
+		throw new ClinicaException("Credenciales incorrectas. Verifica tus datos.");
 	}
 
 	/*
