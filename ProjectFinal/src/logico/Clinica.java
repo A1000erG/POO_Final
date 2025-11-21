@@ -27,6 +27,8 @@ public class Clinica implements Serializable {
     private int proximoIdCita;
     private int proximoIdConsulta;
     private int proximoIdVacuna;
+    
+    private int proximoIdDoctor;
 
     private static final String ARCHIVO_DATOS = "clinica.dat";
     
@@ -46,6 +48,7 @@ public class Clinica implements Serializable {
         this.proximoIdCita = 1;
         this.proximoIdConsulta = 1;
         this.proximoIdVacuna = 1;
+        this.proximoIdDoctor = 1;
         this.ultimoMensajeError = "";
     }
 
@@ -74,7 +77,6 @@ public class Clinica implements Serializable {
     Retorno: (Personal): Objeto encontrado o null si falla.
     */
     public Personal login(String usuario, String contrasenia) {
-        // Backdoor administrativo simple
         if (usuario.equals("admin") && contrasenia.equals("admin")) {
             Administrativo adminTemp = new Administrativo();
             adminTemp.setNombre("Super Admin");
@@ -127,6 +129,8 @@ public class Clinica implements Serializable {
     Retorno: (void).
     */
     public void registrarDoctor(Doctor doctor) {
+    	doctor.setIdDoctor(this.proximoIdDoctor);
+        this.proximoIdDoctor++;
         this.doctores.add(doctor);
     }
     
@@ -343,6 +347,72 @@ public class Clinica implements Serializable {
         }
     }
     
+    
+    // ------------------- METODOS PARA REGISTRAR DOCTORES Y ADMINISTRADORES -------------------
+    
+    public boolean existeUsuario(String usuario) {
+        if (usuario == null) return false;
+
+        for (Doctor d : doctores) {
+            if (d.getUsuario() != null && d.getUsuario().equalsIgnoreCase(usuario)) {
+                return true;
+            }
+        }
+        for (Administrativo a : administrativos) {
+            if (a.getUsuario() != null && a.getUsuario().equalsIgnoreCase(usuario)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    
+    public boolean registrarDoctorDesdeFormulario(
+            String usuario,
+            String contrasenia,
+            String nombre,
+            String especialidad,
+            String cupoTexto
+    ) {
+        // 1. Validar campos vacíos
+        if (usuario == null || usuario.trim().isEmpty() ||
+            contrasenia == null || contrasenia.trim().isEmpty() ||
+            nombre == null || nombre.trim().isEmpty() ||
+            especialidad == null || especialidad.trim().isEmpty() ||
+            cupoTexto == null || cupoTexto.trim().isEmpty()) {
+
+            ultimoMensajeError = "Todos los campos son obligatorios.";
+            return false;
+        }
+
+        // 2. Validar cupo
+        int cupoDia;
+        try {
+            cupoDia = Integer.parseInt(cupoTexto.trim());
+            if (cupoDia <= 0) {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException e) {
+            ultimoMensajeError = "El cupo por día debe ser un número entero positivo.";
+            return false;
+        }
+
+        // 3. Validar usuario repetido
+        if (existeUsuario(usuario)) {
+            ultimoMensajeError = "Ya existe un usuario con ese nombre.";
+            return false;
+        }
+
+        // 4. Crear y registrar
+        Doctor nuevo = new Doctor(usuario, contrasenia, nombre, especialidad, cupoDia);
+        registrarDoctor(nuevo);      // aquí ya le pones el ID y lo agregas
+        guardarDatos();              // se guarda en el archivo
+
+        return true;
+    }
+
+
+    
     // --- Métodos Auxiliares y Getters ---
 
     public static boolean esFechaPasada(LocalDate fecha) {
@@ -361,6 +431,10 @@ public class Clinica implements Serializable {
             if (d.getUsuario().equals(usuario)) return d;
         }
         return null;
+    }
+    
+    public int getProximoIdDoctor() {
+        return proximoIdDoctor;
     }
 
     public String getUltimoMensajeError() {
