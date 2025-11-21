@@ -46,7 +46,7 @@ public class Login extends JFrame {
 
 
 	public Login() {
-		controlador = Clinica.getInstance(); // Inicializar el controlador
+		controlador = Clinica.getInstance();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -218,13 +218,10 @@ public class Login extends JFrame {
 
 			String tipoString = controlador.loginTipo(usuario, pass);
 
-			// 2. Verificamos si devolvió NULL (Error)
 			if (tipoString == null) {
-				// Recuperamos el mensaje de error guardado en la clase Clinica
 				lblError.setText(Clinica.getInstance().getUltimoMensajeError());
 				timerError.restart();
 			} 
-			// 3. Si no es NULL, procedemos con el acceso
 			else {
 				if (tipoString.equals("Administrativo")) {
 					timerError.stop();
