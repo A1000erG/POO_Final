@@ -1,75 +1,63 @@
 package logico;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Paciente extends Persona {
 
-	private static final long serialVersionUID = 6L;
-	private int idPaciente;
-	private ArrayList<Consulta> historialClinico;
-	private ArrayList<Vacuna> vacunasAplicadas;
+    private static final long serialVersionUID = 6L;
+    private int idPaciente;
+    private ArrayList<Consulta> historialClinico;
+    private ArrayList<Vacuna> vacunasAplicadas;
 
-	public Paciente() {
-		super();
-		this.idPaciente = 0; // Se asignar谩 un ID real en la clase Clinica
-		// Importante inicializar las colecciones
-		this.historialClinico = new ArrayList<Consulta>();
-		this.vacunasAplicadas = new ArrayList<Vacuna>();
-	}
+    public Paciente() {
+        super();
+        this.idPaciente = 0;
+        this.historialClinico = new ArrayList<Consulta>();
+        this.vacunasAplicadas = new ArrayList<Vacuna>();
+    }
 
-	public ArrayList<Consulta> consultarHistorial() {
-		return historialClinico;
-	}
+    /*
+    Funci髇: getHistorialClinico
+    Argumentos: Ninguno.
+    Objetivo: Obtener la lista de consultas pasadas.
+    Retorno: (ArrayList<Consulta>): La lista de consultas.
+    */
+    public ArrayList<Consulta> getHistorialClinico() {
+        return historialClinico;
+    }
 
-	public int getIdPaciente() {
-		return idPaciente;
-	}
+    public int getIdPaciente() {
+        return idPaciente;
+    }
 
-	public void setIdPaciente(int idPaciente) {
-		this.idPaciente = idPaciente;
-	}
+    public void setIdPaciente(int idPaciente) {
+        this.idPaciente = idPaciente;
+    }
 
-	public ArrayList<Consulta> getHistorialClinico() {
-		return historialClinico;
-	}
+    public void setHistorialClinico(ArrayList<Consulta> historialClinico) {
+        this.historialClinico = historialClinico;
+    }
 
-	public void setHistorialClinico(ArrayList<Consulta> historialClinico) {
-		this.historialClinico = historialClinico;
-	}
+    public ArrayList<Vacuna> getVacunasAplicadas() {
+        return vacunasAplicadas;
+    }
 
-	public ArrayList<Vacuna> getVacunasAplicadas() {
-		return vacunasAplicadas;
-	}
-
-	public void setVacunasAplicadas(ArrayList<Vacuna> vacunasAplicadas) {
-		this.vacunasAplicadas = vacunasAplicadas;
-	}
-
-	/*
-	 * Funci贸n: equals Argumentos: (Object) obj: El objeto a comparar. Objetivo:
-	 * Compara si dos pacientes son iguales bas谩ndose en su c茅dula. Retorno:
-	 * (boolean): true si son iguales, false si no.
-	 */
-	@Override
-	public boolean equals(Object objeto) {
-		if (this == objeto) {
-			return true;
-		}
-		if (objeto == null || getClass() != objeto.getClass()) {
-			return false;
-		}
-		Paciente paciente = (Paciente) objeto;
-		// La l贸gica de negocio indica que un paciente es 煤nico por su c茅dula
-		return getCedula() != null ? getCedula().equals(paciente.getCedula()) : paciente.getCedula() == null;
-	}
-
-	/*
-	 * Funci贸n: hashCode Argumentos: Ninguno. Objetivo: Generar un c贸digo hash
-	 * basado en la c茅dula. Retorno: (int): El c贸digo hash.
-	 */
-	@Override
-	public int hashCode() {
-		// Se usa el hashCode de la c茅dula (String)
-		return getCedula() != null ? getCedula().hashCode() : 0;
-	}
+    public void setVacunasAplicadas(ArrayList<Vacuna> vacunasAplicadas) {
+        this.vacunasAplicadas = vacunasAplicadas;
+    }
+    
+    /*
+    Funci髇: equals
+    Argumentos: (Object) obj: Objeto a verificar.
+    Objetivo: Comparar pacientes por C閐ula (Regla de Negocio).
+    Retorno: (boolean): Verdadero si tienen la misma c閐ula.
+    */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Paciente paciente = (Paciente) obj;
+        return Objects.equals(getCedula(), paciente.getCedula());
+    }
 }

@@ -2,48 +2,109 @@ package logico;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Vacuna implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    public enum ViaAdministracion {
+        INTRAMUSCULAR, ORAL, SUBCUTANEA
+    };
 
-	private int id;
-	private String nombre;
-	private LocalDate fechaAplicacion;
-	private int numDosis;
+    private static final long serialVersionUID = 7L;
+    private int id;
+    private String nombre;
+    private LocalDate fechaCaducidad;
+    private int cantidadDisponible;
+    private String efectosAdversos;
+    private ViaAdministracion viaAdministracion;
 
-	public Vacuna() {
-	}
+    public Vacuna() {
+        this.id = 0;
+        this.nombre = null;
+        this.fechaCaducidad = null;
+        this.cantidadDisponible = 0;
+        this.efectosAdversos = "";
+        this.viaAdministracion = null;
+    }
 
-	public int getId() {
-		return id;
-	}
+    /*
+    Función: Vacuna (Constructor)
+    Argumentos: 
+        (String) nombre: Marca/Nombre.
+        (LocalDate) fechaCaducidad: Caducidad.
+        (int) cantidadDisponible: Unidades disponibles.
+        (String) efectosAdversos: Texto descriptivo.
+        (ViaAdministracion) viaAdministracion: Enum de vía.
+    Objetivo: Crear un lote de vacunas.
+    Retorno: (Ninguno): Constructor.
+    */
+    public Vacuna(String nombre, LocalDate fechaCaducidad, int cantidadDisponible, String efectosAdversos, ViaAdministracion viaAdministracion) {
+        this.id = 0;
+        this.nombre = nombre;
+        this.fechaCaducidad = fechaCaducidad;
+        this.cantidadDisponible = cantidadDisponible;
+        this.efectosAdversos = efectosAdversos;
+        this.viaAdministracion = viaAdministracion;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public String getNombre() {
-		return nombre;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+    public String getNombre() {
+        return nombre;
+    }
 
-	public LocalDate getFechaAplicacion() {
-		return fechaAplicacion;
-	}
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-	public void setFechaAplicacion(LocalDate localDate) {
-		this.fechaAplicacion = localDate;
-	}
+    public LocalDate getFechaCaducidad() {
+        return fechaCaducidad;
+    }
 
-	public int getNumDosis() {
-		return numDosis;
-	}
+    public void setFechaCaducidad(LocalDate fechaCaducidad) {
+        this.fechaCaducidad = fechaCaducidad;
+    }
 
-	public void setNumDosis(int numDosis) {
-		this.numDosis = numDosis;
-	}
+    public int getCantidadDisponible() {
+        return cantidadDisponible;
+    }
+
+    public void setCantidadDisponible(int cantidadDisponible) {
+        this.cantidadDisponible = cantidadDisponible;
+    }
+
+    public String getEfectosAdversos() {
+        return efectosAdversos;
+    }
+
+    public void setEfectosAdversos(String efectosAdversos) {
+        this.efectosAdversos = efectosAdversos;
+    }
+
+    public ViaAdministracion getViaAdministracion() {
+        return viaAdministracion;
+    }
+
+    public void setViaAdministracion(ViaAdministracion viaAdministracion) {
+        this.viaAdministracion = viaAdministracion;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Vacuna vacuna = (Vacuna) obj;
+        return id == vacuna.id && id != 0;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

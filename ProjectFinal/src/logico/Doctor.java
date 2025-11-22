@@ -1,74 +1,108 @@
 package logico;
 
+import java.util.Objects;
+
 public class Doctor extends Personal {
 
-	private static final long serialVersionUID = 3L;
-	private String nombre;
-	private String especialidad;
-	private int cupoDia;
+    private static final long serialVersionUID = 3L;
+    private int idDoctor;
+    private String nombre;
+    private String especialidad;
+    private int cupoDia;
 
-	public Doctor(String usuario, String contrasenia, String nombre, String especialidad, int cupoDia) {
-		super(usuario, contrasenia);
-		this.nombre = nombre;
-		this.especialidad = especialidad;
-		this.cupoDia = 0;
-	}
+    public Doctor() {
+        super();
+        this.idDoctor = 0;
+        this.nombre = null;
+        this.especialidad = null;
+        this.cupoDia = 0;
+    }
 
-	public String getEspecialidad() {
-		return especialidad;
-	}
+    public Doctor(String usuario, String contrasenia, String nombre, String especialidad, int cupoDia) {
+        super(usuario, contrasenia); // Llama al constructor de Personal
+        this.idDoctor = 0; // El ID será asignado por la Clínica
+        this.nombre = nombre;
+        this.especialidad = especialidad;
+        this.cupoDia = cupoDia;
+    }
 
-	public void setEspecialidad(String especialidad) {
-		this.especialidad = especialidad;
-	}
+    /*
+     * Función: getId (Implementación)
+     * Argumentos: Ninguno.
+     * Objetivo: Obtener el ID único del doctor (implementa el método abstracto de
+     * Personal).
+     * Retorno: (int): El ID del doctor.
+     */
+    @Override
+    public int getId() {
+        return this.idDoctor;
+    }
 
-	public int getCupoDia() {
-		return cupoDia;
-	}
+    /*
+     * Función: getNombre (Implementación)
+     * Argumentos: Ninguno.
+     * Objetivo: Obtener el nombre del doctor (implementa el método abstracto de
+     * Personal).
+     * Retorno: (String): El nombre del doctor.
+     */
+    @Override
+    public String getNombre() {
+        return nombre;
+    }
 
-	/*
-	 * FunciÃ³n: setCupoDia Argumentos: (int) cupoDia: El nuevo lÃ­mite de citas
-	 * diarias. Objetivo: Establecer el lÃ­mite de citas diarias del doctor. Retorno:
-	 * (void): No retorna valor.
-	 */
-	public void setCupoDia(int cupoDia) {
-		this.cupoDia = cupoDia;
-	}
+    public int getIdDoctor() {
+        return idDoctor;
+    }
 
-	/*
-	 * FunciÃ³n: getNombre (ImplementaciÃ³n) Argumentos: Ninguno. Objetivo: Obtener el
-	 * nombre del doctor (implementa el mÃ©todo abstracto de Personal). Retorno:
-	 * (String): El nombre del doctor.
-	 */
-	@Override
-	public String getNombre() {
-		return nombre;
-	}
+    public void setIdDoctor(int idDoctor) {
+        this.idDoctor = idDoctor;
+    }
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-	/*
-	 * FunciÃ³n: equals Argumentos: (Object) obj: El objeto a comparar. Objetivo:
-	 * Compara si dos doctores son iguales basÃ¡ndose en su nombre de usuario.
-	 * Retorno: (boolean): true si son iguales, false si no.
-	 */
-	@Override
-	public boolean equals(Object objeto) {
-		if (this == objeto) {
-			return true;
-		}
-		if (objeto == null || getClass() != objeto.getClass()) {
-			return false;
-		}
-		Doctor doctor = (Doctor) objeto;
-		// La lÃ³gica de negocio mÃ¡s comÃºn es comparar por el login (usuario)
-		return getUsuario() != null ? getUsuario().equals(doctor.getUsuario()) : doctor.getUsuario() == null;
-	}
+    public String getEspecialidad() {
+        return especialidad;
+    }
 
-	@Override
-	public int hashCode() {
-		return getUsuario() != null ? getUsuario().hashCode() : 0;
-	}
+    public void setEspecialidad(String especialidad) {
+        this.especialidad = especialidad;
+    }
+
+    public int getCupoDia() {
+        return cupoDia;
+    }
+
+    public void setCupoDia(int cupoDia) {
+        this.cupoDia = cupoDia;
+    }
+
+    /*
+     * Función: equals
+     * Argumentos: (Object) obj: El objeto a comparar.
+     * Objetivo: Compara si dos doctores son iguales basándose en su ID de Doctor.
+     * Retorno: (boolean): true si son iguales, false si no.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+        Doctor doctor = (Doctor) obj;
+		// La comparación más robusta es por ID único.
+        return idDoctor == doctor.idDoctor && idDoctor != 0;
+    }
+
+    /*
+     * Función: hashCode
+     * Argumentos: Ninguno.
+     * Objetivo: Generar un código hash basado en el ID del Doctor.
+     * Retorno: (int): El código hash.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(idDoctor);
+    }
 }

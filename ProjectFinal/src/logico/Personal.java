@@ -4,43 +4,57 @@ import java.io.Serializable;
 
 public abstract class Personal implements Serializable {
 
-	private static final long serialVersionUID = 2L;
-	private String usuario;
-	private String contrasenia;
+    private static final long serialVersionUID = 2L;
+    private String usuario;
+    private String contrasenia;
 
-	public Personal(String usuario, String contrasenia) {
-		this.usuario = usuario;
-		this.contrasenia = contrasenia;
-	}
+    public Personal() {
+        this.usuario = null;
+        this.contrasenia = null;
+    }
 
-	/*
-	 * FunciÃ³n: getNombre (Abstracta) Argumentos: Ninguno. Objetivo: MÃ©todo
-	 * abstracto para forzar a las clases hijas a implementar la obtenciÃ³n del
-	 * nombre. Retorno: (String): El nombre del personal.
-	 */
-	public abstract String getNombre();
+    /*
+    Función: Personal (Constructor)
+    Argumentos: 
+        (String) usuario: Credencial de acceso (login).
+        (String) contrasenia: Contraseña de acceso.
+    Objetivo: Inicializar las credenciales del personal.
+    Retorno: (Ninguno): Es un constructor.
+    */
+    public Personal(String usuario, String contrasenia) {
+        this.usuario = usuario;
+        this.contrasenia = contrasenia;
+    }
 
-	public String getUsuario() {
-		return usuario;
-	}
+    /*
+    Función: getNombre (Abstracto)
+    Argumentos: Ninguno.
+    Objetivo: Obligar a las clases hijas a devolver el nombre real del personal.
+    Retorno: (String): El nombre.
+    */
+    public abstract String getNombre();
 
-	public void setUsuario(String usuario) {
-		this.usuario = usuario;
-	}
+    /*
+    Función: getId (Abstracto)
+    Argumentos: Ninguno.
+    Objetivo: Obligar a las clases hijas a devolver el ID numérico.
+    Retorno: (int): El identificador único.
+    */
+    public abstract int getId();
 
-	public String getContrasenia() {
-		return contrasenia;
-	}
+    public String getUsuario() {
+        return usuario;
+    }
 
-	public void setContrasenia(String contrasenia) {
-		this.contrasenia = contrasenia;
-	}
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
 
-	public String getContrasenna() {
-		return getContrasenia();
-	}
+    public String getContrasenia() {
+        return contrasenia;
+    }
 
-	public void setContrasenna(String contrasenna) {
-		setContrasenia(contrasenna);
-	}
+    public void setContrasenia(String contrasenia) {
+        this.contrasenia = contrasenia;
+    }
 }

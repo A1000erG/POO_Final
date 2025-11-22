@@ -1,7 +1,6 @@
 package visual;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 
 import javax.swing.ImageIcon;
@@ -9,13 +8,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import logico.Clinica;
-import logico.Personal;
+import Utilidades.FuenteUtil;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -24,7 +21,6 @@ import java.awt.RenderingHints;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.SwingConstants;
 
 public class Principal extends JFrame {
 
@@ -32,15 +28,8 @@ public class Principal extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 
-	private static Dimension dimPrincipal;
-	//Variables de prueba, se eliminarán más adelante
-	private static int mode=0;
-	private static String idUser="";
-	//Colores de la paleta seleccionada para el programa
-
 	private static Color paleteBlue = new Color(55,65,81);
 	private static Color paleteDarkGreen = new Color(22,163, 74);
-	private static Color paleteLightGreen = new Color(74, 222, 128);
 	private static Color paleteRareWhite = new Color(247, 250, 252);
 	
 	public static void main(String[] args) {
@@ -63,19 +52,14 @@ public class Principal extends JFrame {
 	 */
 
 	public Principal(int mode, String idUser) {
-		dimPrincipal = getToolkit().getScreenSize();
+		getToolkit().getScreenSize();
 		setResizable(false);
 
 		setTitle("Ventana principal");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
-		
-		setBounds(100, 100, 450, 300);
-		setSize(dimPrincipal.width+10,dimPrincipal.height-38);
-		setLocationRelativeTo(null);
-		
+		setLocationRelativeTo(null);		
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -94,7 +78,7 @@ public class Principal extends JFrame {
 		lbLogo.setIcon(new ImageIcon("Recursos/Imagenes/logoP.png"));
 		optionPanel.add(lbLogo);
 		
-		JButton btnRegPaciente = new JButton("New button");
+		JButton btnRegPaciente = new JButton("New button");	
 		//Efecto de cambio de de color de botones
 		btnRegPaciente.addMouseListener(new MouseAdapter() {
 			@Override
@@ -186,7 +170,7 @@ public class Principal extends JFrame {
 		/*if(mode==0) {
 			lblNombreUser.setText(Clinica.getInstance().getDoctorPorUsuario(idUser).getNombre());
 		}*/
-		lblNombreUser.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lblNombreUser.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 13f));
 		lblNombreUser.setBounds(846, 37, 153, 14);
 		infoUserPanel.add(lblNombreUser);
 		
@@ -200,6 +184,11 @@ public class Principal extends JFrame {
 		infoUserPanel.add(lblFotoUser);
 		
 		JPanel cantEnfermPanel = new JPanel(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected void paintComponent(Graphics g) {
 			    Graphics2D g2 = (Graphics2D) g;
@@ -230,6 +219,11 @@ public class Principal extends JFrame {
 		cantEnfermPanel.add(lblCountEnf);
 		
 		JPanel cantVacunasPanel = new JPanel(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected void paintComponent(Graphics g) {
 			    Graphics2D g2 = (Graphics2D) g;
@@ -260,6 +254,11 @@ public class Principal extends JFrame {
 		cantVacunasPanel.add(lblCountVac);
 		
 		JPanel cantCitasHoyPanel = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected void paintComponent(Graphics g) {
 			    Graphics2D g2 = (Graphics2D) g;
@@ -291,6 +290,11 @@ public class Principal extends JFrame {
 		cantCitasHoyPanel.add(lblCountCitas);
 		
 		JPanel barGraphSickPanel = new JPanel(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected void paintComponent(Graphics g) {
 			    Graphics2D g2 = (Graphics2D) g;
