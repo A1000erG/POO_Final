@@ -21,6 +21,9 @@ import java.awt.RenderingHints;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.Dimension;
+import java.awt.BorderLayout;
+import java.awt.Font;
 
 public class Principal extends JFrame {
 
@@ -29,8 +32,15 @@ public class Principal extends JFrame {
 	private JPanel contentPane;
 
 	private static Color paleteBlue = new Color(55,65,81);
-	private static Color paleteDarkGreen = new Color(22,163, 74);
+	private static Color paleteGreen = new Color(22, 163, 74);
+	private static Color paleteDarkGreen = new Color(18, 140, 64);
 	private static Color paleteRareWhite = new Color(247, 250, 252);
+	private static Font indicativeNumber = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 20f);
+	private static Font normalUse = FuenteUtil.cargarFuente("/Fuentes/Roboto-Light.ttf", 11f);
+	private static Font nameUser = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 13f);
+	private static Font buttonFont = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 12f);
+	private static JPanel infoPanel;
+	private JPanel bkgPanel;
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -55,27 +65,42 @@ public class Principal extends JFrame {
 		getToolkit().getScreenSize();
 		setResizable(false);
 
-		setTitle("Ventana principal");
+		setTitle("Compile Salud");
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
 		setLocationRelativeTo(null);		
 		
 		contentPane = new JPanel();
+		contentPane.setPreferredSize(new Dimension(820, 3100));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setMaximumSize(dimPrincipal);
 		setContentPane(contentPane);
-		contentPane.setLayout(null);
+		contentPane.setLayout(new BorderLayout(0, 0));
+		
+		bkgPanel = new JPanel();
+		bkgPanel.setBackground(Color.LIGHT_GRAY);
+		contentPane.add(bkgPanel, BorderLayout.CENTER);
+		bkgPanel.setLayout(null);
+		
+		infoPanel = new JPanel();
+		infoPanel.setSize(1121, 738);
+		infoPanel.setLocation(240, 0);
+		infoPanel.setOpaque(false);
+		infoPanel.setLayout(null);
+		bkgPanel.add(infoPanel);
 		
 		JPanel optionPanel = new JPanel();
-		optionPanel.setBounds(0, 0, 240, 701);
-		optionPanel.setBackground(paleteBlue);
-		contentPane.add(optionPanel);
+		optionPanel.setBackground(paleteGreen);
 		optionPanel.setLayout(null);
+		optionPanel.setBounds(0, 0, 240, 738);
+		bkgPanel.add(optionPanel);
+		//bkgPanel.setFont(FuenteUtil.cargarFuente("/Fuentes/Roboto-Bold.ttf", 16f));
 		
-		JLabel lbLogo = new JLabel("");
+		ImageIcon logoIcon = new ImageIcon(getClass().getResource("/Imagenes/logoBlanco.png"));
+		//Escalando imagen
+		Image logoEscalado = logoIcon.getImage().getScaledInstance(76, 76, Image.SCALE_SMOOTH);
+		JLabel lbLogo = new JLabel(new ImageIcon(logoEscalado));
 		lbLogo.setBounds(82, 26, 76, 76);
-		lbLogo.setIcon(new ImageIcon("Recursos/Imagenes/logoP.png"));
 		optionPanel.add(lbLogo);
 		
 		JButton btnRegPaciente = new JButton("New button");	
@@ -87,12 +112,13 @@ public class Principal extends JFrame {
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
-				btnRegPaciente.setBackground(paleteBlue);
+				btnRegPaciente.setBackground(paleteGreen);
 			}
 		});
 		btnRegPaciente.setForeground(Color.WHITE);
+		btnRegPaciente.setFont(buttonFont);
 		btnRegPaciente.setBounds(0, 177, 240, 47);
-		btnRegPaciente.setBackground(paleteBlue);
+		btnRegPaciente.setBackground(paleteGreen);
 		btnRegPaciente.setBorderPainted(false);
 		btnRegPaciente.setFocusPainted(false);
 		optionPanel.add(btnRegPaciente);
@@ -106,12 +132,13 @@ public class Principal extends JFrame {
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
-				btnRegDoctor.setBackground(paleteBlue);
+				btnRegDoctor.setBackground(paleteGreen);
 			}
 		});
 		btnRegDoctor.setForeground(Color.WHITE);
+		btnRegDoctor.setFont(buttonFont);
 		btnRegDoctor.setBounds(0, 224, 240, 47);
-		btnRegDoctor.setBackground(paleteBlue);
+		btnRegDoctor.setBackground(paleteGreen);
 		btnRegDoctor.setBorderPainted(false);
 		btnRegDoctor.setFocusPainted(false);
 		optionPanel.add(btnRegDoctor);
@@ -125,12 +152,13 @@ public class Principal extends JFrame {
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
-				btnConsultas.setBackground(paleteBlue);
+				btnConsultas.setBackground(paleteGreen);
 			}
 		});
 		btnConsultas.setForeground(Color.WHITE);
+		btnConsultas.setFont(buttonFont);
 		btnConsultas.setBounds(0, 271, 240, 47);
-		btnConsultas.setBackground(paleteBlue);
+		btnConsultas.setBackground(paleteGreen);
 		btnConsultas.setBorderPainted(false);
 		btnConsultas.setFocusPainted(false);
 		optionPanel.add(btnConsultas);
@@ -144,37 +172,35 @@ public class Principal extends JFrame {
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
-				btnReportes.setBackground(paleteBlue);
+				btnReportes.setBackground(paleteGreen);
 			}
 		});
 		btnReportes.setForeground(Color.WHITE);
+		btnReportes.setFont(buttonFont);
 		btnReportes.setBounds(0, 318, 240, 47);
-		btnReportes.setBackground(paleteBlue); //las variables palete corresponden a instancias 
+		btnReportes.setBackground(paleteGreen); //las variables palete corresponden a instancias 
 		//de clase Color con los colores de la paleta utilizada para el programa
 		btnReportes.setBorderPainted(false);
 		btnReportes.setFocusPainted(false);
 		optionPanel.add(btnReportes);
 		
-		JPanel bkgPanel = new JPanel();
-		bkgPanel.setBackground(Color.LIGHT_GRAY);
-		bkgPanel.setBounds(239, 0, 1139, 701);
-		contentPane.add(bkgPanel);
-		bkgPanel.setLayout(null);
-		
 		JPanel infoUserPanel = new JPanel(); 
-		infoUserPanel.setBackground(paleteRareWhite);
+		infoUserPanel.setBackground(paleteDarkGreen);
 		infoUserPanel.setBounds(0, 0, 1131, 120);
-		bkgPanel.add(infoUserPanel);
+		infoPanel.add(infoUserPanel);
 		infoUserPanel.setLayout(null);
 		JLabel lblNombreUser = new JLabel("Nombre Usuario");
+		lblNombreUser.setForeground(Color.WHITE);
 		/*if(mode==0) {
 			lblNombreUser.setText(Clinica.getInstance().getDoctorPorUsuario(idUser).getNombre());
 		}*/
-		lblNombreUser.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 13f));
+		lblNombreUser.setFont(nameUser);
 		lblNombreUser.setBounds(846, 37, 153, 14);
 		infoUserPanel.add(lblNombreUser);
 		
 		JLabel lblRolUser = new JLabel("Rol (doctor o admin)");
+		lblRolUser.setForeground(Color.WHITE);
+		lblRolUser.setFont(normalUse);
 		lblRolUser.setBounds(846, 62, 119, 14);
 		infoUserPanel.add(lblRolUser);
 		
@@ -200,7 +226,7 @@ public class Principal extends JFrame {
 		};
 		cantEnfermPanel.setBackground(Color.WHITE);
 		cantEnfermPanel.setBounds(57, 177, 300, 130);
-		bkgPanel.add(cantEnfermPanel);
+		infoPanel.add(cantEnfermPanel);
 		cantEnfermPanel.setLayout(null);
 		
 		ImageIcon enfermedadIcon = new ImageIcon(getClass().getResource("/Imagenes/thermometer.png"));
@@ -211,10 +237,13 @@ public class Principal extends JFrame {
 		cantEnfermPanel.add(lblEnfermedades);
 		
 		JLabel lblDescripEnf = new JLabel("Enfermedades Controladas");
+		lblDescripEnf.setFont(normalUse);
 		lblDescripEnf.setBounds(10, 105, 151, 14);
+		lblDescripEnf.setFont(normalUse);
 		cantEnfermPanel.add(lblDescripEnf);
 		
 		JLabel lblCountEnf = new JLabel("25");
+		lblCountEnf.setFont(indicativeNumber);
 		lblCountEnf.setBounds(10, 11, 80, 50);
 		cantEnfermPanel.add(lblCountEnf);
 		
@@ -235,7 +264,7 @@ public class Principal extends JFrame {
 		};
 		cantVacunasPanel.setBackground(Color.WHITE);
 		cantVacunasPanel.setBounds(414, 177, 300, 130);
-		bkgPanel.add(cantVacunasPanel);
+		infoPanel.add(cantVacunasPanel);
 		cantVacunasPanel.setLayout(null);
 		
 		ImageIcon vacunaIcon = new ImageIcon(getClass().getResource("/Imagenes/syringe.png"));
@@ -245,11 +274,13 @@ public class Principal extends JFrame {
 		lblVacuna.setBounds(171, 11, 108, 108);
 		cantVacunasPanel.add(lblVacuna);
 		
-		JLabel lblNewLabel = new JLabel("Vacunas Existenetes");
-		lblNewLabel.setBounds(10, 105, 151, 14);
-		cantVacunasPanel.add(lblNewLabel);
+		JLabel lblDescripVacuna = new JLabel("Vacunas Existenetes");
+		lblDescripVacuna.setFont(normalUse);
+		lblDescripVacuna.setBounds(10, 105, 151, 14);
+		cantVacunasPanel.add(lblDescripVacuna);
 		
 		JLabel lblCountVac = new JLabel("13");
+		lblCountVac.setFont(indicativeNumber);
 		lblCountVac.setBounds(10, 11, 80, 50);
 		cantVacunasPanel.add(lblCountVac);
 		
@@ -271,7 +302,7 @@ public class Principal extends JFrame {
 		cantCitasHoyPanel.setBackground(Color.WHITE);
 		cantCitasHoyPanel.setBounds(771, 177, 300, 130);
 		
-		bkgPanel.add(cantCitasHoyPanel);
+		infoPanel.add(cantCitasHoyPanel);
 		cantCitasHoyPanel.setLayout(null);
 		
 		ImageIcon citasHoyIcon = new ImageIcon(getClass().getResource("/Imagenes/stethoscope.png"));
@@ -281,11 +312,13 @@ public class Principal extends JFrame {
 		lblCitas.setBounds(171, 11, 108, 108);
 		cantCitasHoyPanel.add(lblCitas);
 		
-		JLabel lblNewLabel_1 = new JLabel("Citas para hoy");
-		lblNewLabel_1.setBounds(10, 105, 151, 14);
-		cantCitasHoyPanel.add(lblNewLabel_1);
+		JLabel lblDescripCitas = new JLabel("Citas para hoy");
+		lblDescripCitas.setFont(normalUse);
+		lblDescripCitas.setBounds(10, 105, 151, 14);
+		cantCitasHoyPanel.add(lblDescripCitas);
 		
 		JLabel lblCountCitas = new JLabel("34");
+		lblCountCitas.setFont(indicativeNumber);
 		lblCountCitas.setBounds(10, 11, 80, 50);
 		cantCitasHoyPanel.add(lblCountCitas);
 		
@@ -306,7 +339,7 @@ public class Principal extends JFrame {
 		};
 		barGraphSickPanel.setBackground(Color.WHITE);
 		barGraphSickPanel.setBounds(57, 355, 1014, 318);
-		bkgPanel.add(barGraphSickPanel);
+		infoPanel.add(barGraphSickPanel);
 		barGraphSickPanel.setLayout(null);
 	}
 }
