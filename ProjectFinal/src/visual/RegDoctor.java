@@ -388,8 +388,6 @@ public class RegDoctor extends JFrame {
 		btnVolver.addMouseListener(new java.awt.event.MouseAdapter() {
 		    @Override
 		    public void mouseClicked(java.awt.event.MouseEvent e) {
-		        Principal principal = new Principal(mode, idUser);
-		        principal.setVisible(true);
 		        dispose();
 		    }
 		    

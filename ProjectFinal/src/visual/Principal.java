@@ -117,6 +117,11 @@ public class Principal extends JFrame {
 		});
 		btnRegPaciente.setForeground(Color.WHITE);
 		btnRegPaciente.setFont(buttonFont);
+		if(mode==0) {
+			btnRegPaciente.setText("Registrar Paciente");
+		}else {
+			btnRegPaciente.setText("New button");
+		}
 		btnRegPaciente.setBounds(0, 177, 240, 47);
 		btnRegPaciente.setBackground(paleteGreen);
 		btnRegPaciente.setBorderPainted(false);
@@ -134,9 +139,27 @@ public class Principal extends JFrame {
 			public void mouseExited(MouseEvent e) {
 				btnRegDoctor.setBackground(paleteGreen);
 			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(mode==0) {
+					try {
+						RegDoctor regDoctor = new RegDoctor(mode, idUser);
+						regDoctor.setVisible(true);
+					} catch (Exception e2) {
+						e2.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Error inesperado al abrir la ventana", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
+					}
+					
+				}
+			}
 		});
 		btnRegDoctor.setForeground(Color.WHITE);
 		btnRegDoctor.setFont(buttonFont);
+		if(mode==0) {
+			btnRegDoctor.setText("Registrar Doctor");
+		}else {
+			btnRegDoctor.setText("New button");
+		}
 		btnRegDoctor.setBounds(0, 224, 240, 47);
 		btnRegDoctor.setBackground(paleteGreen);
 		btnRegDoctor.setBorderPainted(false);
@@ -157,6 +180,11 @@ public class Principal extends JFrame {
 		});
 		btnConsultas.setForeground(Color.WHITE);
 		btnConsultas.setFont(buttonFont);
+		if(mode==0) {
+			btnConsultas.setText("Registrar Cita");
+		}else {
+			btnConsultas.setText("New button");
+		}
 		btnConsultas.setBounds(0, 271, 240, 47);
 		btnConsultas.setBackground(paleteGreen);
 		btnConsultas.setBorderPainted(false);
@@ -177,6 +205,11 @@ public class Principal extends JFrame {
 		});
 		btnReportes.setForeground(Color.WHITE);
 		btnReportes.setFont(buttonFont);
+		if(mode==0) {
+			btnReportes.setText("Reportes");
+		}else {
+			btnReportes.setText("New button");
+		}
 		btnReportes.setBounds(0, 318, 240, 47);
 		btnReportes.setBackground(paleteGreen); //las variables palete corresponden a instancias 
 		//de clase Color con los colores de la paleta utilizada para el programa
@@ -198,9 +231,14 @@ public class Principal extends JFrame {
 		lblNombreUser.setBounds(846, 37, 153, 14);
 		infoUserPanel.add(lblNombreUser);
 		
-		JLabel lblRolUser = new JLabel("Rol (doctor o admin)");
+		JLabel lblRolUser = new JLabel("");
 		lblRolUser.setForeground(Color.WHITE);
 		lblRolUser.setFont(normalUse);
+		if(mode==0) {
+			lblRolUser.setText("Administrativo");
+		}else {
+			lblRolUser.setText("Doctor");
+		}
 		lblRolUser.setBounds(846, 62, 119, 14);
 		infoUserPanel.add(lblRolUser);
 		
