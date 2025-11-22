@@ -79,6 +79,7 @@ public class Principal extends JFrame {
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setMaximumSize(dimPrincipal);
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
@@ -172,7 +173,7 @@ public class Principal extends JFrame {
 		
 		JPanel bkgPanel = new JPanel();
 		bkgPanel.setBackground(Color.LIGHT_GRAY);
-		bkgPanel.setBounds(239, 0, 1131, 701);
+		bkgPanel.setBounds(239, 0, 1139, 701);
 		contentPane.add(bkgPanel);
 		bkgPanel.setLayout(null);
 		
