@@ -255,6 +255,7 @@ public class Principal extends JFrame {
 		lblDoctora.setVisible(true);
 		infoPanel.add(lblDoctora);
 		
+		//================================PANELES PARA DOCTORES====================================
 		JPanel welcomePanel = new JPanel(){
 			/**
 			 * 
@@ -301,6 +302,88 @@ public class Principal extends JFrame {
 		welcomePanel.add(lblBanner);
 		infoPanel.add(welcomePanel);
 		
+		//Panel inferior izquierdo
+		JPanel listEnfPanel = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void paintComponent(Graphics g) {
+			    Graphics2D g2 = (Graphics2D) g;
+			    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+			                       RenderingHints.VALUE_ANTIALIAS_ON);
+			    g2.setColor(getBackground());
+			    g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
+			}
+		};
+		listEnfPanel.setBackground(Color.WHITE);
+		listEnfPanel.setBounds(57, 425, 487, 280);
+		if(mode==0) {
+			listEnfPanel.setVisible(false);
+		}else {
+			listEnfPanel.setVisible(true);
+		}
+		listEnfPanel.setLayout(null);
+		infoPanel.add(listEnfPanel);
+		
+		//Elementos del panel inferior izquierdo
+		ImageIcon enfermedadIcon = new ImageIcon(getClass().getResource("/Imagenes/thermometer.png"));
+		//Escalado
+		Image enfEscala = enfermedadIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+		JLabel lblEnfIcon = new JLabel(new ImageIcon(enfEscala));
+		lblEnfIcon.setBounds(397,10,80,80);
+		listEnfPanel.add(lblEnfIcon);
+		
+		JLabel lblDesEnf = new JLabel("Enfermedades Controladas");
+		lblDesEnf.setFont(normalUse);
+		lblDesEnf.setBounds(10, 105, 151, 14);
+		lblDesEnf.setFont(normalUse);
+		listEnfPanel.add(lblDesEnf);
+		
+		JLabel lblCEnf = new JLabel("25");
+		lblCEnf.setFont(indicativeNumber);
+		lblCEnf.setBounds(10, 11, 80, 50);
+		listEnfPanel.add(lblCEnf);
+		
+		//Panel inferior derecho
+		JPanel citasHoyPanel = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void paintComponent(Graphics g) {
+			    Graphics2D g2 = (Graphics2D) g;
+			    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+			                       RenderingHints.VALUE_ANTIALIAS_ON);
+			    g2.setColor(getBackground());
+			    g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
+			}
+		};
+		citasHoyPanel.setBackground(Color.WHITE);
+		citasHoyPanel.setBounds(584, 425, 487, 280);
+		if(mode==0) {
+			citasHoyPanel.setVisible(false);
+		}else {
+			citasHoyPanel.setVisible(true);
+		}
+		citasHoyPanel.setLayout(null);
+		infoPanel.add(citasHoyPanel);
+		
+		//Elementos del panel inferior derecho
+		ImageIcon citasHoyIcon = new ImageIcon(getClass().getResource("/Imagenes/stethoscope.png"));
+		//Escalado
+		Image citasEscala = citasHoyIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+		JLabel lblCitaIcon = new JLabel(new ImageIcon(citasEscala));
+		lblCitaIcon.setBounds(397,10,80,80);
+		citasHoyPanel.add(lblCitaIcon);
+		
+		
+		
+		//===================================PANELES PARA USUARIOS ADMINISTRATIVOS=================================
 		JPanel cantEnfermPanel = new JPanel(){
 			/**
 			 * 
@@ -326,7 +409,7 @@ public class Principal extends JFrame {
 		infoPanel.add(cantEnfermPanel);
 		cantEnfermPanel.setLayout(null);
 		
-		ImageIcon enfermedadIcon = new ImageIcon(getClass().getResource("/Imagenes/thermometer.png"));
+		
 		//Escalando imagen
 		Image enfermedadEscalada = enfermedadIcon.getImage().getScaledInstance(108, 108, Image.SCALE_SMOOTH);
 		JLabel lblEnfermedades = new JLabel(new ImageIcon(enfermedadEscalada));
@@ -411,7 +494,6 @@ public class Principal extends JFrame {
 		infoPanel.add(cantCitasHoyPanel);
 		cantCitasHoyPanel.setLayout(null);
 		
-		ImageIcon citasHoyIcon = new ImageIcon(getClass().getResource("/Imagenes/stethoscope.png"));
 		//Escalando imagen
 		Image citasEscalada = citasHoyIcon.getImage().getScaledInstance(108, 108, Image.SCALE_SMOOTH);
 		JLabel lblCitas = new JLabel(new ImageIcon(citasEscalada));
