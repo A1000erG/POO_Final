@@ -225,13 +225,13 @@ public class Login extends JFrame {
 			else {
 				if (tipoString.equals("Administrativo")) {
 					timerError.stop();
-					Principal ad = new Principal(1, usuario);
+					Principal ad = new Principal(0, usuario);
 					ad.setVisible(true);
 					this.dispose();
 					
 				} else if (tipoString.equals("Doctor")) {
 					timerError.stop();
-					Principal doc = new Principal(2, usuario);
+					Principal doc = new Principal(1, usuario);
 					doc.setVisible(true);
 					this.dispose();
 				}

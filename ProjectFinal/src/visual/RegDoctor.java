@@ -12,10 +12,14 @@ import java.awt.RenderingHints;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import java.io.File;
 
 import java.awt.Toolkit;
 
@@ -159,18 +163,46 @@ public class RegDoctor extends JFrame {
 		lblAvatar.addMouseListener(new java.awt.event.MouseAdapter() {
 		    @Override
 		    public void mouseClicked(java.awt.event.MouseEvent e) {
-		        System.out.println("Avatar clickeado"); 
+
+		        JFileChooser chooser = new JFileChooser();
+		        chooser.setFileFilter(
+		            new FileNameExtensionFilter(
+		                "Imágenes (JPG, PNG)", "jpg", "jpeg", "png"
+		            )
+		        );
+
+		        int resultado = chooser.showOpenDialog(RegDoctor.this);
+		        if (resultado != JFileChooser.APPROVE_OPTION) {
+		            return; // uusuario canceló
+		        }
+
+		        File archivo = chooser.getSelectedFile();
+
+		        // Cargar y escalar la imagen cuadardo
+		        ImageIcon iconOriginal = new ImageIcon(archivo.getAbsolutePath());
+		        Image imgEscalada = iconOriginal.getImage().getScaledInstance(
+		                lblAvatar.getWidth(),
+		                lblAvatar.getHeight(),
+		                Image.SCALE_SMOOTH
+		        );
+		        ImageIcon iconFinal = new ImageIcon(imgEscalada);
+
+		        lblAvatar.setIcon(iconFinal);
+
+		        lblAvatar.putClientProperty("rutaFoto", archivo.getAbsolutePath());
 		    }
 		});
 
 		lblFotoTexto.addMouseListener(new java.awt.event.MouseAdapter() {
 		    @Override
 		    public void mouseClicked(java.awt.event.MouseEvent e) {
-		        System.out.println("Texto de foto clickeado");
+		        // mismo click del avatar
+		        for (java.awt.event.MouseListener ml : lblAvatar.getMouseListeners()) {
+		            ml.mouseClicked(e);
+		        }
 		    }
 		});
-		
-		
+
 		
 		// ------------------ CAMPOS DE TEXTO PARA REGISTRO -------------------
 		
@@ -330,9 +362,11 @@ public class RegDoctor extends JFrame {
 		    String nombre = txtNombre.getText();
 		    String especialidad = txtEspecialidad.getText();
 		    String cupoTexto = txtCupoDia.getText();
+		    
+		    String rutaFotoOriginal = (String) lblAvatar.getClientProperty("rutaFoto");
 			
 		    boolean ok = controlador.registrarDoctorDesdeFormulario(
-		    		usuario, contrasenia, nombre, especialidad, cupoTexto);
+		    		usuario, contrasenia, nombre, especialidad, cupoTexto, rutaFotoOriginal);
 
 		    if (!ok) {
 		        //  error
@@ -350,7 +384,19 @@ public class RegDoctor extends JFrame {
 		        txtNombre.setText("");
 		        txtEspecialidad.setText("");
 		        txtCupoDia.setText("");
-
+		        
+		        // Avatar de inicio
+		        ImageIcon iconUsuarioGris = new ImageIcon(
+		                getClass().getResource("/Imagenes/UsuarioGris.png")
+		        );
+		        Image imgUsuarioGris = iconUsuarioGris.getImage().getScaledInstance(
+		                lblAvatar.getWidth(),
+		                lblAvatar.getHeight(),
+		                Image.SCALE_SMOOTH
+		        );
+		        lblAvatar.setIcon(new ImageIcon(imgUsuarioGris));
+		        lblAvatar.putClientProperty("rutaFoto", null);
+		        
 		        int siguienteId = controlador.getProximoIdDoctor();
 		        String nuevoCodigo = String.format("ID: D-%03d", siguienteId);
 		        lblIdDoctor.setText(nuevoCodigo);

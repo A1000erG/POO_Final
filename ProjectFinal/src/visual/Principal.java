@@ -73,7 +73,7 @@ public class Principal extends JFrame {
 		
 		contentPane = new JPanel();
 		contentPane.setPreferredSize(new Dimension(820, 3100));
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		//contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
