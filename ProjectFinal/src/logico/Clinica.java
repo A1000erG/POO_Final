@@ -7,6 +7,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -372,7 +376,8 @@ public class Clinica implements Serializable {
             String contrasenia,
             String nombre,
             String especialidad,
-            String cupoTexto
+            String cupoTexto,
+            String rutaFotoOriginal
     ) {
         // 1. Validar campos vacíos
         if (usuario == null || usuario.trim().isEmpty() ||
@@ -405,13 +410,54 @@ public class Clinica implements Serializable {
 
         // 4. Crear y registrar
         Doctor nuevo = new Doctor(usuario, contrasenia, nombre, especialidad, cupoDia);
-        registrarDoctor(nuevo);      // aquí ya le pones el ID y lo agregas
-        guardarDatos();              // se guarda en el archivo
+        
+        // --- Foto: copiar a carpeta FotosDoctores ---
+        if (rutaFotoOriginal != null && !rutaFotoOriginal.trim().isEmpty()) {
+            try {
+                // Carpeta destino
+                File carpeta = new File("FotosDoctores");
+                if (!carpeta.exists()) {
+                    carpeta.mkdirs();
+                }
+
+                // próximo ID para el nombre del archivo
+                int idParaFoto = this.proximoIdDoctor;
+
+                // extensión del archivo original
+                String extension = obtenerExtension(rutaFotoOriginal);
+
+                String nombreArchivo = String.format("doctor_%03d%s", idParaFoto, extension);
+
+                File destino = new File(carpeta, nombreArchivo);
+
+                Path origenPath = Paths.get(rutaFotoOriginal);
+                Path destinoPath = destino.toPath();
+
+                Files.copy(origenPath, destinoPath, StandardCopyOption.REPLACE_EXISTING);
+
+                // Guardar la ruta (relativa) en el doctor
+                nuevo.setRutaFoto(destino.getPath());
+
+            } catch (Exception e) {
+                this.ultimoMensajeError = "Doctor registrado, pero no se pudo guardar la foto correctamente.";
+            }
+        }
+        
+        registrarDoctor(nuevo);
+        guardarDatos();
 
         return true;
     }
 
-
+    private String obtenerExtension(String ruta) {
+        int punto = ruta.lastIndexOf('.');
+        if (punto == -1) {
+            return ""; // sin extensión
+        }
+        return ruta.substring(punto); // incluye el punto, ej: ".jpg"
+    }
+    
+    
     
     // --- Métodos Auxiliares y Getters ---
 

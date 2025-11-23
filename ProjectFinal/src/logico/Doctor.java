@@ -9,6 +9,7 @@ public class Doctor extends Personal {
     private String nombre;
     private String especialidad;
     private int cupoDia;
+    private String rutaFoto;
 
     public Doctor() {
         super();
@@ -16,6 +17,7 @@ public class Doctor extends Personal {
         this.nombre = null;
         this.especialidad = null;
         this.cupoDia = 0;
+        this.rutaFoto = null;
     }
 
     public Doctor(String usuario, String contrasenia, String nombre, String especialidad, int cupoDia) {
@@ -77,6 +79,16 @@ public class Doctor extends Personal {
     public void setCupoDia(int cupoDia) {
         this.cupoDia = cupoDia;
     }
+    
+    public String getRutaFoto() {
+        return rutaFoto;
+    }
+
+    public void setRutaFoto(String rutaFoto) {
+        this.rutaFoto = rutaFoto;
+    }
+    
+    
 
     /*
      * Función: equals
