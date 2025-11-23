@@ -248,6 +248,13 @@ public class Principal extends JFrame {
 		lblFotoUser.setIcon(new ImageIcon("Recursos/Imagenes/useResi.png"));
 		infoUserPanel.add(lblFotoUser);
 		
+		ImageIcon doctoraIcon = new ImageIcon(getClass().getResource("/Imagenes/doctora.png"));
+		Image doctoraRedim = doctoraIcon.getImage().getScaledInstance(230, 250, Image.SCALE_SMOOTH);
+		JLabel lblDoctora = new JLabel(new ImageIcon(doctoraRedim));
+		lblDoctora.setBounds(200,127,230,250);
+		lblDoctora.setVisible(true);
+		infoPanel.add(lblDoctora);
+		
 		JPanel welcomePanel = new JPanel(){
 			/**
 			 * 
