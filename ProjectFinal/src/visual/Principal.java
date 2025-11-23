@@ -21,6 +21,7 @@ import java.awt.RenderingHints;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -46,7 +47,7 @@ public class Principal extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Principal frame = new Principal(0,"");
+					Principal frame = new Principal(1,"");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -247,6 +248,52 @@ public class Principal extends JFrame {
 		lblFotoUser.setIcon(new ImageIcon("Recursos/Imagenes/useResi.png"));
 		infoUserPanel.add(lblFotoUser);
 		
+		JPanel welcomePanel = new JPanel(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void paintComponent(Graphics g) {
+			    Graphics2D g2 = (Graphics2D) g;
+			    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+			                       RenderingHints.VALUE_ANTIALIAS_ON);
+			    g2.setColor(getBackground());
+			    g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
+			}
+		};
+		welcomePanel.setBackground(Color.WHITE);
+		welcomePanel.setBounds(57, 177, 1014, 200);
+		if(mode==0) {
+			welcomePanel.setVisible(false);
+		}else {
+			welcomePanel.setVisible(true);
+		}
+		welcomePanel.setLayout(null);
+		//Aniadiendo imagenes del banner al panel
+		ImageIcon bannerIcon = new ImageIcon(getClass().getResource("/Imagenes/doctorBanner.png"));
+		//Escalando imagen
+		Image bannerEscalado = bannerIcon.getImage().getScaledInstance(1041, 200, Image.SCALE_SMOOTH);
+		JLabel lblBanner = new JLabel(bannerIcon) {
+			 @Override
+	            protected void paintComponent(Graphics g) {
+	                Graphics2D redondeo = (Graphics2D) g.create();
+	                redondeo.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	                // Aca se define el radio del redondeo que se va a aplicar, 30px para este caso, este paso es opcional
+	                int radio = 30; 
+	                // Crear máscara de la forma que quiero que tome el JLabel
+	                redondeo.setClip(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), radio, radio));
+	                // Pintar la imagen original dentro de la máscara hecha
+	                super.paintComponent(redondeo);
+	                redondeo.dispose();
+	            }
+		};
+		lblBanner.setBounds(0, 0, 1014, 200);
+		lblBanner.setIcon(new ImageIcon(bannerEscalado));
+		welcomePanel.add(lblBanner);
+		infoPanel.add(welcomePanel);
+		
 		JPanel cantEnfermPanel = new JPanel(){
 			/**
 			 * 
@@ -264,6 +311,11 @@ public class Principal extends JFrame {
 		};
 		cantEnfermPanel.setBackground(Color.WHITE);
 		cantEnfermPanel.setBounds(57, 177, 300, 130);
+		if(mode==0) {
+			cantEnfermPanel.setVisible(true);
+		}else {
+			cantEnfermPanel.setVisible(false);
+		}
 		infoPanel.add(cantEnfermPanel);
 		cantEnfermPanel.setLayout(null);
 		
@@ -302,6 +354,11 @@ public class Principal extends JFrame {
 		};
 		cantVacunasPanel.setBackground(Color.WHITE);
 		cantVacunasPanel.setBounds(414, 177, 300, 130);
+		if(mode==0) {
+			cantVacunasPanel.setVisible(true);
+		}else {
+			cantVacunasPanel.setVisible(false);
+		}
 		infoPanel.add(cantVacunasPanel);
 		cantVacunasPanel.setLayout(null);
 		
@@ -339,7 +396,11 @@ public class Principal extends JFrame {
 		};
 		cantCitasHoyPanel.setBackground(Color.WHITE);
 		cantCitasHoyPanel.setBounds(771, 177, 300, 130);
-		
+		if(mode==0) {
+			cantCitasHoyPanel.setVisible(true);
+		}else {
+			cantCitasHoyPanel.setVisible(false);
+		}
 		infoPanel.add(cantCitasHoyPanel);
 		cantCitasHoyPanel.setLayout(null);
 		
@@ -377,6 +438,11 @@ public class Principal extends JFrame {
 		};
 		barGraphSickPanel.setBackground(Color.WHITE);
 		barGraphSickPanel.setBounds(57, 355, 1014, 318);
+		if(mode==0) {
+			barGraphSickPanel.setVisible(true);
+		}else {
+			barGraphSickPanel.setVisible(false);
+		}
 		infoPanel.add(barGraphSickPanel);
 		barGraphSickPanel.setLayout(null);
 	}
