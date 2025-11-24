@@ -33,6 +33,7 @@ public class Clinica implements Serializable {
     private int proximoIdVacuna;
     
     private int proximoIdDoctor;
+    private int proximoIdAdmin;
 
     private static final String ARCHIVO_DATOS = "clinica.dat";
     
@@ -53,6 +54,7 @@ public class Clinica implements Serializable {
         this.proximoIdConsulta = 1;
         this.proximoIdVacuna = 1;
         this.proximoIdDoctor = 1;
+        this.proximoIdAdmin = 1;
         this.ultimoMensajeError = "";
     }
 
@@ -139,7 +141,9 @@ public class Clinica implements Serializable {
     }
     
     public void registrarAdministrativo(Administrativo admin) {
-        this.administrativos.add(admin);
+    	admin.setIdAdmin(this.proximoIdAdmin);
+    	this.proximoIdAdmin++;
+    	this.administrativos.add(admin);
     }
 
     /*
@@ -481,6 +485,10 @@ public class Clinica implements Serializable {
     
     public int getProximoIdDoctor() {
         return proximoIdDoctor;
+    }
+    
+    public int getProximoIdAdmin() {
+        return proximoIdAdmin;
     }
 
     public String getUltimoMensajeError() {

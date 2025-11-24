@@ -6,7 +6,6 @@ import java.awt.EventQueue;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 
 import Utilidades.FuenteUtil;
 
@@ -32,10 +31,10 @@ public class Principal extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 
-	private static Color paleteBlue = new Color(55,65,81);
+	//private static Color paleteBlue = new Color(55,65,81);
 	private static Color paleteGreen = new Color(22, 163, 74);
 	private static Color paleteDarkGreen = new Color(18, 140, 64);
-	private static Color paleteRareWhite = new Color(247, 250, 252);
+	//private static Color paleteRareWhite = new Color(247, 250, 252);
 	private static Font indicativeNumber = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 20f);
 	private static Font normalUse = FuenteUtil.cargarFuente("/Fuentes/Roboto-Light.ttf", 11f);
 	private static Font nameUser = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 13f);
@@ -284,7 +283,10 @@ public class Principal extends JFrame {
 		//Escalando imagen
 		Image bannerEscalado = bannerIcon.getImage().getScaledInstance(1041, 200, Image.SCALE_SMOOTH);
 		JLabel lblBanner = new JLabel(bannerIcon) {
-			 @Override
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
 	            protected void paintComponent(Graphics g) {
 	                Graphics2D redondeo = (Graphics2D) g.create();
 	                redondeo.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
