@@ -462,6 +462,69 @@ public class Clinica implements Serializable {
     }
     
     
+    public boolean registrarAdminDesdeFormulario(
+            String usuario,
+            String contrasenia,
+            String nombre,
+            String cargo,
+            String rutaFotoOriginal
+    ) {
+        if (usuario == null || usuario.trim().isEmpty() ||
+            contrasenia == null || contrasenia.trim().isEmpty() ||
+            nombre == null || nombre.trim().isEmpty() ||
+            cargo == null || cargo.trim().isEmpty()) {
+
+            ultimoMensajeError = "Todos los campos son obligatorios.";
+            return false;
+        }
+
+        // Validar usuario repetido
+        if (existeUsuario(usuario)) {
+            ultimoMensajeError = "Ya existe un usuario con ese nombre.";
+            return false;
+        }
+
+        // Crear y registrar
+        Administrativo nuevo = new Administrativo(usuario, contrasenia, nombre, cargo);
+        
+        // --- Foto: copiar a carpeta FotosAdmin ---
+        if (rutaFotoOriginal != null && !rutaFotoOriginal.trim().isEmpty()) {
+            try {
+                // Carpeta destino
+                File carpeta = new File("FotosAdmin");
+                if (!carpeta.exists()) {
+                    carpeta.mkdirs();
+                }
+
+                // próximo ID para el nombre del archivo
+                int idParaFoto = this.proximoIdAdmin;
+
+                // extensión del archivo original
+                String extension = obtenerExtension(rutaFotoOriginal);
+
+                String nombreArchivo = String.format("admin_%03d%s", idParaFoto, extension);
+
+                File destino = new File(carpeta, nombreArchivo);
+
+                Path origenPath = Paths.get(rutaFotoOriginal);
+                Path destinoPath = destino.toPath();
+
+                Files.copy(origenPath, destinoPath, StandardCopyOption.REPLACE_EXISTING);
+
+                // Guardar la ruta (relativa) en el administrativo
+                nuevo.setRutaFoto(destino.getPath());
+
+            } catch (Exception e) {
+                this.ultimoMensajeError = "Administrador registrado, pero no se pudo guardar la foto correctamente.";
+            }
+        }
+        
+        registrarAdministrativo(nuevo);
+        guardarDatos();
+
+        return true;
+    }
+    
     
     // --- Métodos Auxiliares y Getters ---
 

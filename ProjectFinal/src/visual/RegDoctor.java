@@ -159,7 +159,7 @@ public class RegDoctor extends JFrame {
 		panelContenido.add(lblFotoTexto);
 		
 		
-		// OPCION CAMBIAR FOTO 	          !!!!!PENDIENTEEEEEEEEEEEEEE
+		// OPCION CAMBIAR FOTO
 		lblAvatar.addMouseListener(new java.awt.event.MouseAdapter() {
 		    @Override
 		    public void mouseClicked(java.awt.event.MouseEvent e) {

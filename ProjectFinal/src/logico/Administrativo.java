@@ -6,12 +6,14 @@ public class Administrativo extends Personal {
     private int idAdmin;
     private String nombre;
     private String cargo;
+    private String rutaFoto;
 
     public Administrativo() {
         super();
         this.idAdmin = 0;
         this.nombre = null;
         this.cargo = null;
+        this.rutaFoto = null;
     }
 
     /*
@@ -59,5 +61,13 @@ public class Administrativo extends Personal {
 
     public void setCargo(String cargo) {
         this.cargo = cargo;
+    }
+    
+    public String getRutaFoto() {
+        return rutaFoto;
+    }
+
+    public void setRutaFoto(String rutaFoto) {
+        this.rutaFoto = rutaFoto;
     }
 }
