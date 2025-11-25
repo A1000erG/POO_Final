@@ -24,6 +24,8 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Principal extends JFrame {
 
@@ -46,7 +48,7 @@ public class Principal extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Principal frame = new Principal(1,"");
+					Principal frame = new Principal(0,"");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -103,30 +105,44 @@ public class Principal extends JFrame {
 		lbLogo.setBounds(82, 26, 76, 76);
 		optionPanel.add(lbLogo);
 		
-		JButton btnRegPaciente = new JButton("New button");	
+		JButton btnRegAdmin = new JButton("New button");	
 		//Efecto de cambio de de color de botones
-		btnRegPaciente.addMouseListener(new MouseAdapter() {
+		btnRegAdmin.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				btnRegPaciente.setBackground(paleteDarkGreen);
+				btnRegAdmin.setBackground(paleteDarkGreen);
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
-				btnRegPaciente.setBackground(paleteGreen);
+				btnRegAdmin.setBackground(paleteGreen);
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(mode==0) {
+					try {
+						RegAdmin regAdmin = new RegAdmin(mode, idUser);
+						regAdmin.setVisible(true);
+					} catch (Exception e2) {
+						e2.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Error inesperado al abrir la ventana", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
+					}
+				}else {
+					
+				}
 			}
 		});
-		btnRegPaciente.setForeground(Color.WHITE);
-		btnRegPaciente.setFont(buttonFont);
+		btnRegAdmin.setForeground(Color.WHITE);
+		btnRegAdmin.setFont(buttonFont);
 		if(mode==0) {
-			btnRegPaciente.setText("Registrar Paciente");
+			btnRegAdmin.setText("Registrar Admin");
 		}else {
-			btnRegPaciente.setText("New button");
+			btnRegAdmin.setText("Citas");
 		}
-		btnRegPaciente.setBounds(0, 177, 240, 47);
-		btnRegPaciente.setBackground(paleteGreen);
-		btnRegPaciente.setBorderPainted(false);
-		btnRegPaciente.setFocusPainted(false);
-		optionPanel.add(btnRegPaciente);
+		btnRegAdmin.setBounds(0, 177, 240, 47);
+		btnRegAdmin.setBackground(paleteGreen);
+		btnRegAdmin.setBorderPainted(false);
+		btnRegAdmin.setFocusPainted(false);
+		optionPanel.add(btnRegAdmin);
 		
 		JButton btnRegDoctor = new JButton("New button");
 		//Efecto de cambio de de color de botones
@@ -208,6 +224,7 @@ public class Principal extends JFrame {
 		if(mode==0) {
 			btnReportes.setText("Reportes");
 		}else {
+			btnReportes.setVisible(false);
 			btnReportes.setText("New button");
 		}
 		btnReportes.setBounds(0, 318, 240, 47);
@@ -251,7 +268,11 @@ public class Principal extends JFrame {
 		Image doctoraRedim = doctoraIcon.getImage().getScaledInstance(230, 250, Image.SCALE_SMOOTH);
 		JLabel lblDoctora = new JLabel(new ImageIcon(doctoraRedim));
 		lblDoctora.setBounds(200,127,230,250);
-		lblDoctora.setVisible(true);
+		if(mode==0) {
+			lblDoctora.setVisible(false);
+		}else {
+			lblDoctora.setVisible(true);
+		}
 		infoPanel.add(lblDoctora);
 		
 		//================================PANELES PARA DOCTORES====================================

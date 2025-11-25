@@ -51,7 +51,7 @@ public class RegAdmin extends JFrame {
 
 	public RegAdmin(int mode, String idUser) {
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//Recordar cambiar a DISPOSE_ON_CLOSE para que solo se cierre la ventana de registro
 		setResizable(false);
 		setLocationRelativeTo(null);
 		
