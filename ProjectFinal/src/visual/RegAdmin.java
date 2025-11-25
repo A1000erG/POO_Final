@@ -113,6 +113,7 @@ public class RegAdmin extends JFrame {
 		// ID ADMINISTRATIVO
 		
 		Clinica controlador = Clinica.getInstance();
+		
 		int nextIdAdmin = controlador.getProximoIdAdmin();
 		String codigoAdmin = String.format("ID: A-%03d", nextIdAdmin);
 		
@@ -158,7 +159,7 @@ public class RegAdmin extends JFrame {
 		panelContenido.add(lblFotoTexto);
 		
 		
-		// OPCION CAMBIAR FOTO 	          !!!!!PENDIENTEEEEEEEEEEEEEE
+		// OPCION CAMBIAR FOTO
 		lblAvatar.addMouseListener(new java.awt.event.MouseAdapter() {
 		    @Override
 		    public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -271,38 +272,23 @@ public class RegAdmin extends JFrame {
 		panelContenido.add(txtNombre);
 		
 		
-		// ESPECIALIDAD
-		JLabel lblEspecialidad = new JLabel("ESPECIALIDAD");
-		lblEspecialidad.setForeground(new Color(55,65,81));
-		lblEspecialidad.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
-		lblEspecialidad.setBounds(xDer, yFila2 - 25, 200, 20);
-		panelContenido.add(lblEspecialidad);
+		// CARGO
+		JLabel lblCargo = new JLabel("CARGO");
+		lblCargo.setForeground(new Color(55,65,81));
+		lblCargo.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
+		lblCargo.setBounds(xDer, yFila2 - 25, 200, 20);
+		panelContenido.add(lblCargo);
 
-		JTextField txtEspecialidad = new JTextField();
-		txtEspecialidad.setBounds(xDer, yFila2, anchoCampo, altoCampo);
-		txtEspecialidad.setBorder(
+		JTextField txtCargo = new JTextField();
+		txtCargo.setBounds(xDer, yFila2, anchoCampo, altoCampo);
+		txtCargo.setBorder(
 		    BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
 		);
-		txtEspecialidad.setForeground(new Color(55,65,81));
-		txtEspecialidad.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
-		panelContenido.add(txtEspecialidad);
+		txtCargo.setForeground(new Color(55,65,81));
+		txtCargo.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
+		panelContenido.add(txtCargo);
 		
-		
-		// CUPO POR DIA
-		JLabel lblCupoDia = new JLabel("CUPO POR DÍA");
-		lblCupoDia.setForeground(new Color(55,65,81));
-		lblCupoDia.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
-		lblCupoDia.setBounds(xDer, yFila3 - 25, 200, 20);
-		panelContenido.add(lblCupoDia);
 
-		JTextField txtCupoDia = new JTextField();
-		txtCupoDia.setBounds(xDer, yFila3, anchoCampo, altoCampo);
-		txtCupoDia.setBorder(
-		    BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
-		);
-		txtCupoDia.setForeground(new Color(55,65,81));
-		txtCupoDia.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
-		panelContenido.add(txtCupoDia);
 		
 		// ------------------ REGISTRAR -------------------
 		
@@ -359,13 +345,13 @@ public class RegAdmin extends JFrame {
 			String usuario = txtUsuario.getText();
 		    String contrasenia = txtContrasenia.getText();
 		    String nombre = txtNombre.getText();
-		    String especialidad = txtEspecialidad.getText();
-		    String cupoTexto = txtCupoDia.getText();
+		    String cargo = txtCargo.getText();
+		    //String cupoTexto = txtCupoDia.getText();
 		    
 		    String rutaFotoOriginal = (String) lblAvatar.getClientProperty("rutaFoto");
 			
-		    boolean ok = controlador.registrarDoctorDesdeFormulario(
-		    		usuario, contrasenia, nombre, especialidad, cupoTexto, rutaFotoOriginal);
+		    boolean ok = controlador.registrarAdminDesdeFormulario(
+		    		usuario, contrasenia, nombre, cargo, rutaFotoOriginal);
 
 		    if (!ok) {
 		        //  error
@@ -375,14 +361,13 @@ public class RegAdmin extends JFrame {
 		    } else {
 		        // éxito
 		        lblMensaje.setForeground(new Color(22, 163, 74)); // verde
-		        lblMensaje.setText("Doctor registrado correctamente.");
+		        lblMensaje.setText("Administrativo registrado correctamente.");
 		        timerMensaje.restart();
 
 		        txtUsuario.setText("");
 		        txtContrasenia.setText("");
 		        txtNombre.setText("");
-		        txtEspecialidad.setText("");
-		        txtCupoDia.setText("");
+		        txtCargo.setText("");
 		        
 		        // Avatar de inicio
 		        ImageIcon iconUsuarioGris = new ImageIcon(
@@ -396,7 +381,7 @@ public class RegAdmin extends JFrame {
 		        lblAvatar.setIcon(new ImageIcon(imgUsuarioGris));
 		        lblAvatar.putClientProperty("rutaFoto", null);
 		        
-		        int siguienteId = controlador.getProximoIdDoctor();
+		        int siguienteId = controlador.getProximoIdAdmin();
 		        String nuevoCodigo = String.format("ID: D-%03d", siguienteId);
 		        lblIdAdmin.setText(nuevoCodigo);
 		    }
