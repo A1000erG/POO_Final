@@ -10,6 +10,7 @@ public class Cita implements Serializable {
 	private LocalDate fecha;
 	private String hora;
 	private String estado; // "Pendiente", "Realizada", "Cancelada"
+	private Solicitante solicitante;
 	private Paciente paciente;
 	private Doctor doctor;
 
@@ -23,7 +24,7 @@ public class Cita implements Serializable {
 	}
 
 	/*
-	 * Función: Cita (Constructor) Argumentos: (LocalDate) fecha: Día de la cita.
+	 * Funciï¿½n: Cita (Constructor) Argumentos: (LocalDate) fecha: Dï¿½a de la cita.
 	 * (String) hora: Hora en texto. (Paciente) paciente: Quien asiste. (Doctor)
 	 * doctor: Quien atiende. Objetivo: Crear una reserva de cita. Retorno:
 	 * (Ninguno).
@@ -87,5 +88,13 @@ public class Cita implements Serializable {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+
+	public Solicitante getSolicitante() {
+		return solicitante;
+	}
+
+	public void setSolicitante(Solicitante solicitante) {
+		this.solicitante = solicitante;
 	}
 }
