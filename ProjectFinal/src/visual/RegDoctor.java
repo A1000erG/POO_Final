@@ -51,7 +51,7 @@ public class RegDoctor extends JFrame {
 
 	public RegDoctor(int mode, String idUser) {
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//Cambiar por DISPOSE_ON_CLOSE para que solo se cierre la ventana de registro
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setResizable(false);
 		setLocationRelativeTo(null);
 		
