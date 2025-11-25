@@ -5,77 +5,77 @@ import java.time.LocalDate;
 
 public abstract class Persona implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private String cedula;
-    private String nombre;
-    private char sexo;
-    private LocalDate fechaNacimiento;
-    private String telefono;
+	private static final long serialVersionUID = 1L;
+	private String cedula;
+	private String nombre;
+	private char sexo;
+	private LocalDate fechaNacimiento;
+	private String telefono;
 
-    public Persona() {
-        this.cedula = null;
-        this.nombre = null;
-        this.sexo = ' ';
-        this.fechaNacimiento = null;
-        this.telefono = null;
-    }
+	public Persona() {
+		this.cedula = null;
+		this.nombre = null;
+		this.sexo = ' ';
+		this.fechaNacimiento = null;
+		this.telefono = null;
+	}
 
-    /*
-    Función: Persona (Constructor)
-    Argumentos: 
-        (String) cedula: Identificador único de la persona.
-        (String) nombre: Nombre y apellido.
-        (char) sexo: Género ('M' o 'F').
-        (LocalDate) fechaNacimiento: Fecha de nacimiento.
-        (String) telefono: Teléfono de contacto.
-    Objetivo: Inicializar los atributos base de cualquier persona.
-    Retorno: (Ninguno): Es un constructor.
-    */
-    public Persona(String cedula, String nombre, char sexo, LocalDate fechaNacimiento, String telefono) {
-        this.cedula = cedula;
-        this.nombre = nombre;
-        this.sexo = sexo;
-        this.fechaNacimiento = fechaNacimiento;
-        this.telefono = telefono;
-    }
+	/*
+	 * Función: Persona (Constructor) Argumentos: (String) cedula: Identificador
+	 * único de la persona. (String) nombre: Nombre y apellido. (char) sexo: Género
+	 * ('M' o 'F'). (LocalDate) fechaNacimiento: Fecha de nacimiento. (String)
+	 * telefono: Teléfono de contacto. Objetivo: Inicializar los atributos base de
+	 * cualquier persona. Retorno: (Ninguno): Es un constructor.
+	 */
+	public Persona(String cedula, String nombre, char sexo, LocalDate fechaNacimiento, String telefono) {
+		this.cedula = cedula;
+		this.nombre = nombre;
+		this.sexo = sexo;
+		this.fechaNacimiento = fechaNacimiento;
+		this.telefono = telefono;
+	}
 
-    public String getCedula() {
-        return cedula;
-    }
+	public String getCedula() {
+		return cedula;
+	}
 
-    public void setCedula(String cedula) {
-        this.cedula = cedula;
-    }
+	public void setCedula(String cedula) {
+		this.cedula = cedula;
+	}
 
-    public String getNombre() {
-        return nombre;
-    }
+	public String getNombre() {
+		return nombre;
+	}
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 
-    public char getSexo() {
-        return sexo;
-    }
+	public char getSexo() {
+		return sexo;
+	}
 
-    public void setSexo(char sexo) {
-        this.sexo = sexo;
-    }
+	public void setSexo(char sexo) {
+		this.sexo = sexo;
+	}
 
-    public LocalDate getFechaNacimiento() {
-        return fechaNacimiento;
-    }
+	public LocalDate getFechaNacimiento() {
+		return fechaNacimiento;
+	}
 
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
-    }
+	public void setFechaNacimiento(LocalDate fechaNacimiento) {
+		this.fechaNacimiento = fechaNacimiento;
+	}
 
-    public String getTelefono() {
-        return telefono;
-    }
+	public String getTelefono() {
+		return telefono;
+	}
 
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
+	public void setTelefono(String telefono) {
+		this.telefono = telefono;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 }

@@ -16,554 +16,583 @@ import java.util.ArrayList;
 
 public class Clinica implements Serializable {
 
-    private static final long serialVersionUID = 10L;
-    private static Clinica instance;
+	private static final long serialVersionUID = 10L;
+	private static Clinica instance;
 
-    private ArrayList<Doctor> doctores;
-    private ArrayList<Paciente> pacientes;
-    private ArrayList<Cita> citas;
-    private ArrayList<Consulta> consultas;
-    private ArrayList<Vacuna> vacunas;
-    private ArrayList<Solicitante> solicitantes;
-    private ArrayList<Administrativo> administrativos;
+	private ArrayList<Doctor> doctores;
+	private ArrayList<Paciente> pacientes;
+	private ArrayList<Cita> citas;
+	private ArrayList<Consulta> consultas;
+	private ArrayList<Vacuna> vacunas;
+	private ArrayList<Solicitante> solicitantes;
+	private ArrayList<Administrativo> administrativos;
+	
+	private ArrayList<Enfermedad> catalogoEnfermedades;
 
-    private int proximoIdPaciente;
-    private int proximoIdCita;
-    private int proximoIdConsulta;
-    private int proximoIdVacuna;
-    
-    private int proximoIdDoctor;
-    private int proximoIdAdmin;
+	private int proximoIdPaciente;
+	private int proximoIdCita;
+	private int proximoIdConsulta;
+	private int proximoIdVacuna;
 
-    private static final String ARCHIVO_DATOS = "clinica.dat";
-    
-    // Variable para almacenar errores sin usar Exceptions (Transient para no serializar)
-    private transient String ultimoMensajeError;
+	private int proximoIdDoctor;
+	private int proximoIdAdmin;
 
-    private Clinica() {
-        this.doctores = new ArrayList<Doctor>();
-        this.pacientes = new ArrayList<Paciente>();
-        this.citas = new ArrayList<Cita>();
-        this.consultas = new ArrayList<Consulta>();
-        this.vacunas = new ArrayList<Vacuna>();
-        this.solicitantes = new ArrayList<Solicitante>();
-        this.administrativos = new ArrayList<Administrativo>();
+	private static final String ARCHIVO_DATOS = "clinica.dat";
 
-        this.proximoIdPaciente = 1;
-        this.proximoIdCita = 1;
-        this.proximoIdConsulta = 1;
-        this.proximoIdVacuna = 1;
-        this.proximoIdDoctor = 1;
-        this.proximoIdAdmin = 1;
-        this.ultimoMensajeError = "";
-    }
+	private transient String ultimoMensajeError;
 
-    /*
-    Función: getInstance
-    Argumentos: Ninguno.
-    Objetivo: Implementar Singleton y cargar datos automáticamente.
-    Retorno: (Clinica): La instancia única.
-    */
-    public static Clinica getInstance() {
-        if (instance == null) {
-            instance = cargarDatos();
-            if (instance == null) {
-                instance = new Clinica();
-            }
-        }
-        return instance;
-    }
+	private Clinica() {
+		this.doctores = new ArrayList<Doctor>();
+		this.pacientes = new ArrayList<Paciente>();
+		this.citas = new ArrayList<Cita>();
+		this.consultas = new ArrayList<Consulta>();
+		this.vacunas = new ArrayList<Vacuna>();
+		this.solicitantes = new ArrayList<Solicitante>();
+		this.administrativos = new ArrayList<Administrativo>();
+		this.catalogoEnfermedades = new ArrayList<Enfermedad>();
 
-    /*
-    Función: login
-    Argumentos: 
-        (String) usuario: Login.
-        (String) contrasenia: Password.
-    Objetivo: Validar credenciales sin lanzar excepciones.
-    Retorno: (Personal): Objeto encontrado o null si falla.
-    */
-    public Personal login(String usuario, String contrasenia) {
-        if (usuario.equals("admin") && contrasenia.equals("admin")) {
-            Administrativo adminTemp = new Administrativo();
-            adminTemp.setNombre("Super Admin");
-            adminTemp.setUsuario("admin");
-            adminTemp.setCargo("Administrador General");
-            return adminTemp;
-        }
+		this.proximoIdPaciente = 1;
+		this.proximoIdCita = 1;
+		this.proximoIdConsulta = 1;
+		this.proximoIdVacuna = 1;
+		this.proximoIdDoctor = 1;
+		this.proximoIdAdmin = 1;
+		this.ultimoMensajeError = "";
+		
+		inicializarCatalogoEnfermedades();
+	}
 
-        for (Doctor doc : doctores) {
-            if (doc.getUsuario().equals(usuario) && doc.getContrasenia().equals(contrasenia)) {
-                return doc;
-            }
-        }
-        for (Administrativo admin : administrativos) {
-            if (admin.getUsuario().equals(usuario) && admin.getContrasenia().equals(contrasenia)) {
-                return admin;
-            }
-        }
-        
-        this.ultimoMensajeError = "Credenciales incorrectas.";
-        return null; 
-    }
+	private void inicializarCatalogoEnfermedades() {
+		if (catalogoEnfermedades.isEmpty()) {
+			catalogoEnfermedades.add(new Enfermedad(1, "Gripe Estacional", false));
+			catalogoEnfermedades.add(new Enfermedad(2, "COVID-19", true)); // Vigilada
+			catalogoEnfermedades.add(new Enfermedad(3, "Diabetes Tipo 2", false));
+			catalogoEnfermedades.add(new Enfermedad(4, "Hipertensión", false));
+			catalogoEnfermedades.add(new Enfermedad(5, "Dengue", true)); // Vigilada
+			catalogoEnfermedades.add(new Enfermedad(6, "Tuberculosis", true)); // Vigilada
+		}
+	}
 
-    /*
-     * Función: loginTipo
-     * Argumentos: (String) usuario, (String) password
-     * Objetivo: Autenticar y devolver el TIPO de usuario como String.
-     * Nota: Agregado para compatibilidad con tu Login.java.
-     * Retorno: (String): "Doctor", "Administrativo" o null si falla.
-     */
-    public String loginTipo(String usuario, String password) {
-        Personal logueado = login(usuario, password);
+	public static Clinica getInstance() {
+		if (instance == null) {
+			instance = cargarDatos();
+			if (instance == null) {
+				instance = new Clinica();
+			}
+		}
+		return instance;
+	}
 
-        if (logueado == null) {
-            return null; // Error en login
-        }
-        if (logueado instanceof Doctor) {
-            return "Doctor";
-        }
-        if (logueado instanceof Administrativo) {
-            return "Administrativo";
-        }
-        return "Desconocido";
-    }
+	/*
+	 * Función: login
+	 */
+	public Personal login(String usuario, String contrasenia) {
+		if (usuario.equals("admin") && contrasenia.equals("admin")) {
+			Administrativo adminTemp = new Administrativo();
+			adminTemp.setNombre("Super Admin");
+			adminTemp.setUsuario("admin");
+			adminTemp.setCargo("Administrador General");
+			return adminTemp;
+		}
 
-    /*
-    Función: registrarDoctor
-    Argumentos: (Doctor) doctor: Objeto a guardar.
-    Objetivo: Agregar doctor a la lista.
-    Retorno: (void).
-    */
-    public void registrarDoctor(Doctor doctor) {
-    	doctor.setIdDoctor(this.proximoIdDoctor);
-        this.proximoIdDoctor++;
-        this.doctores.add(doctor);
-    }
-    
-    public void registrarAdministrativo(Administrativo admin) {
-    	admin.setIdAdmin(this.proximoIdAdmin);
-    	this.proximoIdAdmin++;
-    	this.administrativos.add(admin);
-    }
+		for (Doctor doc : doctores) {
+			if (doc.getUsuario().equals(usuario) && doc.getContrasenia().equals(contrasenia)) {
+				return doc;
+			}
+		}
+		for (Administrativo admin : administrativos) {
+			if (admin.getUsuario().equals(usuario) && admin.getContrasenia().equals(contrasenia)) {
+				return admin;
+			}
+		}
 
-    /*
-    Función: registrarPaciente
-    Argumentos: (Paciente) paciente: Objeto a guardar.
-    Objetivo: Agregar paciente con ID autogenerado.
-    Retorno: (void).
-    */
-    public void registrarPaciente(Paciente paciente) {
-        paciente.setIdPaciente(this.proximoIdPaciente);
-        this.proximoIdPaciente++;
-        this.pacientes.add(paciente);
-    }
+		this.ultimoMensajeError = "Credenciales incorrectas.";
+		return null;
+	}
 
-    /*
-    Función: registrarSolicitante
-    Argumentos: (Solicitante) solicitante: Objeto a guardar.
-    Objetivo: Agregar persona a la cola de espera.
-    Retorno: (void).
-    */
-    public void registrarSolicitante(Solicitante solicitante) {
-        this.solicitantes.add(solicitante);
-    }
-    
-    public void registrarVacuna(Paciente paciente, Vacuna vacuna) {
-        vacuna.setId(this.proximoIdVacuna);
-        this.proximoIdVacuna++;
-        this.vacunas.add(vacuna);
-        paciente.getVacunasAplicadas().add(vacuna);
-    }
+	public String loginTipo(String usuario, String password) {
+		Personal logueado = login(usuario, password);
 
-    /*
-    Función: convertirSolicitanteAPaciente
-    Argumentos: (Solicitante) solicitante: Objeto origen.
-    Objetivo: Promover solicitante a paciente validando duplicados.
-    Retorno: (Paciente): El nuevo paciente o null si falla.
-    */
-    public Paciente convertirSolicitanteAPaciente(Solicitante solicitante) {
-        Paciente pacienteExistente = getPacientePorCedula(solicitante.getCedula());
-        
-        if (pacienteExistente != null) {
-            this.ultimoMensajeError = "Ya existe paciente con esa cédula.";
-            return null;
-        }
+		if (logueado == null) {
+			return null;
+		}
+		if (logueado instanceof Doctor) {
+			return "Doctor";
+		}
+		if (logueado instanceof Administrativo) {
+			return "Administrativo";
+		}
+		return "Desconocido";
+	}
+	
+	/*
+	 * Función: verificarUltimaConsultaVigilada (NUEVA)
+	 * Argumentos: (Paciente) paciente
+	 * Objetivo: Verificar si la ÚLTIMA consulta registrada del paciente
+	 * tuvo un diagnóstico de una enfermedad controlada.
+	 * Retorno: (boolean) true si la última consulta es de riesgo.
+	 */
+	public boolean verificarUltimaConsultaVigilada(Paciente paciente) {
+		if (paciente == null) {
+			return false;
+		}
+		
+		ArrayList<Consulta> historial = paciente.getHistorialClinico();
+		
+		// 1. Si no tiene historial, no hay riesgo reciente
+		if (historial == null || historial.isEmpty()) {
+			return false;
+		}
+		
+		// 2. Obtenemos la ÚLTIMA consulta (la más reciente)
+		Consulta ultimaConsulta = historial.get(historial.size() - 1);
+		
+		// 3. Verificamos si tiene diagnóstico y si este requiere vigilancia
+		if (ultimaConsulta.getDiagnostico() != null) {
+			return ultimaConsulta.getDiagnostico().requiereNotificacion();
+		}
+		
+		return false;
+	}
 
-        Paciente nuevoPaciente = new Paciente();
-        nuevoPaciente.setCedula(solicitante.getCedula());
-        nuevoPaciente.setNombre(solicitante.getNombre());
-        nuevoPaciente.setFechaNacimiento(solicitante.getFechaNacimiento());
-        nuevoPaciente.setSexo(solicitante.getSexo());
-        nuevoPaciente.setTelefono(solicitante.getTelefono());
+	// ------------------- MÉTODOS DE REGISTRO -------------------
 
-        registrarPaciente(nuevoPaciente);
-        this.solicitantes.remove(solicitante);
+	public void registrarDoctor(Doctor doctor) {
+		doctor.setIdDoctor(this.proximoIdDoctor);
+		this.proximoIdDoctor++;
+		this.doctores.add(doctor);
+	}
 
-        return nuevoPaciente;
-    }
+	public void registrarAdministrativo(Administrativo admin) {
+		admin.setIdAdmin(this.proximoIdAdmin);
+		this.proximoIdAdmin++;
+		this.administrativos.add(admin);
+	}
 
-    /*
-    Función: programarCita
-    Argumentos: 
-        (Paciente) paciente: Quien asiste.
-        (Doctor) doctor: Quien atiende.
-        (LocalDate) fecha: Cuando.
-        (String) hora: A qué hora.
-    Objetivo: Crear cita si hay cupo y la fecha es válida.
-    Retorno: (boolean): true si éxito, false si error (ver getUltimoMensajeError).
-    */
-    public boolean programarCita(Paciente paciente, Doctor doctor, LocalDate fecha, String hora) {
-        if (paciente == null || doctor == null || fecha == null || hora == null) {
-            this.ultimoMensajeError = "Datos incompletos.";
-            return false;
-        }
+	public void registrarPaciente(Paciente paciente) {
+		paciente.setIdPaciente(this.proximoIdPaciente);
+		this.proximoIdPaciente++;
+		this.pacientes.add(paciente);
+	}
 
-        if (esFechaPasada(fecha)) {
-            this.ultimoMensajeError = "No se puede programar en el pasado.";
-            return false;
-        }
+	public void registrarSolicitante(Solicitante solicitante) {
+		this.solicitantes.add(solicitante);
+	}
 
-        int conteoCitasDia = 0;
-        for (Cita cita : citas) {
-            if (cita.getDoctor().equals(doctor) && 
-                cita.getFecha().isEqual(fecha) &&
-                !cita.getEstado().equals("Cancelada")) {
-                conteoCitasDia++;
-            }
-        }
+	public void registrarVacuna(Paciente paciente, Vacuna vacuna) {
+		vacuna.setId(this.proximoIdVacuna);
+		this.proximoIdVacuna++;
+		this.vacunas.add(vacuna);
+		paciente.getVacunasAplicadas().add(vacuna);
+	}
 
-        if (conteoCitasDia >= doctor.getCupoDia()) {
-            this.ultimoMensajeError = "El doctor no tiene cupo para este día.";
-            return false;
-        }
+	public Paciente convertirSolicitanteAPaciente(Solicitante solicitante) {
+		Paciente pacienteExistente = getPacientePorCedula(solicitante.getCedula());
 
-        Cita nuevaCita = new Cita();
-        nuevaCita.setIdCita(this.proximoIdCita++);
-        nuevaCita.setPaciente(paciente);
-        nuevaCita.setDoctor(doctor);
-        nuevaCita.setFecha(fecha);
-        nuevaCita.setHora(hora);
-        nuevaCita.setEstado("Pendiente");
+		if (pacienteExistente != null) {
+			this.ultimoMensajeError = "Ya existe paciente con esa cédula.";
+			return null;
+		}
 
-        this.citas.add(nuevaCita);
-        return true;
-    }
-    
-    public boolean cancelarCita(Cita cita) {
-        if (esFechaPasada(cita.getFecha())) {
-            this.ultimoMensajeError = "No se puede cancelar una cita pasada.";
-            return false;
-        }
-        cita.setEstado("Cancelada");
-        return true;
-    }
+		Paciente nuevoPaciente = new Paciente();
+		nuevoPaciente.setCedula(solicitante.getCedula());
+		nuevoPaciente.setNombre(solicitante.getNombre());
+		nuevoPaciente.setFechaNacimiento(solicitante.getFechaNacimiento());
+		nuevoPaciente.setSexo(solicitante.getSexo());
+		nuevoPaciente.setTelefono(solicitante.getTelefono());
 
-    public boolean modificarEstadoCita(Cita cita, String nuevoEstado) {
-        if (cita.getEstado().equals("Realizada")) {
-            this.ultimoMensajeError = "No se puede modificar una cita ya realizada.";
-            return false;
-        }
-        if (esFechaPasada(cita.getFecha()) && !cita.getEstado().equals("Pendiente")) {
-            this.ultimoMensajeError = "No se puede modificar una cita pasada no pendiente.";
-            return false;
-        }
-        cita.setEstado(nuevoEstado);
-        return true;
-    }
+		registrarPaciente(nuevoPaciente);
+		this.solicitantes.remove(solicitante);
 
-    /*
-    Función: registrarConsulta
-    Argumentos: (Consulta) consulta: La consulta realizada.
-    Objetivo: Guardar consulta, actualizar historial y cerrar cita.
-    Retorno: (void).
-    */
-    public void registrarConsulta(Consulta consulta) {
-        consulta.setIdConsulta(this.proximoIdConsulta++);
-        this.consultas.add(consulta);
+		return nuevoPaciente;
+	}
 
-        if (consulta.isAgregarAlHistorial() && consulta.getCitaAsociada() != null) {
-            Paciente paciente = consulta.getCitaAsociada().getPaciente();
-            if (paciente != null) {
-                paciente.getHistorialClinico().add(consulta);
-            }
-        }
+	public boolean programarCita(Paciente paciente, Doctor doctor, LocalDate fecha, String hora) {
+		if (paciente == null || doctor == null || fecha == null || hora == null) {
+			this.ultimoMensajeError = "Datos incompletos.";
+			return false;
+		}
 
-        if (consulta.getCitaAsociada() != null) {
-            consulta.getCitaAsociada().setEstado("Realizada");
-        }
-    }
-    
-    /*
-    Función: guardarDatos
-    Argumentos: Ninguno.
-    Objetivo: Guardar datos localmente y enviarlos al servidor de respaldo.
-    Retorno: (boolean): true si el respaldo remoto funcionó.
-    */
-    public boolean guardarDatos() {
-        // 1. Guardado local
-        guardarDatosLocal();
-        
-        // 2. Preparar reporte texto (Puntos extra)
-        StringBuilder reporte = new StringBuilder();
-        reporte.append("REPORTE DE ENFERMEDADES - CLINICA\n");
-        reporte.append("Fecha: ").append(LocalDate.now()).append("\n");
-        // Lógica simple de conteo de diagnósticos para el reporte
-        reporte.append("Total Consultas: ").append(consultas.size()).append("\n");
-        
-        // 3. Enviar al servidor
-        File archivoLocal = new File(ARCHIVO_DATOS);
-        return ClienteRespaldo.enviarRespaldo(archivoLocal, reporte.toString());
-    }
+		if (esFechaPasada(fecha)) {
+			this.ultimoMensajeError = "No se puede programar en el pasado.";
+			return false;
+		}
 
-    /*
-    Función: guardarDatosLocal
-    Argumentos: Ninguno.
-    Objetivo: Serializar la clase completa.
-    Retorno: (void).
-    */
-    public void guardarDatosLocal() {
-        try {
-            FileOutputStream archivoSalida = new FileOutputStream(ARCHIVO_DATOS);
-            ObjectOutputStream flujoSalida = new ObjectOutputStream(archivoSalida);
-            flujoSalida.writeObject(this);
-            flujoSalida.close();
-            archivoSalida.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+		int conteoCitasDia = 0;
+		for (Cita cita : citas) {
+			if (cita.getDoctor().equals(doctor) && cita.getFecha().isEqual(fecha)
+					&& !cita.getEstado().equals("Cancelada")) {
+				conteoCitasDia++;
+			}
+		}
 
-    /*
-    Función: cargarDatos
-    Argumentos: Ninguno.
-    Objetivo: Deserializar la clase completa.
-    Retorno: (Clinica): Instancia o null.
-    */
-    private static Clinica cargarDatos() {
-        try {
-            File archivo = new File(ARCHIVO_DATOS);
-            if (!archivo.exists()) return null;
-            
-            FileInputStream archivoEntrada = new FileInputStream(archivo);
-            ObjectInputStream flujoEntrada = new ObjectInputStream(archivoEntrada);
-            Clinica instancia = (Clinica) flujoEntrada.readObject();
-            flujoEntrada.close();
-            archivoEntrada.close();
-            return instancia;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-    
-    
-    // ------------------- METODOS PARA REGISTRAR DOCTORES Y ADMINISTRADORES -------------------
-    
-    public boolean existeUsuario(String usuario) {
-        if (usuario == null) return false;
+		if (conteoCitasDia >= doctor.getCupoDia()) {
+			this.ultimoMensajeError = "El doctor no tiene cupo para este día.";
+			return false;
+		}
 
-        for (Doctor d : doctores) {
-            if (d.getUsuario() != null && d.getUsuario().equalsIgnoreCase(usuario)) {
-                return true;
-            }
-        }
-        for (Administrativo a : administrativos) {
-            if (a.getUsuario() != null && a.getUsuario().equalsIgnoreCase(usuario)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    
-    public boolean registrarDoctorDesdeFormulario(
-            String usuario,
-            String contrasenia,
-            String nombre,
-            String especialidad,
-            String cupoTexto,
-            String rutaFotoOriginal
-    ) {
-        // 1. Validar campos vacíos
-        if (usuario == null || usuario.trim().isEmpty() ||
-            contrasenia == null || contrasenia.trim().isEmpty() ||
-            nombre == null || nombre.trim().isEmpty() ||
-            especialidad == null || especialidad.trim().isEmpty() ||
-            cupoTexto == null || cupoTexto.trim().isEmpty()) {
+		Cita nuevaCita = new Cita();
+		nuevaCita.setIdCita(this.proximoIdCita++);
+		nuevaCita.setPaciente(paciente);
+		nuevaCita.setDoctor(doctor);
+		nuevaCita.setFecha(fecha);
+		nuevaCita.setHora(hora);
+		nuevaCita.setEstado("Pendiente");
 
-            ultimoMensajeError = "Todos los campos son obligatorios.";
-            return false;
-        }
+		this.citas.add(nuevaCita);
+		return true;
+	}
 
-        // 2. Validar cupo
-        int cupoDia;
-        try {
-            cupoDia = Integer.parseInt(cupoTexto.trim());
-            if (cupoDia <= 0) {
-                throw new NumberFormatException();
-            }
-        } catch (NumberFormatException e) {
-            ultimoMensajeError = "El cupo por día debe ser un número entero positivo.";
-            return false;
-        }
+	public boolean cancelarCita(Cita cita) {
+		if (esFechaPasada(cita.getFecha())) {
+			this.ultimoMensajeError = "No se puede cancelar una cita pasada.";
+			return false;
+		}
+		cita.setEstado("Cancelada");
+		return true;
+	}
 
-        // 3. Validar usuario repetido
-        if (existeUsuario(usuario)) {
-            ultimoMensajeError = "Ya existe un usuario con ese nombre.";
-            return false;
-        }
+	public boolean modificarEstadoCita(Cita cita, String nuevoEstado) {
+		if (cita.getEstado().equals("Realizada")) {
+			this.ultimoMensajeError = "No se puede modificar una cita ya realizada.";
+			return false;
+		}
+		if (esFechaPasada(cita.getFecha()) && !cita.getEstado().equals("Pendiente")) {
+			this.ultimoMensajeError = "No se puede modificar una cita pasada no pendiente.";
+			return false;
+		}
+		cita.setEstado(nuevoEstado);
+		return true;
+	}
 
-        // 4. Crear y registrar
-        Doctor nuevo = new Doctor(usuario, contrasenia, nombre, especialidad, cupoDia);
-        
-        // --- Foto: copiar a carpeta FotosDoctores ---
-        if (rutaFotoOriginal != null && !rutaFotoOriginal.trim().isEmpty()) {
-            try {
-                // Carpeta destino
-                File carpeta = new File("FotosDoctores");
-                if (!carpeta.exists()) {
-                    carpeta.mkdirs();
-                }
+	public void registrarConsulta(Consulta consulta) {
+		consulta.setIdConsulta(this.proximoIdConsulta++);
+		this.consultas.add(consulta);
 
-                // próximo ID para el nombre del archivo
-                int idParaFoto = this.proximoIdDoctor;
+		if (consulta.isAgregarAlHistorial() && consulta.getCitaAsociada() != null) {
+			Paciente paciente = consulta.getCitaAsociada().getPaciente();
+			if (paciente != null) {
+				paciente.getHistorialClinico().add(consulta);
+			}
+		}
 
-                // extensión del archivo original
-                String extension = obtenerExtension(rutaFotoOriginal);
+		if (consulta.getCitaAsociada() != null) {
+			consulta.getCitaAsociada().setEstado("Realizada");
+		}
+	}
 
-                String nombreArchivo = String.format("doctor_%03d%s", idParaFoto, extension);
+	public boolean guardarDatos() {
+		guardarDatosLocal();
+		StringBuilder reporte = new StringBuilder();
+		reporte.append("REPORTE DE ENFERMEDADES - CLINICA\n");
+		reporte.append("Fecha: ").append(LocalDate.now()).append("\n");
+		reporte.append("Total Consultas: ").append(consultas.size()).append("\n");
 
-                File destino = new File(carpeta, nombreArchivo);
+		File archivoLocal = new File(ARCHIVO_DATOS);
+		return ClienteRespaldo.enviarRespaldo(archivoLocal, reporte.toString());
+	}
 
-                Path origenPath = Paths.get(rutaFotoOriginal);
-                Path destinoPath = destino.toPath();
+	public void guardarDatosLocal() {
+		try {
+			FileOutputStream archivoSalida = new FileOutputStream(ARCHIVO_DATOS);
+			ObjectOutputStream flujoSalida = new ObjectOutputStream(archivoSalida);
+			flujoSalida.writeObject(this);
+			flujoSalida.close();
+			archivoSalida.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-                Files.copy(origenPath, destinoPath, StandardCopyOption.REPLACE_EXISTING);
+	private static Clinica cargarDatos() {
+		try {
+			File archivo = new File(ARCHIVO_DATOS);
+			if (!archivo.exists())
+				return null;
 
-                // Guardar la ruta (relativa) en el doctor
-                nuevo.setRutaFoto(destino.getPath());
+			FileInputStream archivoEntrada = new FileInputStream(archivo);
+			ObjectInputStream flujoEntrada = new ObjectInputStream(archivoEntrada);
+			Clinica instancia = (Clinica) flujoEntrada.readObject();
+			flujoEntrada.close();
+			archivoEntrada.close();
+			
+			if (instancia.catalogoEnfermedades == null) {
+				instancia.catalogoEnfermedades = new ArrayList<Enfermedad>();
+				instancia.inicializarCatalogoEnfermedades();
+			}
+			
+			return instancia;
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
-            } catch (Exception e) {
-                this.ultimoMensajeError = "Doctor registrado, pero no se pudo guardar la foto correctamente.";
-            }
-        }
-        
-        registrarDoctor(nuevo);
-        guardarDatos();
+	// ------------------- FORMULARIOS Y VALIDACIONES -------------------
 
-        return true;
-    }
+	public boolean existeUsuario(String usuario) {
+		if (usuario == null)
+			return false;
 
-    private String obtenerExtension(String ruta) {
-        int punto = ruta.lastIndexOf('.');
-        if (punto == -1) {
-            return ""; // sin extensión
-        }
-        return ruta.substring(punto); // incluye el punto, ej: ".jpg"
-    }
-    
-    
-    public boolean registrarAdminDesdeFormulario(
-            String usuario,
-            String contrasenia,
-            String nombre,
-            String cargo,
-            String rutaFotoOriginal
-    ) {
-        if (usuario == null || usuario.trim().isEmpty() ||
-            contrasenia == null || contrasenia.trim().isEmpty() ||
-            nombre == null || nombre.trim().isEmpty() ||
-            cargo == null || cargo.trim().isEmpty()) {
+		for (Doctor d : doctores) {
+			if (d.getUsuario() != null && d.getUsuario().equalsIgnoreCase(usuario)) {
+				return true;
+			}
+		}
+		for (Administrativo a : administrativos) {
+			if (a.getUsuario() != null && a.getUsuario().equalsIgnoreCase(usuario)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-            ultimoMensajeError = "Todos los campos son obligatorios.";
-            return false;
-        }
+	public boolean registrarDoctorDesdeFormulario(String usuario, String contrasenia, String nombre,
+			String especialidad, String cupoTexto, String rutaFotoOriginal) {
+		if (usuario == null || usuario.trim().isEmpty() || contrasenia == null || contrasenia.trim().isEmpty()
+				|| nombre == null || nombre.trim().isEmpty() || especialidad == null || especialidad.trim().isEmpty()
+				|| cupoTexto == null || cupoTexto.trim().isEmpty()) {
 
-        // Validar usuario repetido
-        if (existeUsuario(usuario)) {
-            ultimoMensajeError = "Ya existe un usuario con ese nombre.";
-            return false;
-        }
+			ultimoMensajeError = "Todos los campos son obligatorios.";
+			return false;
+		}
 
-        // Crear y registrar
-        Administrativo nuevo = new Administrativo(usuario, contrasenia, nombre, cargo);
-        
-        // --- Foto: copiar a carpeta FotosAdmin ---
-        if (rutaFotoOriginal != null && !rutaFotoOriginal.trim().isEmpty()) {
-            try {
-                // Carpeta destino
-                File carpeta = new File("FotosAdmin");
-                if (!carpeta.exists()) {
-                    carpeta.mkdirs();
-                }
+		int cupoDia;
+		try {
+			cupoDia = Integer.parseInt(cupoTexto.trim());
+			if (cupoDia <= 0) {
+				throw new NumberFormatException();
+			}
+		} catch (NumberFormatException e) {
+			ultimoMensajeError = "El cupo por día debe ser un número entero positivo.";
+			return false;
+		}
 
-                // próximo ID para el nombre del archivo
-                int idParaFoto = this.proximoIdAdmin;
+		if (existeUsuario(usuario)) {
+			ultimoMensajeError = "Ya existe un usuario con ese nombre.";
+			return false;
+		}
 
-                // extensión del archivo original
-                String extension = obtenerExtension(rutaFotoOriginal);
+		Doctor nuevo = new Doctor(usuario, contrasenia, nombre, especialidad, cupoDia);
 
-                String nombreArchivo = String.format("admin_%03d%s", idParaFoto, extension);
+		if (rutaFotoOriginal != null && !rutaFotoOriginal.trim().isEmpty()) {
+			try {
+				File carpeta = new File("FotosDoctores");
+				if (!carpeta.exists()) {
+					carpeta.mkdirs();
+				}
+				int idParaFoto = this.proximoIdDoctor;
+				String extension = obtenerExtension(rutaFotoOriginal);
+				String nombreArchivo = String.format("doctor_%03d%s", idParaFoto, extension);
+				File destino = new File(carpeta, nombreArchivo);
+				Path origenPath = Paths.get(rutaFotoOriginal);
+				Path destinoPath = destino.toPath();
+				Files.copy(origenPath, destinoPath, StandardCopyOption.REPLACE_EXISTING);
+				nuevo.setRutaFoto(destino.getPath());
+			} catch (Exception e) {
+				this.ultimoMensajeError = "Doctor registrado, pero no se pudo guardar la foto correctamente.";
+			}
+		}
 
-                File destino = new File(carpeta, nombreArchivo);
+		registrarDoctor(nuevo);
+		guardarDatos();
+		return true;
+	}
 
-                Path origenPath = Paths.get(rutaFotoOriginal);
-                Path destinoPath = destino.toPath();
+	private String obtenerExtension(String ruta) {
+		int punto = ruta.lastIndexOf('.');
+		if (punto == -1) {
+			return "";
+		}
+		return ruta.substring(punto);
+	}
 
-                Files.copy(origenPath, destinoPath, StandardCopyOption.REPLACE_EXISTING);
+	public boolean registrarAdminDesdeFormulario(String usuario, String contrasenia, String nombre, String cargo,
+			String rutaFotoOriginal) {
+		if (usuario == null || usuario.trim().isEmpty() || contrasenia == null || contrasenia.trim().isEmpty()
+				|| nombre == null || nombre.trim().isEmpty() || cargo == null || cargo.trim().isEmpty()) {
 
-                // Guardar la ruta (relativa) en el administrativo
-                nuevo.setRutaFoto(destino.getPath());
+			ultimoMensajeError = "Todos los campos son obligatorios.";
+			return false;
+		}
 
-            } catch (Exception e) {
-                this.ultimoMensajeError = "Administrador registrado, pero no se pudo guardar la foto correctamente.";
-            }
-        }
-        
-        registrarAdministrativo(nuevo);
-        guardarDatos();
+		if (existeUsuario(usuario)) {
+			ultimoMensajeError = "Ya existe un usuario con ese nombre.";
+			return false;
+		}
 
-        return true;
-    }
-    
-    
-    // --- Métodos Auxiliares y Getters ---
+		Administrativo nuevo = new Administrativo(usuario, contrasenia, nombre, cargo);
 
-    public static boolean esFechaPasada(LocalDate fecha) {
-        return fecha.isBefore(LocalDate.now());
-    }
+		if (rutaFotoOriginal != null && !rutaFotoOriginal.trim().isEmpty()) {
+			try {
+				File carpeta = new File("FotosAdmin");
+				if (!carpeta.exists()) {
+					carpeta.mkdirs();
+				}
+				int idParaFoto = this.proximoIdAdmin;
+				String extension = obtenerExtension(rutaFotoOriginal);
+				String nombreArchivo = String.format("admin_%03d%s", idParaFoto, extension);
+				File destino = new File(carpeta, nombreArchivo);
+				Path origenPath = Paths.get(rutaFotoOriginal);
+				Path destinoPath = destino.toPath();
+				Files.copy(origenPath, destinoPath, StandardCopyOption.REPLACE_EXISTING);
+				nuevo.setRutaFoto(destino.getPath());
+			} catch (Exception e) {
+				this.ultimoMensajeError = "Administrador registrado, pero no se pudo guardar la foto correctamente.";
+			}
+		}
 
-    public Paciente getPacientePorCedula(String cedula) {
-        for (Paciente p : pacientes) {
-            if (p.getCedula().equals(cedula)) return p;
-        }
-        return null;
-    }
+		registrarAdministrativo(nuevo);
+		guardarDatos();
+		return true;
+	}
 
-    public Doctor getDoctorPorUsuario(String usuario) {
-        for (Doctor d : doctores) {
-            if (d.getUsuario().equals(usuario)) return d;
-        }
-        return null;
-    }
-    
-    public int getProximoIdDoctor() {
-        return proximoIdDoctor;
-    }
-    
-    public int getProximoIdAdmin() {
-        return proximoIdAdmin;
-    }
+	// --- Getters y Setters ---
 
-    public String getUltimoMensajeError() {
-        return ultimoMensajeError;
-    }
-    
-    // Getters de listas (Nombres originales)
-    public ArrayList<Doctor> getDoctores() { return doctores; }
-    public ArrayList<Paciente> getPacientes() { return pacientes; }
-    public ArrayList<Cita> getCitas() { return citas; }
-    public ArrayList<Consulta> getConsultas() { return consultas; }
-    public ArrayList<Vacuna> getVacunas() { return vacunas; }
-    public ArrayList<Solicitante> getSolicitantes() { return solicitantes; }
-    public ArrayList<Administrativo> getAdministrativos() { return administrativos; }
+	public static boolean esFechaPasada(LocalDate fecha) {
+		return fecha.isBefore(LocalDate.now());
+	}
+
+	public Paciente getPacientePorCedula(String cedula) {
+		for (Paciente p : pacientes) {
+			if (p.getCedula().equals(cedula))
+				return p;
+		}
+		return null;
+	}
+
+	public Doctor getDoctorPorUsuario(String usuario) {
+		for (Doctor d : doctores) {
+			if (d.getUsuario().equals(usuario))
+				return d;
+		}
+		return null;
+	}
+
+	public int getProximoIdDoctor() {
+		return proximoIdDoctor;
+	}
+
+	public int getProximoIdAdmin() {
+		return proximoIdAdmin;
+	}
+
+	public String getUltimoMensajeError() {
+		return ultimoMensajeError;
+	}
+
+	public ArrayList<Doctor> getDoctores() {
+		return doctores;
+	}
+
+	public ArrayList<Paciente> getPacientes() {
+		return pacientes;
+	}
+
+	public ArrayList<Cita> getCitas() {
+		return citas;
+	}
+
+	public ArrayList<Consulta> getConsultas() {
+		return consultas;
+	}
+
+	public ArrayList<Vacuna> getVacunas() {
+		return vacunas;
+	}
+
+	public ArrayList<Solicitante> getSolicitantes() {
+		return solicitantes;
+	}
+
+	public ArrayList<Administrativo> getAdministrativos() {
+		return administrativos;
+	}
+
+	public int getProximoIdPaciente() {
+		return proximoIdPaciente;
+	}
+
+	public void setProximoIdPaciente(int proximoIdPaciente) {
+		this.proximoIdPaciente = proximoIdPaciente;
+	}
+
+	public int getProximoIdCita() {
+		return proximoIdCita;
+	}
+
+	public void setProximoIdCita(int proximoIdCita) {
+		this.proximoIdCita = proximoIdCita;
+	}
+
+	public int getProximoIdConsulta() {
+		return proximoIdConsulta;
+	}
+
+	public void setProximoIdConsulta(int proximoIdConsulta) {
+		this.proximoIdConsulta = proximoIdConsulta;
+	}
+
+	public int getProximoIdVacuna() {
+		return proximoIdVacuna;
+	}
+
+	public void setProximoIdVacuna(int proximoIdVacuna) {
+		this.proximoIdVacuna = proximoIdVacuna;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public static String getArchivoDatos() {
+		return ARCHIVO_DATOS;
+	}
+
+	public static void setInstance(Clinica instance) {
+		Clinica.instance = instance;
+	}
+
+	public void setDoctores(ArrayList<Doctor> doctores) {
+		this.doctores = doctores;
+	}
+
+	public void setPacientes(ArrayList<Paciente> pacientes) {
+		this.pacientes = pacientes;
+	}
+
+	public void setCitas(ArrayList<Cita> citas) {
+		this.citas = citas;
+	}
+
+	public void setConsultas(ArrayList<Consulta> consultas) {
+		this.consultas = consultas;
+	}
+
+	public void setVacunas(ArrayList<Vacuna> vacunas) {
+		this.vacunas = vacunas;
+	}
+
+	public void setSolicitantes(ArrayList<Solicitante> solicitantes) {
+		this.solicitantes = solicitantes;
+	}
+
+	public void setAdministrativos(ArrayList<Administrativo> administrativos) {
+		this.administrativos = administrativos;
+	}
+
+	public void setProximoIdDoctor(int proximoIdDoctor) {
+		this.proximoIdDoctor = proximoIdDoctor;
+	}
+
+	public void setProximoIdAdmin(int proximoIdAdmin) {
+		this.proximoIdAdmin = proximoIdAdmin;
+	}
+
+	public void setUltimoMensajeError(String ultimoMensajeError) {
+		this.ultimoMensajeError = ultimoMensajeError;
+	}
+	
+	public ArrayList<Enfermedad> getCatalogoEnfermedades() {
+		return catalogoEnfermedades;
+	}
 }

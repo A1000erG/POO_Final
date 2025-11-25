@@ -5,94 +5,95 @@ import java.time.LocalDate;
 
 public class Consulta implements Serializable {
 
-    private static final long serialVersionUID = 9L;
-    private int idConsulta;
-    private Cita citaAsociada;
-    private Doctor doctor;
-    private String sintomas;
-    private String diagnostico;
-    private boolean agregarAlHistorial;
-    private boolean transferida;
-    private LocalDate fecha;
+	private static final long serialVersionUID = 9L;
+	private int idConsulta;
+	private Cita citaAsociada;
+	private Doctor doctor;
+	private String sintomas;
 
-    public Consulta() {
-        this.idConsulta = 0;
-        this.citaAsociada = null;
-        this.doctor = null;
-        this.sintomas = null;
-        this.diagnostico = null;
-        this.agregarAlHistorial = true;
-        this.transferida = false;
-        this.fecha = LocalDate.now();
-    }
+	// CAMBIO: Ahora es objeto Diagnostico, NO String
+	private Diagnostico diagnostico;
 
-    public int getIdConsulta() {
-        return idConsulta;
-    }
+	private boolean agregarAlHistorial;
+	private boolean transferida;
+	private LocalDate fecha;
 
-    public void setIdConsulta(int idConsulta) {
-        this.idConsulta = idConsulta;
-    }
+	public Consulta() {
+		this.idConsulta = 0;
+		this.citaAsociada = null;
+		this.doctor = null;
+		this.sintomas = null;
+		this.diagnostico = null;
+		this.agregarAlHistorial = true;
+		this.transferida = false;
+		this.fecha = LocalDate.now();
+	}
 
-    public Cita getCitaAsociada() {
-        return citaAsociada;
-    }
+	public int getIdConsulta() {
+		return idConsulta;
+	}
 
-    public void setCitaAsociada(Cita citaAsociada) {
-        this.citaAsociada = citaAsociada;
-    }
+	public void setIdConsulta(int idConsulta) {
+		this.idConsulta = idConsulta;
+	}
 
-    public Doctor getDoctor() {
-        return doctor;
-    }
+	public Cita getCitaAsociada() {
+		return citaAsociada;
+	}
 
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
-    }
+	public void setCitaAsociada(Cita citaAsociada) {
+		this.citaAsociada = citaAsociada;
+	}
 
-    public String getSintomas() {
-        return sintomas;
-    }
+	public Doctor getDoctor() {
+		return doctor;
+	}
 
-    public void setSintomas(String sintomas) {
-        this.sintomas = sintomas;
-    }
+	public void setDoctor(Doctor doctor) {
+		this.doctor = doctor;
+	}
 
-    public String getDiagnostico() {
-        return diagnostico;
-    }
+	public String getSintomas() {
+		return sintomas;
+	}
 
-    public void setDiagnostico(String diagnostico) {
-        this.diagnostico = diagnostico;
-    }
+	public void setSintomas(String sintomas) {
+		this.sintomas = sintomas;
+	}
 
-    /*
-    Función: isAgregarAlHistorial
-    Argumentos: Ninguno.
-    Objetivo: Flag para saber si mostrar en historial.
-    Retorno: (boolean): true si visible.
-    */
-    public boolean isAgregarAlHistorial() {
-        return agregarAlHistorial;
-    }
+	public Diagnostico getDiagnostico() {
+		return diagnostico;
+	}
 
-    public void setAgregarAlHistorial(boolean agregarAlHistorial) {
-        this.agregarAlHistorial = agregarAlHistorial;
-    }
+	public void setDiagnostico(Diagnostico diagnostico) {
+		this.diagnostico = diagnostico;
+	}
 
-    public boolean isTransferida() {
-        return transferida;
-    }
+	public boolean isAgregarAlHistorial() {
+		return agregarAlHistorial;
+	}
 
-    public void setTransferida(boolean transferida) {
-        this.transferida = transferida;
-    }
+	public void setAgregarAlHistorial(boolean agregarAlHistorial) {
+		this.agregarAlHistorial = agregarAlHistorial;
+	}
 
-    public LocalDate getFecha() {
-        return fecha;
-    }
+	public boolean isTransferida() {
+		return transferida;
+	}
 
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
-    }
+	public void setTransferida(boolean transferida) {
+		this.transferida = transferida;
+	}
+
+	public LocalDate getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(LocalDate fecha) {
+		this.fecha = fecha;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 }
