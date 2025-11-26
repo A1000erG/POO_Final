@@ -1,15 +1,19 @@
 package visual;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
 
 import java.awt.Toolkit;
+import java.util.Date;
+
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
@@ -58,11 +62,17 @@ public class RegCita extends JFrame {
 		
 		calendario = new JDateChooser();
 		calendario.setBounds(199, 226, 142, 20);
+		Date hoy = new Date();
+		calendario.setMinSelectableDate(hoy);
+		calendario.getCalendarButton().setBackground(Color.WHITE);
 		contenidoPanel.add(calendario);
 		
+		/*JCalendar calen = new JCalendar();
+		calen.setBounds(199, 226, 142, 20);
+		contenidoPanel.add(calen);
 		JLabel lblCmbBox = new JLabel("Escoja un especialista:");
 		lblCmbBox.setBounds(10, 11, 202, 20);
-		contenidoPanel.add(lblCmbBox);
+		contenidoPanel.add(lblCmbBox);*/
 		
 		JComboBox cmbEspecialista = new JComboBox();
 		cmbEspecialista.setBounds(10, 42, 429, 27);

@@ -4,5 +4,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="Recursos"/>
 	<classpathentry kind="lib" path="extraLib/jcalendar-1.4.jar"/>
+	<classpathentry kind="lib" path="extraLib/jcommon-1.0.23.jar"/>
+	<classpathentry kind="lib" path="extraLib/jfreechart-1.0.19.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

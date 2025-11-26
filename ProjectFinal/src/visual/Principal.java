@@ -7,7 +7,20 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.StandardBarPainter;
+import org.jfree.data.category.DefaultCategoryDataset;
+
 import Utilidades.FuenteUtil;
+import logico.Clinica;
+import logico.Enfermedad;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -15,6 +28,7 @@ import javax.swing.JOptionPane;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 
 import javax.swing.JButton;
@@ -33,15 +47,17 @@ public class Principal extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 
-	//private static Color paleteBlue = new Color(55,65,81);
 	private static Color paleteGreen = new Color(22, 163, 74);
 	private static Color paleteDarkGreen = new Color(18, 140, 64);
-	//private static Color paleteRareWhite = new Color(247, 250, 252);
+	private static Font fuenteTituloGraph = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 22f);
+    private static Font fuenteEjesGraph = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 14f);
+    private static Font fuenteDatosGraph  = FuenteUtil.cargarFuente("/Fuentes/Roboto-Light.ttf", 12f);
 	private static Font indicativeNumber = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 20f);
 	private static Font normalUse = FuenteUtil.cargarFuente("/Fuentes/Roboto-Light.ttf", 11f);
 	private static Font nameUser = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 13f);
 	private static Font buttonFont = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 12f);
 	private static JPanel infoPanel;
+	private static Clinica clinic = Clinica.getInstance();
 	private JPanel bkgPanel;
 	
 	public static void main(String[] args) {
@@ -274,6 +290,8 @@ public class Principal extends JFrame {
 			lblDoctora.setVisible(true);
 		}
 		infoPanel.add(lblDoctora);
+		
+		
 		
 		//================================PANELES PARA DOCTORES====================================
 		JPanel welcomePanel = new JPanel(){
@@ -557,5 +575,47 @@ public class Principal extends JFrame {
 		}
 		infoPanel.add(barGraphSickPanel);
 		barGraphSickPanel.setLayout(null);
+		
+		DefaultCategoryDataset enfermedadesDataset = new DefaultCategoryDataset();
+		int i = clinic.getCatalogoEnfermedades().size()-1;
+		int maxEnfermedades = 5;
+		if(clinic.getCatalogoEnfermedades().size() < 5) maxEnfermedades = i+1;
+		JLabel noData = new JLabel("No hay data");
+		if(clinic.getCatalogoEnfermedades().size() != 0) {
+			for(Enfermedad e1 = clinic.getCatalogoEnfermedades().get(i); maxEnfermedades>0;i--,maxEnfermedades--) {
+				enfermedadesDataset.addValue(1, "Pacientes", e1.getNombre());
+			}
+			JFreeChart chartEnfermedades = ChartFactory.createBarChart("Pacientes por Enfermedad", "Enfermedades", "Cantidad", enfermedadesDataset, PlotOrientation.VERTICAL, false, true, false);
+			CategoryPlot ploteo = chartEnfermedades.getCategoryPlot();
+	        
+			chartEnfermedades.setBackgroundPaint(Color.WHITE); 
+	        ploteo.setBackgroundPaint(Color.WHITE);  
+	        // Quitar lineas de fondo
+	        ploteo.setRangeGridlinesVisible(false);  
+	        ploteo.setDomainGridlinesVisible(false); 
+	        ploteo.setOutlineVisible(false); 
+	        
+	        BarRenderer render2D = (BarRenderer) ploteo.getRenderer();
+	        render2D.setSeriesPaint(0,new Color(21, 129, 191));
+	        render2D.setBarPainter(new StandardBarPainter());
+	        render2D.setMaximumBarWidth(0.15);
+	        //Modificando fuentes
+	        chartEnfermedades.getTitle().setFont(fuenteTituloGraph);
+	        CategoryAxis ejes = ploteo.getDomainAxis();
+	        ejes.setLabelFont(fuenteEjesGraph);
+	        ejes.setTickLabelFont(fuenteDatosGraph);
+	        // Mejorando el eje Y
+	        NumberAxis rangoEjes = (NumberAxis) ploteo.getRangeAxis();
+	        rangoEjes.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+	        ChartPanel chartPanel = new ChartPanel(chartEnfermedades);
+	        chartPanel.setBounds(30,5,954,308);
+	        barGraphSickPanel.add(chartPanel);
+		}else {
+			noData.setBounds(30,5,954,308);
+			noData.setVisible(true);
+			barGraphSickPanel.add(noData);
+		}
 	}
+	
+	
 }
