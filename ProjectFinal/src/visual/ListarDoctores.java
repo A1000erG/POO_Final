@@ -27,7 +27,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField; // Importamos JPasswordField
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -185,7 +184,7 @@ public class ListarDoctores extends JDialog {
         scrollPane.setViewportView(table);
         
         
-        // --- LABEL PARA MENSAJES (DEBAJO DE LA TABLA) ---
+        // --- LABEL PARA MENSAJES ---
         lblMensaje = new JLabel("");
         lblMensaje.setForeground(new Color(220, 38, 38));
         lblMensaje.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f));
