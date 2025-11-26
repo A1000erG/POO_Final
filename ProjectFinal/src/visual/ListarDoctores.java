@@ -38,7 +38,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 import Utilidades.FuenteUtil; 
-import logico.Administrativo;
 import logico.Clinica;
 import logico.Doctor;
 import logico.Personal;
@@ -57,8 +56,10 @@ public class ListarDoctores extends JDialog {
     private JTextField txtEspecialidad;
     private JTextField txtCupo;
     private JTextField txtUsuario;
-    private JPasswordField txtContrasenia;
+    private JTextField txtContrasenia;
     private JLabel lblFoto;
+    
+    private JLabel lblMensaje;
     
     private JButton btnModificar;
     private JButton btnEstado;
@@ -82,6 +83,8 @@ public class ListarDoctores extends JDialog {
             }
         });
     }
+    
+
 
     public ListarDoctores(Personal usuarioLogueado) {
         this.usuarioActual = usuarioLogueado;
@@ -180,8 +183,18 @@ public class ListarDoctores extends JDialog {
             }
         });
         scrollPane.setViewportView(table);
+        
+        
+        // --- LABEL PARA MENSAJES (DEBAJO DE LA TABLA) ---
+        lblMensaje = new JLabel("");
+        lblMensaje.setForeground(new Color(220, 38, 38));
+        lblMensaje.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f));
+        lblMensaje.setHorizontalAlignment(JLabel.CENTER);
+        lblMensaje.setBounds(220, 530, 820, 25);
+        panelCentral.add(lblMensaje);
+        
+        
 
-        // === SECCIÓN DERECHA (DETALLES) ===
         
         JPanel panelDetalle = new JPanel(); 
         panelDetalle.setBackground(new Color(245, 245, 245));
@@ -198,7 +211,7 @@ public class ListarDoctores extends JDialog {
         lblDetalleTitulo.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 18f));
         lblDetalleTitulo.setBounds(20, 20, 360, 30);
         panelDetalle.add(lblDetalleTitulo);
-
+        
         // Foto
         lblFoto = new JLabel("");
         lblFoto.setBounds(125, 60, 150, 150);
@@ -245,7 +258,7 @@ public class ListarDoctores extends JDialog {
         lblPass.setForeground(new Color(100, 100, 100));
         panelDetalle.add(lblPass);
 
-        txtContrasenia = new JPasswordField();
+        txtContrasenia = new JTextField();
         txtContrasenia.setBounds(50, yStart + gap * 4 + 20, 300, 35);
         txtContrasenia.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
         txtContrasenia.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Regular.ttf", 15f));
@@ -253,7 +266,8 @@ public class ListarDoctores extends JDialog {
         
         txtUsuario.setEditable(false);
         txtUsuario.setBackground(new Color(240, 240, 240));
-
+        
+        
         // --- BOTONES ALINEADOS LADO A LADO ---
         // Ajustados más abajo para aprovechar el alto de 568
         int btnY = 510; 
@@ -261,7 +275,7 @@ public class ListarDoctores extends JDialog {
 
         btnModificar = new JButton("MODIFICAR");
         btnModificar.setBounds(50, btnY, btnWidth, 40);
-        btnModificar.setBackground(new Color(22, 163, 74));
+        btnModificar.setBackground(new Color(150, 150, 150));
         btnModificar.setForeground(Color.WHITE);
         btnModificar.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 13f));
         btnModificar.setFocusPainted(false);
@@ -271,7 +285,7 @@ public class ListarDoctores extends JDialog {
 
         btnEstado = new JButton("DESHABILITAR");
         btnEstado.setBounds(50 + btnWidth + 10, btnY, btnWidth, 40); // 10px de separación
-        btnEstado.setBackground(new Color(220, 38, 38));
+        btnEstado.setBackground(new Color(150, 150, 150));
         btnEstado.setForeground(Color.WHITE);
         btnEstado.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 13f));
         btnEstado.setFocusPainted(false);
@@ -427,16 +441,19 @@ public class ListarDoctores extends JDialog {
             txtNombre.setEnabled(true);
             txtEspecialidad.setEnabled(true);
             txtCupo.setEnabled(true);
+            txtContrasenia.setEnabled(true);
             
-            // --- SEGURIDAD: Solo ADMIN puede modificar la contraseña ---
-            boolean esAdmin = (usuarioActual instanceof Administrativo);
-            txtContrasenia.setEnabled(esAdmin);
+//          // --- SEGURIDAD: Solo ADMIN puede modificar la contraseña ---
+//          boolean esAdmin = (usuarioActual instanceof Administrativo);
+//          txtContrasenia.setEnabled(esAdmin);
             
             cargarFotoEnLabel(selectedDoctor.getRutaFoto());
             nuevaRutaFotoTemp = null; 
             
             btnModificar.setEnabled(true);
             btnEstado.setEnabled(true);
+            
+            btnModificar.setBackground(new Color(22, 163, 74));
             
             if (selectedDoctor.isActivo()) {
                 btnEstado.setText("DESHABILITAR");
@@ -462,8 +479,13 @@ public class ListarDoctores extends JDialog {
         txtContrasenia.setEnabled(false);
         
         cargarFotoEnLabel(null);
+        
         btnModificar.setEnabled(false);
         btnEstado.setEnabled(false);
+        
+        btnModificar.setBackground(new Color(150, 150, 150));
+        btnEstado.setBackground(new Color(150, 150, 150));
+        
         btnEstado.setText("DESHABILITAR");
         btnEstado.setBackground(new Color(220, 38, 38));
         selectedDoctor = null;
@@ -495,9 +517,9 @@ public class ListarDoctores extends JDialog {
     private void modificarDoctor() {
         if (selectedDoctor == null) return;
         
-        String pass = new String(txtContrasenia.getPassword());
+        String pass = txtContrasenia.getText();
         if(txtNombre.getText().isEmpty() || txtEspecialidad.getText().isEmpty() || txtCupo.getText().isEmpty() || pass.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Los campos no pueden estar vacíos.", "Error", JOptionPane.WARNING_MESSAGE);
+        	mostrarMensajeError("Los campos no pueden estar vacíos.");
             return;
         }
 
@@ -542,16 +564,17 @@ public class ListarDoctores extends JDialog {
                     nuevaRutaFotoTemp = null; 
                     
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(this, "Error al actualizar la foto: " + e.getMessage(), "Error IO", JOptionPane.ERROR_MESSAGE);
+                	mostrarMensajeError("Error al actualizar la foto: " + e.getMessage());
+                    return;
                 }
             }
             
             Clinica.getInstance().guardarDatos();
-            JOptionPane.showMessageDialog(this, "Doctor modificado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            mostrarMensajeExito("Doctor modificado correctamente.");
             loadDoctores(txtBuscador.getText());
             
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "El cupo debe ser un número válido.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+        	mostrarMensajeError("El cupo debe ser un número válido.");
         }
     }
 
@@ -560,7 +583,7 @@ public class ListarDoctores extends JDialog {
 
         // Bloqueo de seguridad: Un Doctor NO puede deshabilitar a otro (aunque el botón esté visible)
         if (usuarioActual instanceof Doctor) {
-            JOptionPane.showMessageDialog(this, "Acceso Denegado: Solo un Administrador puede inhabilitar Doctores.", "Permisos Insuficientes", JOptionPane.ERROR_MESSAGE);
+        	mostrarMensajeError("Acceso Denegado: Solo un Administrador puede inhabilitar Doctores.");
             return;
         }
 
@@ -570,6 +593,7 @@ public class ListarDoctores extends JDialog {
                 selectedDoctor.setActivo(false);
                 selectedDoctor.setCausaDeshabilitacion(razon);
                 Clinica.getInstance().guardarDatos();
+                mostrarMensajeExito("Doctor deshabilitado correctamente.");
                 cargarDatosDoctor();
                 loadDoctores(txtBuscador.getText());
             }
@@ -582,9 +606,45 @@ public class ListarDoctores extends JDialog {
                 selectedDoctor.setActivo(true);
                 selectedDoctor.setCausaDeshabilitacion("");
                 Clinica.getInstance().guardarDatos();
+                mostrarMensajeExito("Doctor habilitado correctamente.");
                 cargarDatosDoctor();
                 loadDoctores(txtBuscador.getText());
             }
         }
     }
+    
+    /**
+     * Método para mostrar mensajes de error
+     */
+    private void mostrarMensajeError(String mensaje) {
+        lblMensaje.setForeground(new Color(220, 38, 38));
+        lblMensaje.setText(mensaje);
+        ocultarMensajeDespuesDeTiempo();
+    }
+    
+    /**
+     * Método para mostrar mensajes de éxito
+     */
+    private void mostrarMensajeExito(String mensaje) {
+        lblMensaje.setForeground(new Color(22, 163, 74));
+        lblMensaje.setText(mensaje);
+        ocultarMensajeDespuesDeTiempo();
+    }
+
+    /**
+     * Oculta el mensaje después de 3 segundos
+     */
+    private void ocultarMensajeDespuesDeTiempo() {
+        new Thread(() -> {
+            try {
+                Thread.sleep(3000);
+                EventQueue.invokeLater(() -> {
+                    lblMensaje.setText("");
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
 }
