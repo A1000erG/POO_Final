@@ -1,81 +1,99 @@
 package visual;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
-
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
-import Utilidades.FuenteUtil;
-
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
-
-import javax.swing.JButton;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
-import java.awt.Dimension;
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import Utilidades.FuenteUtil;
+import logico.Administrativo;
+import logico.Clinica;
+import logico.Personal;
 
 public class Principal extends JFrame {
 
-	
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 
-	//private static Color paleteBlue = new Color(55,65,81);
+	// Colores y Fuentes
 	private static Color paleteGreen = new Color(22, 163, 74);
 	private static Color paleteDarkGreen = new Color(18, 140, 64);
-	//private static Color paleteRareWhite = new Color(247, 250, 252);
+	
 	private static Font indicativeNumber = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 20f);
 	private static Font normalUse = FuenteUtil.cargarFuente("/Fuentes/Roboto-Light.ttf", 11f);
 	private static Font nameUser = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 13f);
 	private static Font buttonFont = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 12f);
+	
 	private static JPanel infoPanel;
 	private JPanel bkgPanel;
 	
+	// Usuario que inició sesión (Objeto Real)
+	private Personal usuarioActual; 
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Principal frame = new Principal(0,"");
+					Principal frame = new Principal(0,"admin"); // Test admin
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
-					JOptionPane.showMessageDialog(null, "Error inesperado al abrir la ventana. Por favor, reinicie la aplicación", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Error inesperado al abrir la ventana.", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 * @param tipo 
-	 */
-
 	public Principal(int mode, String idUser) {
+		// --- Lógica para recuperar el Objeto Personal (Usuario Logueado) ---
+		// Esto es necesario para pasarlo a los Listar y controlar permisos.
+		if (mode == 0) { // Admin
+			if (idUser.equalsIgnoreCase("admin")) {
+				// Usuario "Super Admin" hardcodeado (Backdoor)
+				Administrativo superAdmin = new Administrativo("admin", "admin", "Super Admin", "General");
+				superAdmin.setIdAdmin(-1); // ID especial
+				this.usuarioActual = superAdmin;
+			} else {
+				// Buscar en la lista real
+				for (Administrativo a : Clinica.getInstance().getAdministrativos()) {
+					if (a.getUsuario().equalsIgnoreCase(idUser)) {
+						this.usuarioActual = a;
+						break;
+					}
+				}
+			}
+		} else { // Doctor
+			this.usuarioActual = Clinica.getInstance().getDoctorPorUsuario(idUser);
+		}
+		// -------------------------------------------------------------------
+
 		getToolkit().getScreenSize();
 		setResizable(false);
-
 		setTitle("Compile Salud");
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setResizable(false);
 		setLocationRelativeTo(null);		
 		
 		contentPane = new JPanel();
 		contentPane.setPreferredSize(new Dimension(820, 3100));
-		//contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
@@ -91,159 +109,107 @@ public class Principal extends JFrame {
 		infoPanel.setLayout(null);
 		bkgPanel.add(infoPanel);
 		
+		// --- PANEL LATERAL IZQUIERDO (MENÚ) ---
 		JPanel optionPanel = new JPanel();
 		optionPanel.setBackground(paleteGreen);
 		optionPanel.setLayout(null);
-		optionPanel.setBounds(0, 0, 240, 738);
+		optionPanel.setBounds(0, 0, 240, 738); // Altura ajustada
 		bkgPanel.add(optionPanel);
-		//bkgPanel.setFont(FuenteUtil.cargarFuente("/Fuentes/Roboto-Bold.ttf", 16f));
 		
 		ImageIcon logoIcon = new ImageIcon(getClass().getResource("/Imagenes/logoBlanco.png"));
-		//Escalando imagen
 		Image logoEscalado = logoIcon.getImage().getScaledInstance(76, 76, Image.SCALE_SMOOTH);
 		JLabel lbLogo = new JLabel(new ImageIcon(logoEscalado));
 		lbLogo.setBounds(82, 26, 76, 76);
 		optionPanel.add(lbLogo);
 		
-		JButton btnRegAdmin = new JButton("New button");	
-		//Efecto de cambio de de color de botones
-		btnRegAdmin.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				btnRegAdmin.setBackground(paleteDarkGreen);
-			}
-			@Override
-			public void mouseExited(MouseEvent e) {
-				btnRegAdmin.setBackground(paleteGreen);
-			}
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if(mode==0) {
-					try {
-						RegAdmin regAdmin = new RegAdmin(mode, idUser);
-						regAdmin.setVisible(true);
-					} catch (Exception e2) {
-						e2.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Error inesperado al abrir la ventana", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
-					}
-				}else {
-					
-				}
+		// 1. Botón Registrar Admin
+		JButton btnRegAdmin = crearBotonMenu("Registrar Admin");
+		btnRegAdmin.setBounds(0, 177, 240, 47);
+		if(mode != 0) btnRegAdmin.setText("Citas"); // Si es doctor
+		btnRegAdmin.addActionListener(e -> {
+			if(mode == 0) {
+				try {
+					RegAdmin regAdmin = new RegAdmin(mode, idUser);
+					regAdmin.setVisible(true);
+				} catch (Exception ex) { ex.printStackTrace(); }
 			}
 		});
-		btnRegAdmin.setForeground(Color.WHITE);
-		btnRegAdmin.setFont(buttonFont);
-		if(mode==0) {
-			btnRegAdmin.setText("Registrar Admin");
-		}else {
-			btnRegAdmin.setText("Citas");
-		}
-		btnRegAdmin.setBounds(0, 177, 240, 47);
-		btnRegAdmin.setBackground(paleteGreen);
-		btnRegAdmin.setBorderPainted(false);
-		btnRegAdmin.setFocusPainted(false);
 		optionPanel.add(btnRegAdmin);
 		
-		JButton btnRegDoctor = new JButton("New button");
-		//Efecto de cambio de de color de botones
-		btnRegDoctor.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				btnRegDoctor.setBackground(paleteDarkGreen);
-			}
-			@Override
-			public void mouseExited(MouseEvent e) {
-				btnRegDoctor.setBackground(paleteGreen);
-			}
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if(mode==0) {
-					try {
-						RegDoctor regDoctor = new RegDoctor(mode, idUser);
-						regDoctor.setVisible(true);
-					} catch (Exception e2) {
-						e2.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Error inesperado al abrir la ventana", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
-					}
-					
-				}
+		// 2. Botón Registrar Doctor
+		JButton btnRegDoctor = crearBotonMenu("Registrar Doctor");
+		btnRegDoctor.setBounds(0, 224, 240, 47);
+		if(mode != 0) btnRegDoctor.setText("---"); // Placeholder doctor
+		btnRegDoctor.addActionListener(e -> {
+			if(mode == 0) {
+				try {
+					RegDoctor regDoctor = new RegDoctor(mode, idUser);
+					regDoctor.setVisible(true);
+				} catch (Exception ex) { ex.printStackTrace(); }
 			}
 		});
-		btnRegDoctor.setForeground(Color.WHITE);
-		btnRegDoctor.setFont(buttonFont);
-		if(mode==0) {
-			btnRegDoctor.setText("Registrar Doctor");
-		}else {
-			btnRegDoctor.setText("New button");
-		}
-		btnRegDoctor.setBounds(0, 224, 240, 47);
-		btnRegDoctor.setBackground(paleteGreen);
-		btnRegDoctor.setBorderPainted(false);
-		btnRegDoctor.setFocusPainted(false);
 		optionPanel.add(btnRegDoctor);
 		
-		JButton btnConsultas = new JButton("New button");
-		//Efecto de cambio de de color de botones
-		btnConsultas.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				btnConsultas.setBackground(paleteDarkGreen);
-			}
-			@Override
-			public void mouseExited(MouseEvent e) {
-				btnConsultas.setBackground(paleteGreen);
+		// 3. Botón Registrar Cita
+		JButton btnConsultas = crearBotonMenu("Registrar Cita");
+		btnConsultas.setBounds(0, 271, 240, 47);
+		if(mode != 0) btnConsultas.setText("---");
+		btnConsultas.addActionListener(e -> {
+			if(mode == 0) {
+				try {
+					RegCita regCita = new RegCita(); // Asumiendo constructor vacío o ajustar
+					regCita.setVisible(true);
+				} catch (Exception ex) { ex.printStackTrace(); }
 			}
 		});
-		btnConsultas.setForeground(Color.WHITE);
-		btnConsultas.setFont(buttonFont);
-		if(mode==0) {
-			btnConsultas.setText("Registrar Cita");
-		}else {
-			btnConsultas.setText("New button");
-		}
-		btnConsultas.setBounds(0, 271, 240, 47);
-		btnConsultas.setBackground(paleteGreen);
-		btnConsultas.setBorderPainted(false);
-		btnConsultas.setFocusPainted(false);
 		optionPanel.add(btnConsultas);
 		
-		JButton btnReportes = new JButton("New button");
-		//Efecto de cambio de de color de botones
-		btnReportes.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				btnReportes.setBackground(paleteDarkGreen);
-			}
-			@Override
-			public void mouseExited(MouseEvent e) {
-				btnReportes.setBackground(paleteGreen);
-			}
-		});
-		btnReportes.setForeground(Color.WHITE);
-		btnReportes.setFont(buttonFont);
-		if(mode==0) {
-			btnReportes.setText("Reportes");
-		}else {
-			btnReportes.setVisible(false);
-			btnReportes.setText("New button");
-		}
+		// 4. Botón Reportes
+		JButton btnReportes = crearBotonMenu("Reportes");
 		btnReportes.setBounds(0, 318, 240, 47);
-		btnReportes.setBackground(paleteGreen); //las variables palete corresponden a instancias 
-		//de clase Color con los colores de la paleta utilizada para el programa
-		btnReportes.setBorderPainted(false);
-		btnReportes.setFocusPainted(false);
+		if(mode != 0) btnReportes.setVisible(false);
 		optionPanel.add(btnReportes);
 		
+		// --- NUEVOS BOTONES DE LISTADO ---
+		
+		// 5. Botón Listar Doctores
+		JButton btnListarDoc = crearBotonMenu("Listar Doctores");
+		btnListarDoc.setBounds(0, 365, 240, 47);
+		if(mode != 0) btnListarDoc.setVisible(false); // Solo Admin ve listas completas
+		btnListarDoc.addActionListener(e -> {
+			ListarDoctores listDoc = new ListarDoctores(usuarioActual);
+			listDoc.setVisible(true);
+		});
+		optionPanel.add(btnListarDoc);
+		
+		// 6. Botón Listar Administradores
+		JButton btnListarAdmin = crearBotonMenu("Listar Administradores");
+		btnListarAdmin.setBounds(0, 412, 240, 47);
+		if(mode != 0) btnListarAdmin.setVisible(false);
+		btnListarAdmin.addActionListener(e -> {
+			ListarAdministradores listAdmin = new ListarAdministradores(usuarioActual);
+			listAdmin.setVisible(true);
+		});
+		optionPanel.add(btnListarAdmin);
+		
+		// --- FIN MENÚ ---
+
+		// HEADER USUARIO
 		JPanel infoUserPanel = new JPanel(); 
 		infoUserPanel.setBackground(paleteDarkGreen);
 		infoUserPanel.setBounds(0, 0, 1131, 120);
 		infoPanel.add(infoUserPanel);
 		infoUserPanel.setLayout(null);
+		
 		JLabel lblNombreUser = new JLabel("Nombre Usuario");
 		lblNombreUser.setForeground(Color.WHITE);
-		/*if(mode==0) {
-			lblNombreUser.setText(Clinica.getInstance().getDoctorPorUsuario(idUser).getNombre());
-		}*/
+		// Mostrar nombre real si existe usuario
+		if (usuarioActual != null) {
+			lblNombreUser.setText(usuarioActual.getNombre());
+		} else {
+			lblNombreUser.setText(idUser);
+		}
+		
 		lblNombreUser.setFont(nameUser);
 		lblNombreUser.setBounds(846, 37, 153, 14);
 		infoUserPanel.add(lblNombreUser);
@@ -261,9 +227,17 @@ public class Principal extends JFrame {
 		
 		JLabel lblFotoUser = new JLabel("");
 		lblFotoUser.setBounds(1020, 11, 90, 90);
-		lblFotoUser.setIcon(new ImageIcon("Recursos/Imagenes/useResi.png"));
+		// Intentar cargar foto del usuario si tiene
+		ImageIcon iconoUser = new ImageIcon(getClass().getResource("/Imagenes/useResi.png"));
+		if (usuarioActual != null && usuarioActual.getRutaFoto() != null && !usuarioActual.getRutaFoto().isEmpty()) {
+			ImageIcon fotoReal = new ImageIcon(usuarioActual.getRutaFoto());
+			Image imgReal = fotoReal.getImage().getScaledInstance(90, 90, Image.SCALE_SMOOTH);
+			iconoUser = new ImageIcon(imgReal);
+		}
+		lblFotoUser.setIcon(iconoUser);
 		infoUserPanel.add(lblFotoUser);
 		
+		// IMAGEN DE FONDO (DOCTORA)
 		ImageIcon doctoraIcon = new ImageIcon(getClass().getResource("/Imagenes/doctora.png"));
 		Image doctoraRedim = doctoraIcon.getImage().getScaledInstance(230, 250, Image.SCALE_SMOOTH);
 		JLabel lblDoctora = new JLabel(new ImageIcon(doctoraRedim));
@@ -275,85 +249,85 @@ public class Principal extends JFrame {
 		}
 		infoPanel.add(lblDoctora);
 		
-		//================================PANELES PARA DOCTORES====================================
-		JPanel welcomePanel = new JPanel(){
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
+		// --- PANELES DASHBOARD ---
+		
+		// Panel Bienvenida (Solo Doctor)
+		crearPanelBienvenida(mode);
+		
+		// Paneles Estadísticas
+		crearPanelesEstadisticas(mode);
+	}
+	
+	// Método auxiliar para crear botones del menú con estilo uniforme
+	private JButton crearBotonMenu(String texto) {
+		JButton btn = new JButton(texto);
+		btn.setForeground(Color.WHITE);
+		btn.setFont(buttonFont);
+		btn.setBackground(paleteGreen);
+		btn.setBorderPainted(false);
+		btn.setFocusPainted(false);
+		
+		btn.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				btn.setBackground(paleteDarkGreen);
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				btn.setBackground(paleteGreen);
+			}
+		});
+		return btn;
+	}
 
+	private void crearPanelBienvenida(int mode) {
+		JPanel welcomePanel = new JPanel(){
+			private static final long serialVersionUID = 1L;
 			@Override
 			protected void paintComponent(Graphics g) {
-			    Graphics2D g2 = (Graphics2D) g;
-			    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
-			                       RenderingHints.VALUE_ANTIALIAS_ON);
-			    g2.setColor(getBackground());
-			    g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.setColor(getBackground());
+				g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
 			}
 		};
 		welcomePanel.setBackground(Color.WHITE);
 		welcomePanel.setBounds(57, 177, 1014, 200);
-		if(mode==0) {
-			welcomePanel.setVisible(false);
-		}else {
-			welcomePanel.setVisible(true);
-		}
+		welcomePanel.setVisible(mode != 0);
 		welcomePanel.setLayout(null);
-		//Aniadiendo imagenes del banner al panel
-		ImageIcon bannerIcon = new ImageIcon(getClass().getResource("/Imagenes/doctorBanner.png"));
-		//Escalando imagen
-		Image bannerEscalado = bannerIcon.getImage().getScaledInstance(1041, 200, Image.SCALE_SMOOTH);
-		JLabel lblBanner = new JLabel(bannerIcon) {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-	            protected void paintComponent(Graphics g) {
-	                Graphics2D redondeo = (Graphics2D) g.create();
-	                redondeo.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-	                // Aca se define el radio del redondeo que se va a aplicar, 30px para este caso, este paso es opcional
-	                int radio = 30; 
-	                // Crear máscara de la forma que quiero que tome el JLabel
-	                redondeo.setClip(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), radio, radio));
-	                // Pintar la imagen original dentro de la máscara hecha
-	                super.paintComponent(redondeo);
-	                redondeo.dispose();
-	            }
-		};
-		lblBanner.setBounds(0, 0, 1014, 200);
-		lblBanner.setIcon(new ImageIcon(bannerEscalado));
-		welcomePanel.add(lblBanner);
-		infoPanel.add(welcomePanel);
 		
-		//Panel inferior izquierdo
-		JPanel listEnfPanel = new JPanel() {
-			/**
-			 * 
-			 */
+		ImageIcon bannerIcon = new ImageIcon(getClass().getResource("/Imagenes/doctorBanner.png"));
+		Image bannerEscalado = bannerIcon.getImage().getScaledInstance(1041, 200, Image.SCALE_SMOOTH);
+		JLabel lblBanner = new JLabel(new ImageIcon(bannerEscalado)) {
 			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void paintComponent(Graphics g) {
-			    Graphics2D g2 = (Graphics2D) g;
-			    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
-			                       RenderingHints.VALUE_ANTIALIAS_ON);
-			    g2.setColor(getBackground());
-			    g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
+				Graphics2D redondeo = (Graphics2D) g.create();
+				redondeo.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				int radio = 30; 
+				redondeo.setClip(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), radio, radio));
+				super.paintComponent(redondeo);
+				redondeo.dispose();
 			}
 		};
-		listEnfPanel.setBackground(Color.WHITE);
+		lblBanner.setBounds(0, 0, 1014, 200);
+		welcomePanel.add(lblBanner);
+		infoPanel.add(welcomePanel);
+	}
+
+	private void crearPanelesEstadisticas(int mode) {
+		// Iconos comunes
+		ImageIcon enfermedadIcon = new ImageIcon(getClass().getResource("/Imagenes/thermometer.png"));
+		ImageIcon citasHoyIcon = new ImageIcon(getClass().getResource("/Imagenes/stethoscope.png"));
+		ImageIcon vacunaIcon = new ImageIcon(getClass().getResource("/Imagenes/syringe.png"));
+
+		// --- PANELES MODO DOCTOR (Inferiores) ---
+		
+		JPanel listEnfPanel = crearPanelRedondeado(20);
 		listEnfPanel.setBounds(57, 425, 487, 280);
-		if(mode==0) {
-			listEnfPanel.setVisible(false);
-		}else {
-			listEnfPanel.setVisible(true);
-		}
-		listEnfPanel.setLayout(null);
+		listEnfPanel.setVisible(mode != 0);
 		infoPanel.add(listEnfPanel);
 		
-		//Elementos del panel inferior izquierdo
-		ImageIcon enfermedadIcon = new ImageIcon(getClass().getResource("/Imagenes/thermometer.png"));
-		//Escalado
 		Image enfEscala = enfermedadIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
 		JLabel lblEnfIcon = new JLabel(new ImageIcon(enfEscala));
 		lblEnfIcon.setBounds(397,10,80,80);
@@ -362,78 +336,31 @@ public class Principal extends JFrame {
 		JLabel lblDesEnf = new JLabel("Enfermedades Controladas");
 		lblDesEnf.setFont(normalUse);
 		lblDesEnf.setBounds(10, 105, 151, 14);
-		lblDesEnf.setFont(normalUse);
 		listEnfPanel.add(lblDesEnf);
 		
-		JLabel lblCEnf = new JLabel("25");
+		JLabel lblCEnf = new JLabel("25"); // Dato Dummy
 		lblCEnf.setFont(indicativeNumber);
 		lblCEnf.setBounds(10, 11, 80, 50);
 		listEnfPanel.add(lblCEnf);
 		
-		//Panel inferior derecho
-		JPanel citasHoyPanel = new JPanel() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			protected void paintComponent(Graphics g) {
-			    Graphics2D g2 = (Graphics2D) g;
-			    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
-			                       RenderingHints.VALUE_ANTIALIAS_ON);
-			    g2.setColor(getBackground());
-			    g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
-			}
-		};
-		citasHoyPanel.setBackground(Color.WHITE);
+		JPanel citasHoyPanel = crearPanelRedondeado(20);
 		citasHoyPanel.setBounds(584, 425, 487, 280);
-		if(mode==0) {
-			citasHoyPanel.setVisible(false);
-		}else {
-			citasHoyPanel.setVisible(true);
-		}
-		citasHoyPanel.setLayout(null);
+		citasHoyPanel.setVisible(mode != 0);
 		infoPanel.add(citasHoyPanel);
 		
-		//Elementos del panel inferior derecho
-		ImageIcon citasHoyIcon = new ImageIcon(getClass().getResource("/Imagenes/stethoscope.png"));
-		//Escalado
 		Image citasEscala = citasHoyIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
 		JLabel lblCitaIcon = new JLabel(new ImageIcon(citasEscala));
 		lblCitaIcon.setBounds(397,10,80,80);
 		citasHoyPanel.add(lblCitaIcon);
-		
-		
-		
-		//===================================PANELES PARA USUARIOS ADMINISTRATIVOS=================================
-		JPanel cantEnfermPanel = new JPanel(){
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 
-			@Override
-			protected void paintComponent(Graphics g) {
-			    Graphics2D g2 = (Graphics2D) g;
-			    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
-			                       RenderingHints.VALUE_ANTIALIAS_ON);
-			    g2.setColor(getBackground());
-			    g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
-			}
-		};
-		cantEnfermPanel.setBackground(Color.WHITE);
+		// --- PANELES MODO ADMIN (Superiores) ---
+		
+		// 1. Enfermedades
+		JPanel cantEnfermPanel = crearPanelRedondeado(20);
 		cantEnfermPanel.setBounds(57, 177, 300, 130);
-		if(mode==0) {
-			cantEnfermPanel.setVisible(true);
-		}else {
-			cantEnfermPanel.setVisible(false);
-		}
+		cantEnfermPanel.setVisible(mode == 0);
 		infoPanel.add(cantEnfermPanel);
-		cantEnfermPanel.setLayout(null);
 		
-		
-		//Escalando imagen
 		Image enfermedadEscalada = enfermedadIcon.getImage().getScaledInstance(108, 108, Image.SCALE_SMOOTH);
 		JLabel lblEnfermedades = new JLabel(new ImageIcon(enfermedadEscalada));
 		lblEnfermedades.setBounds(171, 11, 108, 108);
@@ -442,7 +369,6 @@ public class Principal extends JFrame {
 		JLabel lblDescripEnf = new JLabel("Enfermedades Controladas");
 		lblDescripEnf.setFont(normalUse);
 		lblDescripEnf.setBounds(10, 105, 151, 14);
-		lblDescripEnf.setFont(normalUse);
 		cantEnfermPanel.add(lblDescripEnf);
 		
 		JLabel lblCountEnf = new JLabel("25");
@@ -450,39 +376,18 @@ public class Principal extends JFrame {
 		lblCountEnf.setBounds(10, 11, 80, 50);
 		cantEnfermPanel.add(lblCountEnf);
 		
-		JPanel cantVacunasPanel = new JPanel(){
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			protected void paintComponent(Graphics g) {
-			    Graphics2D g2 = (Graphics2D) g;
-			    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
-			                       RenderingHints.VALUE_ANTIALIAS_ON);
-			    g2.setColor(getBackground());
-			    g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
-			}
-		};
-		cantVacunasPanel.setBackground(Color.WHITE);
+		// 2. Vacunas
+		JPanel cantVacunasPanel = crearPanelRedondeado(20);
 		cantVacunasPanel.setBounds(414, 177, 300, 130);
-		if(mode==0) {
-			cantVacunasPanel.setVisible(true);
-		}else {
-			cantVacunasPanel.setVisible(false);
-		}
+		cantVacunasPanel.setVisible(mode == 0);
 		infoPanel.add(cantVacunasPanel);
-		cantVacunasPanel.setLayout(null);
 		
-		ImageIcon vacunaIcon = new ImageIcon(getClass().getResource("/Imagenes/syringe.png"));
-		//Escalando imagen
 		Image vacunaEscalada = vacunaIcon.getImage().getScaledInstance(108, 108, Image.SCALE_SMOOTH);
 		JLabel lblVacuna = new JLabel(new ImageIcon(vacunaEscalada));
 		lblVacuna.setBounds(171, 11, 108, 108);
 		cantVacunasPanel.add(lblVacuna);
 		
-		JLabel lblDescripVacuna = new JLabel("Vacunas Existenetes");
+		JLabel lblDescripVacuna = new JLabel("Vacunas Existentes");
 		lblDescripVacuna.setFont(normalUse);
 		lblDescripVacuna.setBounds(10, 105, 151, 14);
 		cantVacunasPanel.add(lblDescripVacuna);
@@ -492,32 +397,12 @@ public class Principal extends JFrame {
 		lblCountVac.setBounds(10, 11, 80, 50);
 		cantVacunasPanel.add(lblCountVac);
 		
-		JPanel cantCitasHoyPanel = new JPanel() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			protected void paintComponent(Graphics g) {
-			    Graphics2D g2 = (Graphics2D) g;
-			    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
-			                       RenderingHints.VALUE_ANTIALIAS_ON);
-			    g2.setColor(getBackground());
-			    g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
-			}
-		};
-		cantCitasHoyPanel.setBackground(Color.WHITE);
+		// 3. Citas
+		JPanel cantCitasHoyPanel = crearPanelRedondeado(20);
 		cantCitasHoyPanel.setBounds(771, 177, 300, 130);
-		if(mode==0) {
-			cantCitasHoyPanel.setVisible(true);
-		}else {
-			cantCitasHoyPanel.setVisible(false);
-		}
+		cantCitasHoyPanel.setVisible(mode == 0);
 		infoPanel.add(cantCitasHoyPanel);
-		cantCitasHoyPanel.setLayout(null);
 		
-		//Escalando imagen
 		Image citasEscalada = citasHoyIcon.getImage().getScaledInstance(108, 108, Image.SCALE_SMOOTH);
 		JLabel lblCitas = new JLabel(new ImageIcon(citasEscalada));
 		lblCitas.setBounds(171, 11, 108, 108);
@@ -533,29 +418,26 @@ public class Principal extends JFrame {
 		lblCountCitas.setBounds(10, 11, 80, 50);
 		cantCitasHoyPanel.add(lblCountCitas);
 		
-		JPanel barGraphSickPanel = new JPanel(){
-			/**
-			 * 
-			 */
+		// 4. Gráfico Grande
+		JPanel barGraphSickPanel = crearPanelRedondeado(20);
+		barGraphSickPanel.setBounds(57, 355, 1014, 318);
+		barGraphSickPanel.setVisible(mode == 0);
+		infoPanel.add(barGraphSickPanel);
+	}
+	
+	private JPanel crearPanelRedondeado(int radio) {
+		JPanel panel = new JPanel(){
 			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected void paintComponent(Graphics g) {
-			    Graphics2D g2 = (Graphics2D) g;
-			    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
-			                       RenderingHints.VALUE_ANTIALIAS_ON);
-			    g2.setColor(getBackground());
-			    g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.setColor(getBackground());
+				g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, radio, radio);
 			}
 		};
-		barGraphSickPanel.setBackground(Color.WHITE);
-		barGraphSickPanel.setBounds(57, 355, 1014, 318);
-		if(mode==0) {
-			barGraphSickPanel.setVisible(true);
-		}else {
-			barGraphSickPanel.setVisible(false);
-		}
-		infoPanel.add(barGraphSickPanel);
-		barGraphSickPanel.setLayout(null);
+		panel.setBackground(Color.WHITE);
+		panel.setLayout(null);
+		return panel;
 	}
 }
