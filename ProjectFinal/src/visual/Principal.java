@@ -49,6 +49,7 @@ public class Principal extends JFrame {
 
 	private static Color paleteGreen = new Color(22, 163, 74);
 	private static Color paleteDarkGreen = new Color(18, 140, 64);
+	private static Color paleteBeautyBlu = new Color(21, 129, 191);
 	private static Font fuenteTituloGraph = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 22f);
 	private static Font fuenteEjesGraph = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 14f);
 	private static Font fuenteDatosGraph  = FuenteUtil.cargarFuente("/Fuentes/Roboto-Light.ttf", 12f);
@@ -278,7 +279,10 @@ public class Principal extends JFrame {
 					cantCitasHoyPanel.setVisible(false);
 					barGraphSickPanel.setVisible(false);
 					infoListPanel.setVisible(true);
-					//adminListPanel.setVisible(true);
+					adminListPanel.setVisible(true);
+					vacunaListPanel.setVisible(true);
+					doctorsListPanel.setVisible(true);
+					pacientesListPanel.setVisible(true);
 				} catch (Exception e2) {
 					e2.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Error inesperado al mostrar la ventana", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
@@ -674,16 +678,16 @@ public class Principal extends JFrame {
 				g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
 			}
 		};
-		infoListPanel.setBackground(new Color(21, 129, 191));
+		infoListPanel.setBackground(paleteBeautyBlu);
 		infoListPanel.setBounds(57, 177, 1014, 300);
 		infoListPanel.setVisible(false);
 		infoListPanel.setLayout(null);
 		infoPanel.add(infoListPanel);
 		
 		ImageIcon doctorIcon = new ImageIcon(getClass().getResource("/Imagenes/doctorPanel2.png"));
-		Image doctorRedim = doctorIcon.getImage().getScaledInstance(275, 275, Image.SCALE_SMOOTH);
+		Image doctorRedim = doctorIcon.getImage().getScaledInstance(375, 375, Image.SCALE_SMOOTH);
 		JLabel lblDoctor = new JLabel(new ImageIcon(doctorRedim));
-		lblDoctor.setBounds(700,27,250,300);
+		lblDoctor.setBounds(630,0,375,375);
 		if(mode==0) {
 			lblDoctor.setVisible(true);
 		}else {
@@ -691,11 +695,76 @@ public class Principal extends JFrame {
 		}
 		infoListPanel.add(lblDoctor);
 		
-		JLabel lblTitlePanel = new JLabel("Titulo del panel");
+		JLabel lblTitlePanel = new JLabel("Título del panel");
+		lblTitlePanel.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 28f));
+		lblTitlePanel.setForeground(Color.WHITE);
+		lblTitlePanel.setBounds(40, 30, 300, 30);
+		infoListPanel.add(lblTitlePanel);
 		
 		JLabel lblInfoPanel = new JLabel("Info del panel");
+		lblInfoPanel.setFont(FuenteUtil.cargarFuente("/Fuentes/Roboto-Regular.ttf", 14f));
+		lblInfoPanel.setForeground(Color.WHITE);
+		lblInfoPanel.setBounds(45, 75, 100, 25);
+		infoListPanel.add(lblInfoPanel);
 		
-		JButton btnVolver = new JButton("Volver"){
+		JButton btnVolver = new JButton(){
+			/**
+			 * 
+			 */
+			 private static final long serialVersionUID = 1L;
+
+			    @Override
+			    protected void paintComponent(Graphics g) {
+			        Graphics2D g2 = (Graphics2D) g;
+			        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);			        
+			        g2.setColor(getBackground());
+			        g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
+			        super.paintComponent(g);
+			    }
+		};
+		btnVolver.setContentAreaFilled(false); 
+		btnVolver.setFocusPainted(false); 
+		btnVolver.setBorderPainted(false);
+		btnVolver.setOpaque(false);
+		btnVolver.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				btnVolver.setBackground(new Color(211,211,211));
+				btnVolver.setForeground(Color.WHITE);
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				btnVolver.setBackground(Color.WHITE);
+				btnVolver.setForeground(paleteBeautyBlu);
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					cantEnfermPanel.setVisible(true);
+					cantVacunasPanel.setVisible(true);
+					cantCitasHoyPanel.setVisible(true);
+					barGraphSickPanel.setVisible(true);
+					infoListPanel.setVisible(false);
+					adminListPanel.setVisible(false);
+					vacunaListPanel.setVisible(false);
+					doctorsListPanel.setVisible(false);
+					pacientesListPanel.setVisible(false);
+				} catch (Exception e2) {
+					e2.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Error inesperado al mostrar la ventana", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		btnVolver.setText("Volver al menú principal");
+		btnVolver.setFont(buttonFont);
+		btnVolver.setForeground(paleteBeautyBlu);
+		btnVolver.setBackground(Color.WHITE);
+		btnVolver.setBounds(40, 225, 250, 25);
+		btnVolver.setVisible(true);
+		infoListPanel.add(btnVolver);
+		
+		
+		doctorsListPanel = new JPanel(){
 			/**
 			 * 
 			 */
@@ -710,25 +779,70 @@ public class Principal extends JFrame {
 				g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
 			}
 		};
-		btnVolver.setBorderPainted(false);
-		btnVolver.setBackground(Color.WHITE);
-		btnVolver.setBounds(20, 250, 70, 35);
-		btnVolver.setVisible(true);
-		infoListPanel.add(btnVolver);
+		doctorsListPanel.setBounds(827, 487, 225, 225);
+		doctorsListPanel.setBackground(Color.WHITE);
+		doctorsListPanel.setVisible(false);
+		infoPanel.add(doctorsListPanel);
 		
 		
-		doctorsListPanel = new JPanel();
+		adminListPanel = new JPanel(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void paintComponent(Graphics g) {
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+						RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.setColor(getBackground());
+				g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
+			}
+		};
+		adminListPanel.setBounds(572, 487, 225, 225);
+		adminListPanel.setBackground(Color.WHITE);
+		adminListPanel.setVisible(false);
+		infoPanel.add(adminListPanel);
 		
+		vacunaListPanel = new JPanel(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void paintComponent(Graphics g) {
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+						RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.setColor(getBackground());
+				g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
+			}
+		};
+		vacunaListPanel.setBounds(317, 487, 225, 225);
+		vacunaListPanel.setBackground(Color.WHITE);
+		vacunaListPanel.setVisible(false);
+		infoPanel.add(vacunaListPanel);
 		
-		adminListPanel = new JPanel();
-		
-		
-		vacunaListPanel = new JPanel();
-		
-		
-		pacientesListPanel = new JPanel();
-		
+		pacientesListPanel = new JPanel(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void paintComponent(Graphics g) {
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+						RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.setColor(getBackground());
+				g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
+			}
+		};
+		pacientesListPanel.setBounds(57, 487, 225, 225);
+		pacientesListPanel.setBackground(Color.WHITE);
+		pacientesListPanel.setVisible(false);
+		infoPanel.add(pacientesListPanel);
 	}
-
-
 }
