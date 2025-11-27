@@ -17,6 +17,8 @@ public class Vacuna implements Serializable {
 	private int cantidadDisponible;
 	private String efectosAdversos;
 	private ViaAdministracion viaAdministracion;
+    // NUEVO CAMPO PARA HABILITAR/DESHABILITAR
+    private boolean activo;
 
 	public Vacuna() {
 		this.id = 0;
@@ -25,25 +27,31 @@ public class Vacuna implements Serializable {
 		this.cantidadDisponible = 0;
 		this.efectosAdversos = "";
 		this.viaAdministracion = null;
+        this.activo = true; // Por defecto activa
 	}
 
-	/*
-	 * Función: Vacuna (Constructor) Argumentos: (String) nombre: Marca/Nombre.
-	 * (LocalDate) fechaCaducidad: Caducidad. (int) cantidadDisponible: Unidades
-	 * disponibles. (String) efectosAdversos: Texto descriptivo. (ViaAdministracion)
-	 * viaAdministracion: Enum de vía. Objetivo: Crear un lote de vacunas. Retorno:
-	 * (Ninguno): Constructor.
-	 */
 	public Vacuna(String nombre, LocalDate fechaCaducidad, int cantidadDisponible, String efectosAdversos,
-			ViaAdministracion viaAdministracion) {
+			ViaAdministracion via) {
 		this.id = 0;
 		this.nombre = nombre;
 		this.fechaCaducidad = fechaCaducidad;
 		this.cantidadDisponible = cantidadDisponible;
 		this.efectosAdversos = efectosAdversos;
-		this.viaAdministracion = viaAdministracion;
+		this.viaAdministracion = via;
+        this.activo = true;
 	}
+    
+    // Getters y Setters originales...
 
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
+    // ... Resto de la clase igual ...
 	public int getId() {
 		return id;
 	}
@@ -105,9 +113,5 @@ public class Vacuna implements Serializable {
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
 	}
 }

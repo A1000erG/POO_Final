@@ -27,7 +27,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-//import javax.swing.JPasswordField; 
+import javax.swing.JPasswordField; 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -54,10 +54,8 @@ public class ListarAdministradores extends JDialog {
     private JTextField txtNombre;
     private JTextField txtCargo;
     private JTextField txtUsuario;
-    private JTextField txtContrasenia;
+    private JPasswordField txtContrasenia;
     private JLabel lblFoto;
-    
-    private JLabel lblMensaje;
     
     private JButton btnModificar;
     private JButton btnEstado;
@@ -80,11 +78,11 @@ public class ListarAdministradores extends JDialog {
         });
     }
 
+
     public ListarAdministradores(/*Personal usuarioLogueado*/) {
         //this.usuarioActual = usuarioLogueado;
         setTitle("Gestión de Administradores");
         setModal(true);
-        // TAMAÑO 1366x768 EXACTO
         setBounds(100, 100, 1366, 768);
         setLocationRelativeTo(null);
         
@@ -106,7 +104,7 @@ public class ListarAdministradores extends JDialog {
         lblLogo.setBounds(40, 25, 70, 70);
         panelSuperior.add(lblLogo);
         
-        JLabel lblTitulo = new JLabel("GESTIÓN DE ADMINISTRADORES");
+        JLabel lblTitulo = new JLabel("GESTIÃ“N DE ADMINISTRADORES");
         lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 34f));
         lblTitulo.setBounds(130, 35, 800, 50);
@@ -122,7 +120,7 @@ public class ListarAdministradores extends JDialog {
         int margenX = 40;
         int margenY = 30;
 
-        // === SECCIÓN IZQUIERDA (LISTADO) ===
+        // === SECCIÃ“N IZQUIERDA (LISTADO) ===
         
         JLabel lblBuscar = new JLabel("Buscar (ID o Nombre):");
         lblBuscar.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Regular.ttf", 16f));
@@ -178,23 +176,12 @@ public class ListarAdministradores extends JDialog {
         });
         scrollPane.setViewportView(table);
 
-        
-        // --- LABEL PARA MENSAJES ---
-        lblMensaje = new JLabel("");
-        lblMensaje.setForeground(new Color(220, 38, 38));
-        lblMensaje.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f));
-        lblMensaje.setHorizontalAlignment(JLabel.CENTER);
-        lblMensaje.setBounds(290, 530, 820, 25);
-        panelCentral.add(lblMensaje);
-        
-        
-        // === SECCIÓN DERECHA (DETALLES) ===
+        // === SECCIÃ“N DERECHA (DETALLES) ===
         
         JPanel panelDetalle = new JPanel(); 
         panelDetalle.setBackground(new Color(245, 245, 245));
         panelDetalle.setBorder(new LineBorder(new Color(220, 220, 220), 1, true));
         
-        // TAMAÑO AMPLIADO A 568px DE ALTO (IGUAL QUE DOCTORES)
         panelDetalle.setBounds(900, margenY, 400, 568);
         panelDetalle.setLayout(null);
         panelCentral.add(panelDetalle);
@@ -203,7 +190,7 @@ public class ListarAdministradores extends JDialog {
         lblDetalleTitulo.setHorizontalAlignment(JLabel.CENTER);
         lblDetalleTitulo.setForeground(new Color(4, 111, 67));
         lblDetalleTitulo.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 18f));
-        lblDetalleTitulo.setBounds(20, 20, 360, 30);
+        lblDetalleTitulo.setBounds(20, 25, 360, 30);
         panelDetalle.add(lblDetalleTitulo);
 
         lblFoto = new JLabel("");
@@ -235,21 +222,20 @@ public class ListarAdministradores extends JDialog {
         cargarFotoEnLabel(null);
         panelDetalle.add(lblFoto);
 
-        // Ajuste de espaciado vertical
         int yStart = 230;
-        int gap = 60;
+        int gap = 55;
         
         createLabelAndInput(panelDetalle, "NOMBRE:", yStart, txtNombre = new JTextField());
         createLabelAndInput(panelDetalle, "CARGO:", yStart + gap, txtCargo = new JTextField());
         createLabelAndInput(panelDetalle, "USUARIO:", yStart + gap * 2, txtUsuario = new JTextField());
         
-        JLabel lblPass = new JLabel("CONTRASEÑA:");
+        JLabel lblPass = new JLabel("CONTRASEÃ‘A:");
         lblPass.setBounds(50, yStart + gap * 3, 300, 20);
         lblPass.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 13f));
         lblPass.setForeground(new Color(100, 100, 100));
         panelDetalle.add(lblPass);
 
-        txtContrasenia = new JTextField();
+        txtContrasenia = new JPasswordField();
         txtContrasenia.setBounds(50, yStart + gap * 3 + 20, 300, 35);
         txtContrasenia.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
         txtContrasenia.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Regular.ttf", 15f));
@@ -258,13 +244,13 @@ public class ListarAdministradores extends JDialog {
         txtUsuario.setEditable(false); 
         txtUsuario.setBackground(new Color(240, 240, 240));
 
-        // --- BOTONES ALINEADOS LADO A LADO ---
+        // BOTONES
         int btnY = 510;
         int btnWidth = 145;
 
         btnModificar = new JButton("MODIFICAR");
         btnModificar.setBounds(50, btnY, btnWidth, 40);
-        btnModificar.setBackground(new Color(150, 150, 150)); 
+        btnModificar.setBackground(new Color(22, 163, 74)); 
         btnModificar.setForeground(Color.WHITE);
         btnModificar.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 13f));
         btnModificar.setFocusPainted(false);
@@ -273,8 +259,8 @@ public class ListarAdministradores extends JDialog {
         panelDetalle.add(btnModificar);
 
         btnEstado = new JButton("DESHABILITAR");
-        btnEstado.setBounds(50 + btnWidth + 10, btnY, btnWidth, 40); // Separación 10px
-        btnEstado.setBackground(new Color(150, 150, 150)); 
+        btnEstado.setBounds(50 + btnWidth + 10, btnY, btnWidth, 40); 
+        btnEstado.setBackground(new Color(220, 38, 38)); 
         btnEstado.setForeground(Color.WHITE);
         btnEstado.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 13f));
         btnEstado.setFocusPainted(false);
@@ -282,8 +268,7 @@ public class ListarAdministradores extends JDialog {
         btnEstado.addActionListener(e -> cambiarEstadoAdmin());
         panelDetalle.add(btnEstado);
 
-        // --- BOTÓN VOLVER CIRCULAR ---
-        
+        // BOTÃ“N VOLVER
         ImageIcon iconFlecha = new ImageIcon(getClass().getResource("/Imagenes/FlechaAtras.png"));
         Image imgFlechaScaled = iconFlecha.getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
         ImageIcon iconFlechaFinal = new ImageIcon(imgFlechaScaled);
@@ -301,7 +286,6 @@ public class ListarAdministradores extends JDialog {
         };
         btnVolver.setOpaque(false);
         btnVolver.setLayout(null);
-        // Ubicado debajo de la tabla (Y=560)
         btnVolver.setBounds(40, 528, 70, 70); 
         btnVolver.setBackground(new Color(4, 111, 67)); 
 
@@ -387,6 +371,7 @@ public class ListarAdministradores extends JDialog {
         hilo.start();
     }
 
+    // --- LÃ“GICA DE BÃšSQUEDA MEJORADA ---
     private void loadAdmins(String filtro) {
         model.setRowCount(0);
         rows = new Object[model.getColumnCount()];
@@ -396,10 +381,24 @@ public class ListarAdministradores extends JDialog {
 
         for (Administrativo adm : lista) {
             String nombre = adm.getNombre().toLowerCase();
-            String idStr = String.valueOf(adm.getId());
             String filtroMin = filtro.toLowerCase();
+            
+            // LÃ³gica de bÃºsqueda mejorada:
+            // 1. Por nombre
+            // 2. Por ID crudo ("1")
+            // 3. Por ID formateado ("001")
+            // 4. Por CÃ³digo completo ("A-001")
+            
+            String idRaw = String.valueOf(adm.getId());
+            String idFormatted = String.format("%03d", adm.getId());
+            String idFull = String.format("A-%03d", adm.getId()).toLowerCase();
 
-            if (filtro.isEmpty() || nombre.contains(filtroMin) || idStr.contains(filtroMin)) {
+            if (filtro.isEmpty() || 
+                nombre.contains(filtroMin) || 
+                idRaw.contains(filtroMin) ||
+                idFormatted.contains(filtroMin) ||
+                idFull.contains(filtroMin)) {
+
                 rows[0] = String.format("A-%03d", adm.getId());
                 rows[1] = adm.getNombre();
                 rows[2] = adm.getCargo();
@@ -428,19 +427,24 @@ public class ListarAdministradores extends JDialog {
             
             txtNombre.setEnabled(true);
             txtCargo.setEnabled(true);
-            txtContrasenia.setEnabled(true);
             
-//            // Validación de seguridad para la contraseña
-//            boolean esAdmin = (usuarioActual instanceof Administrativo);
-//            txtContrasenia.setEnabled(esAdmin);
+            // --- VALIDACIÃ“N DE SEGURIDAD ---
+            // Solo habilita la contraseÃ±a si el usuario logueado es un Administrativo
+            boolean esAdmin = (usuarioActual instanceof Administrativo);
+            txtContrasenia.setEnabled(esAdmin);
+            
+            // --- VISIBILIDAD DE CONTRASEÃ‘A ---
+            if (esAdmin) {
+                txtContrasenia.setEchoChar((char)0); // Visible (texto plano) para quien puede editar
+            } else {
+                txtContrasenia.setEchoChar('•'); // Oculta para quien no tiene permiso
+            }
             
             cargarFotoEnLabel(selectedAdmin.getRutaFoto());
             nuevaRutaFotoTemp = null;
             
             btnModificar.setEnabled(true);
             btnEstado.setEnabled(true);
-            
-            btnModificar.setBackground(new Color(22, 163, 74));
             
             if (selectedAdmin.isActivo()) {
                 btnEstado.setText("DESHABILITAR");
@@ -464,13 +468,8 @@ public class ListarAdministradores extends JDialog {
         txtContrasenia.setEnabled(false); 
         
         cargarFotoEnLabel(null);
-        
         btnModificar.setEnabled(false);
         btnEstado.setEnabled(false);
-        
-        btnModificar.setBackground(new Color(150, 150, 150));
-        btnEstado.setBackground(new Color(150, 150, 150));
-        
         btnEstado.setText("DESHABILITAR");
         btnEstado.setBackground(new Color(220, 38, 38));
         selectedAdmin = null;
@@ -486,7 +485,7 @@ public class ListarAdministradores extends JDialog {
 
     private void cambiarFotoAdmin() {
         JFileChooser chooser = new JFileChooser();
-        chooser.setFileFilter(new FileNameExtensionFilter("Imágenes (JPG, PNG)", "jpg", "jpeg", "png"));
+        chooser.setFileFilter(new FileNameExtensionFilter("ImÃ¡genes (JPG, PNG)", "jpg", "jpeg", "png"));
         
         int resultado = chooser.showOpenDialog(this);
         if (resultado == JFileChooser.APPROVE_OPTION) {
@@ -502,15 +501,16 @@ public class ListarAdministradores extends JDialog {
     private void modificarAdmin() {
         if (selectedAdmin == null) return;
         
-        String pass = new String(txtContrasenia.getText());
+        String pass = new String(txtContrasenia.getPassword());
         if(txtNombre.getText().isEmpty() || txtCargo.getText().isEmpty() || pass.isEmpty()) {
-        	mostrarMensajeError("Los campos no pueden estar vacíos.");
+            JOptionPane.showMessageDialog(this, "Los campos no pueden estar vacÃ­os.", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         selectedAdmin.setNombre(txtNombre.getText());
         selectedAdmin.setCargo(txtCargo.getText());
         
+        // Solo guardamos contraseÃ±a si el campo estaba habilitado
         if (txtContrasenia.isEnabled()) {
             selectedAdmin.setContrasenia(pass); 
         }
@@ -546,14 +546,12 @@ public class ListarAdministradores extends JDialog {
                 nuevaRutaFotoTemp = null;
                 
             } catch (Exception e) {
-            	mostrarMensajeError("Error al actualizar la foto: " + e.getMessage());
-                return;
+                JOptionPane.showMessageDialog(this, "Error al actualizar la foto: " + e.getMessage(), "Error IO", JOptionPane.ERROR_MESSAGE);
             }
         }
         
         Clinica.getInstance().guardarDatos();
-        mostrarMensajeExito("Administrador modificado correctamente.");
-
+        JOptionPane.showMessageDialog(this, "Administrador modificado correctamente.", "Ã‰xito", JOptionPane.INFORMATION_MESSAGE);
         loadAdmins(txtBuscador.getText());
     }
 
@@ -561,70 +559,30 @@ public class ListarAdministradores extends JDialog {
         if (selectedAdmin == null) return;
 
         if (usuarioActual != null && usuarioActual instanceof Administrativo && usuarioActual.getId() == selectedAdmin.getId()) {
-        	mostrarMensajeError("No puedes inhabilitarte a ti mismo.");
+            JOptionPane.showMessageDialog(this, "No puedes inhabilitarte a ti mismo.", "AcciÃ³n Bloqueada", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if (selectedAdmin.isActivo()) {
-            String razon = JOptionPane.showInputDialog(this, "Razón de inhabilitación:", "Confirmar", JOptionPane.WARNING_MESSAGE);
+            String razon = JOptionPane.showInputDialog(this, "RazÃ³n de inhabilitaciÃ³n:", "Confirmar", JOptionPane.WARNING_MESSAGE);
             if (razon != null && !razon.trim().isEmpty()) {
                 selectedAdmin.setActivo(false);
                 selectedAdmin.setCausaDeshabilitacion(razon);
                 Clinica.getInstance().guardarDatos();
-                mostrarMensajeExito("Administrador deshabilitado correctamente.");
                 cargarDatosAdmin();
                 loadAdmins(txtBuscador.getText());
             }
         } else {
             int confirm = JOptionPane.showConfirmDialog(this, 
-                    "Razón anterior: " + selectedAdmin.getCausaDeshabilitacion() + "\n¿Desea habilitar nuevamente a este usuario?", 
-                    "Confirmar Habilitación", JOptionPane.YES_NO_OPTION);
+                    "RazÃ³n anterior: " + selectedAdmin.getCausaDeshabilitacion() + "\nÂ¿Desea habilitar nuevamente a este usuario?", 
+                    "Confirmar HabilitaciÃ³n", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
                 selectedAdmin.setActivo(true);
                 selectedAdmin.setCausaDeshabilitacion("");
                 Clinica.getInstance().guardarDatos();
-                mostrarMensajeExito("Administrador habilitado correctamente.");
                 cargarDatosAdmin();
                 loadAdmins(txtBuscador.getText());
             }
         }
     }
-    
-    
-    
-    /**
-     * Método para mostrar mensajes de error
-     */
-    private void mostrarMensajeError(String mensaje) {
-        lblMensaje.setForeground(new Color(220, 38, 38));
-        lblMensaje.setText(mensaje);
-        ocultarMensajeDespuesDeTiempo();
-    }
-    
-    /**
-     * Método para mostrar mensajes de éxito
-     */
-    private void mostrarMensajeExito(String mensaje) {
-        lblMensaje.setForeground(new Color(22, 163, 74));
-        lblMensaje.setText(mensaje);
-        ocultarMensajeDespuesDeTiempo();
-    }
-
-    /**
-     * Oculta el mensaje después de 3 segundos
-     */
-    private void ocultarMensajeDespuesDeTiempo() {
-        new Thread(() -> {
-            try {
-                Thread.sleep(3000);
-                EventQueue.invokeLater(() -> {
-                    lblMensaje.setText("");
-                });
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
-    }
-    
-    
 }
