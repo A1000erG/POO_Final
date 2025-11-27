@@ -72,7 +72,7 @@ public class ListarAdministradores extends JDialog {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    ListarAdministradores dialog = new ListarAdministradores(null);
+                    ListarAdministradores dialog = new ListarAdministradores(/*null*/);
                     dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     dialog.setVisible(true);
                 } catch (Exception e) { e.printStackTrace(); }
@@ -80,8 +80,8 @@ public class ListarAdministradores extends JDialog {
         });
     }
 
-    public ListarAdministradores(Personal usuarioLogueado) {
-        this.usuarioActual = usuarioLogueado;
+    public ListarAdministradores(/*Personal usuarioLogueado*/) {
+        //this.usuarioActual = usuarioLogueado;
         setTitle("Gestión de Administradores");
         setModal(true);
         // TAMAÑO 1366x768 EXACTO

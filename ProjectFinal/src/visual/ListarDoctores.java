@@ -73,7 +73,7 @@ public class ListarDoctores extends JDialog {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    ListarDoctores dialog = new ListarDoctores(null);
+                    ListarDoctores dialog = new ListarDoctores(/*null*/);
                     dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     dialog.setVisible(true);
                 } catch (Exception e) {
@@ -85,8 +85,8 @@ public class ListarDoctores extends JDialog {
     
 
 
-    public ListarDoctores(Personal usuarioLogueado) {
-        this.usuarioActual = usuarioLogueado;
+    public ListarDoctores(/*Personal usuarioLogueado*/) {
+        /*this.usuarioActual = usuarioLogueado;*/
         setTitle("Gestión de Doctores");
         setModal(true);
         // TAMAÑO 1366x768

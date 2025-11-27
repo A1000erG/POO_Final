@@ -3,6 +3,7 @@ package visual;
 import java.awt.Color;
 import java.awt.EventQueue;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -34,6 +35,7 @@ import java.awt.RenderingHints;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
@@ -782,9 +784,12 @@ public class Principal extends JFrame {
 		doctorsListPanel.setBounds(827, 487, 225, 225);
 		doctorsListPanel.setBackground(Color.WHITE);
 		doctorsListPanel.setVisible(false);
+		doctorsListPanel.setLayout(null);
+		doctorsListPanel.setFocusable(false);
+		doctorsListPanel.setOpaque(false);
 		infoPanel.add(doctorsListPanel);
 		
-		JButton btnDoctorsList = new JButton(){
+		JLabel iconDoctorsList = new JLabel(){
 			/**
 			 * 
 			 */
@@ -799,6 +804,49 @@ public class Principal extends JFrame {
 			        super.paintComponent(g);
 			    }
 		};
+		MouseListener eventoDoctor = new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				doctorsListPanel.setBackground(new Color(189, 214, 240));
+				doctorsListPanel.repaint();
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				doctorsListPanel.setBackground(Color.WHITE);
+				doctorsListPanel.repaint();
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				doctorsListPanel.setBackground(new Color(207, 207, 207));
+				try {
+					ListarDoctores listDoctor = new ListarDoctores();
+					listDoctor.setVisible(true);
+				} catch (Exception e2) {
+					e2.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Error inesperado al abrir la ventana", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		};		
+		ImageIcon imgDoctorList = new ImageIcon(getClass().getResource("/Imagenes/doctorList.png"));
+		Image scaleDoctorList = imgDoctorList.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+		iconDoctorsList.setIcon(new ImageIcon(scaleDoctorList));
+		iconDoctorsList.setBounds(50, 20, 125, 125);
+		iconDoctorsList.setVisible(true);
+		iconDoctorsList.setOpaque(false);
+		iconDoctorsList.setBackground(new Color(0,0,0,0));
+		iconDoctorsList.setHorizontalAlignment(JLabel.CENTER);
+		iconDoctorsList.addMouseListener(eventoDoctor);
+		JLabel lblDoctorList = new JLabel("Lista de doctores");
+		lblDoctorList.setFont(normalUse);
+		lblDoctorList.setForeground(paleteBeautyBlu);
+		lblDoctorList.setBounds(20, 160, 185, 20);
+		lblDoctorList.setHorizontalAlignment(JLabel.CENTER);
+		lblDoctorList.setBackground(new Color(0,0,0,0));
+		lblDoctorList.addMouseListener(eventoDoctor);
+		lblDoctorList.setOpaque(false);
+		doctorsListPanel.addMouseListener(eventoDoctor);
+		doctorsListPanel.add(iconDoctorsList);
+		doctorsListPanel.add(lblDoctorList);
 		
 		//panel del listado de administradores
 		adminListPanel = new JPanel(){
@@ -819,7 +867,69 @@ public class Principal extends JFrame {
 		adminListPanel.setBounds(572, 487, 225, 225);
 		adminListPanel.setBackground(Color.WHITE);
 		adminListPanel.setVisible(false);
+		adminListPanel.setLayout(null);
+		adminListPanel.setFocusable(false);
+		adminListPanel.setOpaque(false);
 		infoPanel.add(adminListPanel);
+		
+		JLabel iconAdminList = new JLabel(){
+			/**
+			 * 
+			 */
+			 private static final long serialVersionUID = 1L;
+
+			    @Override
+			    protected void paintComponent(Graphics g) {
+			        Graphics2D g2 = (Graphics2D) g;
+			        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);			        
+			        g2.setColor(getBackground());
+			        g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
+			        super.paintComponent(g);
+			    }
+		};
+		MouseListener eventoAdmin = new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				adminListPanel.setBackground(new Color(189, 214, 240));
+				adminListPanel.repaint();
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				adminListPanel.setBackground(Color.WHITE);
+				adminListPanel.repaint();
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				adminListPanel.setBackground(new Color(207, 207, 207));
+				try {
+					ListarAdministradores listAdministrador = new ListarAdministradores();
+					listAdministrador.setVisible(true);
+				} catch (Exception e2) {
+					e2.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Error inesperado al abrir la ventana", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		};		
+		ImageIcon imgAdminList = new ImageIcon(getClass().getResource("/Imagenes/adminList.png"));
+		Image scaleAdminList = imgAdminList.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+		iconAdminList.setIcon(new ImageIcon(scaleAdminList));
+		iconAdminList.setBounds(50, 20, 125, 125);
+		iconAdminList.setVisible(true);
+		iconAdminList.setOpaque(false);
+		iconAdminList.setBackground(new Color(0,0,0,0));
+		iconAdminList.setHorizontalAlignment(JLabel.CENTER);
+		iconAdminList.addMouseListener(eventoAdmin);
+		JLabel lblAdminList = new JLabel("Lista de administradores");
+		lblAdminList.setFont(normalUse);
+		lblAdminList.setForeground(paleteBeautyBlu);
+		lblAdminList.setBounds(20, 160, 185, 20);
+		lblAdminList.setHorizontalAlignment(JLabel.CENTER);
+		lblAdminList.setBackground(new Color(0,0,0,0));
+		lblAdminList.addMouseListener(eventoAdmin);
+		lblAdminList.setOpaque(false);
+		adminListPanel.addMouseListener(eventoAdmin);
+		adminListPanel.add(iconAdminList);
+		adminListPanel.add(lblAdminList);
 		
 		vacunaListPanel = new JPanel(){
 			/**
@@ -839,7 +949,69 @@ public class Principal extends JFrame {
 		vacunaListPanel.setBounds(317, 487, 225, 225);
 		vacunaListPanel.setBackground(Color.WHITE);
 		vacunaListPanel.setVisible(false);
+		vacunaListPanel.setLayout(null);
+		vacunaListPanel.setFocusable(false);
+		vacunaListPanel.setOpaque(false);
 		infoPanel.add(vacunaListPanel);
+		
+		JLabel iconVacunaList = new JLabel(){
+			/**
+			 * 
+			 */
+			 private static final long serialVersionUID = 1L;
+
+			    @Override
+			    protected void paintComponent(Graphics g) {
+			        Graphics2D g2 = (Graphics2D) g;
+			        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);			        
+			        g2.setColor(getBackground());
+			        g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
+			        super.paintComponent(g);
+			    }
+		};
+		MouseListener eventoVacuna = new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				vacunaListPanel.setBackground(new Color(189, 214, 240));
+				vacunaListPanel.repaint();
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				vacunaListPanel.setBackground(Color.WHITE);
+				vacunaListPanel.repaint();
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				vacunaListPanel.setBackground(new Color(207, 207, 207));
+				/*try {
+					ListarDoctores listDoctor = new ListarDoctores();
+					listDoctor.setVisible(true);
+				} catch (Exception e2) {
+					e2.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Error inesperado al abrir la ventana", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
+				}*/
+			}
+		};		
+		ImageIcon imgVacunaList = new ImageIcon(getClass().getResource("/Imagenes/vacinList.png"));
+		Image scaleVacunaList = imgVacunaList.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+		iconVacunaList.setIcon(new ImageIcon(scaleVacunaList));
+		iconVacunaList.setBounds(50, 20, 125, 125);
+		iconVacunaList.setVisible(true);
+		iconVacunaList.setOpaque(false);
+		iconVacunaList.setBackground(new Color(0,0,0,0));
+		iconVacunaList.setHorizontalAlignment(JLabel.CENTER);
+		iconVacunaList.addMouseListener(eventoVacuna);
+		JLabel lblVacunaList = new JLabel("Lista de vacunas");
+		lblVacunaList.setFont(normalUse);
+		lblVacunaList.setForeground(paleteBeautyBlu);
+		lblVacunaList.setBounds(20, 160, 185, 20);
+		lblVacunaList.setHorizontalAlignment(JLabel.CENTER);
+		lblVacunaList.setBackground(new Color(0,0,0,0));
+		lblVacunaList.addMouseListener(eventoVacuna);
+		lblVacunaList.setOpaque(false);
+		vacunaListPanel.addMouseListener(eventoVacuna);
+		vacunaListPanel.add(iconVacunaList);
+		vacunaListPanel.add(lblVacunaList);
 		
 		pacientesListPanel = new JPanel(){
 			/**
@@ -859,6 +1031,68 @@ public class Principal extends JFrame {
 		pacientesListPanel.setBounds(57, 487, 225, 225);
 		pacientesListPanel.setBackground(Color.WHITE);
 		pacientesListPanel.setVisible(false);
+		pacientesListPanel.setLayout(null);
+		pacientesListPanel.setFocusable(false);
+		pacientesListPanel.setOpaque(false);
 		infoPanel.add(pacientesListPanel);
+		
+		JLabel iconPacienteList = new JLabel(){
+			/**
+			 * 
+			 */
+			 private static final long serialVersionUID = 1L;
+
+			    @Override
+			    protected void paintComponent(Graphics g) {
+			        Graphics2D g2 = (Graphics2D) g;
+			        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);			        
+			        g2.setColor(getBackground());
+			        g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
+			        super.paintComponent(g);
+			    }
+		};
+		MouseListener eventoPaciente = new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				pacientesListPanel.setBackground(new Color(189, 214, 240));
+				pacientesListPanel.repaint();
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				pacientesListPanel.setBackground(Color.WHITE);
+				pacientesListPanel.repaint();
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				pacientesListPanel.setBackground(new Color(207, 207, 207));
+				/*try {
+					ListarDoctores listDoctor = new ListarDoctores();
+					listDoctor.setVisible(true);
+				} catch (Exception e2) {
+					e2.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Error inesperado al abrir la ventana", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
+				}*/
+			}
+		};		
+		ImageIcon imgPacienteList = new ImageIcon(getClass().getResource("/Imagenes/pacientList.png"));
+		Image scalePacienteList = imgPacienteList.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+		iconPacienteList.setIcon(new ImageIcon(scalePacienteList));
+		iconPacienteList.setBounds(50, 20, 125, 125);
+		iconPacienteList.setVisible(true);
+		iconPacienteList.setOpaque(false);
+		iconPacienteList.setBackground(new Color(0,0,0,0));
+		iconPacienteList.setHorizontalAlignment(JLabel.CENTER);
+		iconPacienteList.addMouseListener(eventoPaciente);
+		JLabel lblPacienteList = new JLabel("Lista de pacientes");
+		lblPacienteList.setFont(normalUse);
+		lblPacienteList.setForeground(paleteBeautyBlu);
+		lblPacienteList.setBounds(20, 160, 185, 20);
+		lblPacienteList.setHorizontalAlignment(JLabel.CENTER);
+		lblPacienteList.setBackground(new Color(0,0,0,0));
+		lblPacienteList.addMouseListener(eventoPaciente);
+		lblPacienteList.setOpaque(false);
+		pacientesListPanel.addMouseListener(eventoPaciente);
+		pacientesListPanel.add(iconPacienteList);
+		pacientesListPanel.add(lblPacienteList);
 	}
 }
