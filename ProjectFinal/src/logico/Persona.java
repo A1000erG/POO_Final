@@ -5,77 +5,94 @@ import java.time.LocalDate;
 
 public abstract class Persona implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	private String cedula;
-	private String nombre;
-	private char sexo;
-	private LocalDate fechaNacimiento;
-	private String telefono;
+    private static final long serialVersionUID = 1L;
+    private String cedula;
+    private String nombre;
+    private char sexo;
+    private LocalDate fechaNacimiento;
+    private String telefono;
+    
+    // --- NUEVOS CAMPOS DE ESTADO (Sin foto) ---
+    private boolean activo;
+    private String causaDeshabilitacion;
+    // Se eliminó rutaFoto de aquí porque Paciente no la usa.
+    // Doctor y Admin la heredan de Personal.
 
-	public Persona() {
-		this.cedula = null;
-		this.nombre = null;
-		this.sexo = ' ';
-		this.fechaNacimiento = null;
-		this.telefono = null;
-	}
+    public Persona() {
+        this.cedula = null;
+        this.nombre = null;
+        this.sexo = ' ';
+        this.fechaNacimiento = null;
+        this.telefono = null;
+        this.activo = true;
+        this.causaDeshabilitacion = "";
+    }
 
-	/*
-	 * Función: Persona (Constructor) Argumentos: (String) cedula: Identificador
-	 * único de la persona. (String) nombre: Nombre y apellido. (char) sexo: Género
-	 * ('M' o 'F'). (LocalDate) fechaNacimiento: Fecha de nacimiento. (String)
-	 * telefono: Teléfono de contacto. Objetivo: Inicializar los atributos base de
-	 * cualquier persona. Retorno: (Ninguno): Es un constructor.
-	 */
-	public Persona(String cedula, String nombre, char sexo, LocalDate fechaNacimiento, String telefono) {
-		this.cedula = cedula;
-		this.nombre = nombre;
-		this.sexo = sexo;
-		this.fechaNacimiento = fechaNacimiento;
-		this.telefono = telefono;
-	}
+    public Persona(String cedula, String nombre, char sexo, LocalDate fechaNacimiento, String telefono) {
+        this.cedula = cedula;
+        this.nombre = nombre;
+        this.sexo = sexo;
+        this.fechaNacimiento = fechaNacimiento;
+        this.telefono = telefono;
+        this.activo = true;
+        this.causaDeshabilitacion = "";
+    }
 
-	public String getCedula() {
-		return cedula;
-	}
+    public String getCedula() {
+        return cedula;
+    }
 
-	public void setCedula(String cedula) {
-		this.cedula = cedula;
-	}
+    public void setCedula(String cedula) {
+        this.cedula = cedula;
+    }
 
-	public String getNombre() {
-		return nombre;
-	}
+    public String getNombre() {
+        return nombre;
+    }
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-	public char getSexo() {
-		return sexo;
-	}
+    public char getSexo() {
+        return sexo;
+    }
 
-	public void setSexo(char sexo) {
-		this.sexo = sexo;
-	}
+    public void setSexo(char sexo) {
+        this.sexo = sexo;
+    }
 
-	public LocalDate getFechaNacimiento() {
-		return fechaNacimiento;
-	}
+    public LocalDate getFechaNacimiento() {
+        return fechaNacimiento;
+    }
 
-	public void setFechaNacimiento(LocalDate fechaNacimiento) {
-		this.fechaNacimiento = fechaNacimiento;
-	}
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
+    }
 
-	public String getTelefono() {
-		return telefono;
-	}
+    public String getTelefono() {
+        return telefono;
+    }
 
-	public void setTelefono(String telefono) {
-		this.telefono = telefono;
-	}
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+    // --- GETTERS Y SETTERS DE ESTADO ---
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
+    public String getCausaDeshabilitacion() {
+        return causaDeshabilitacion;
+    }
+
+    public void setCausaDeshabilitacion(String causaDeshabilitacion) {
+        this.causaDeshabilitacion = causaDeshabilitacion;
+    }
 }
