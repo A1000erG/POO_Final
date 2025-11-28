@@ -71,6 +71,7 @@ public class Principal extends JFrame {
 	private static JPanel pacientesListPanel;
 	private static Clinica clinic = Clinica.getInstance();
 	private JPanel bkgPanel;
+	private JLabel lblDoctor;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -221,6 +222,20 @@ public class Principal extends JFrame {
 			public void mouseExited(MouseEvent e) {
 				btnConsultas.setBackground(paleteGreen);
 			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(mode==0) {
+					try {
+						RegCita regCita = new RegCita();
+						regCita.setVisible(true);
+					} catch (Exception e2) {
+						e2.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Error inesperado al abrir la ventana", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
+					}
+
+				}
+			}
+			
 		});
 		btnConsultas.setForeground(Color.WHITE);
 		btnConsultas.setFont(buttonFont);
@@ -285,6 +300,7 @@ public class Principal extends JFrame {
 					vacunaListPanel.setVisible(true);
 					doctorsListPanel.setVisible(true);
 					pacientesListPanel.setVisible(true);
+					lblDoctor.setVisible(true);
 				} catch (Exception e2) {
 					e2.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Error inesperado al mostrar la ventana", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
@@ -669,6 +685,13 @@ public class Principal extends JFrame {
 		}
 		
 		//================PANELES PARA LISTADOS======================
+		ImageIcon doctorIcon = new ImageIcon(getClass().getResource("/Imagenes/doctorPanel2.png"));
+		Image doctorRedim = doctorIcon.getImage().getScaledInstance(300, 286, Image.SCALE_SMOOTH);
+		lblDoctor = new JLabel(new ImageIcon(doctorRedim));
+		lblDoctor.setBounds(680,115,300,286);
+		lblDoctor.setVisible(false);
+		infoPanel.add(lblDoctor);
+		
 		infoListPanel = new JPanel() {
 			private static final long serialVersionUID = 1L;
 			@Override
@@ -681,21 +704,10 @@ public class Principal extends JFrame {
 			}
 		};
 		infoListPanel.setBackground(paleteBeautyBlu);
-		infoListPanel.setBounds(57, 177, 1014, 300);
+		infoListPanel.setBounds(57, 177, 1014, 225);
 		infoListPanel.setVisible(false);
 		infoListPanel.setLayout(null);
 		infoPanel.add(infoListPanel);
-		
-		ImageIcon doctorIcon = new ImageIcon(getClass().getResource("/Imagenes/doctorPanel2.png"));
-		Image doctorRedim = doctorIcon.getImage().getScaledInstance(375, 375, Image.SCALE_SMOOTH);
-		JLabel lblDoctor = new JLabel(new ImageIcon(doctorRedim));
-		lblDoctor.setBounds(630,0,375,375);
-		if(mode==0) {
-			lblDoctor.setVisible(true);
-		}else {
-			lblDoctor.setVisible(false);
-		}
-		infoListPanel.add(lblDoctor);
 		
 		JLabel lblTitlePanel = new JLabel("Título del panel");
 		lblTitlePanel.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 28f));
@@ -751,6 +763,7 @@ public class Principal extends JFrame {
 					vacunaListPanel.setVisible(false);
 					doctorsListPanel.setVisible(false);
 					pacientesListPanel.setVisible(false);
+					lblDoctor.setVisible(false);
 				} catch (Exception e2) {
 					e2.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Error inesperado al mostrar la ventana", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
@@ -761,7 +774,7 @@ public class Principal extends JFrame {
 		btnVolver.setFont(buttonFont);
 		btnVolver.setForeground(paleteBeautyBlu);
 		btnVolver.setBackground(Color.WHITE);
-		btnVolver.setBounds(40, 225, 250, 25);
+		btnVolver.setBounds(40, 175, 250, 25);
 		btnVolver.setVisible(true);
 		infoListPanel.add(btnVolver);
 		
@@ -781,7 +794,7 @@ public class Principal extends JFrame {
 				g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
 			}
 		};
-		doctorsListPanel.setBounds(827, 487, 225, 225);
+		doctorsListPanel.setBounds(827, 432, 225, 225);
 		doctorsListPanel.setBackground(Color.WHITE);
 		doctorsListPanel.setVisible(false);
 		doctorsListPanel.setLayout(null);
@@ -864,7 +877,7 @@ public class Principal extends JFrame {
 				g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
 			}
 		};
-		adminListPanel.setBounds(572, 487, 225, 225);
+		adminListPanel.setBounds(572, 432, 225, 225);
 		adminListPanel.setBackground(Color.WHITE);
 		adminListPanel.setVisible(false);
 		adminListPanel.setLayout(null);
@@ -946,7 +959,7 @@ public class Principal extends JFrame {
 				g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
 			}
 		};
-		vacunaListPanel.setBounds(317, 487, 225, 225);
+		vacunaListPanel.setBounds(317, 432, 225, 225);
 		vacunaListPanel.setBackground(Color.WHITE);
 		vacunaListPanel.setVisible(false);
 		vacunaListPanel.setLayout(null);
@@ -983,13 +996,13 @@ public class Principal extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				vacunaListPanel.setBackground(new Color(207, 207, 207));
-				/*try {
-					ListarDoctores listDoctor = new ListarDoctores();
-					listDoctor.setVisible(true);
+				try {
+					ListarVacunas listVacuna = new ListarVacunas();
+					listVacuna.setVisible(true);
 				} catch (Exception e2) {
 					e2.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Error inesperado al abrir la ventana", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
-				}*/
+				}
 			}
 		};		
 		ImageIcon imgVacunaList = new ImageIcon(getClass().getResource("/Imagenes/vacinList.png"));
@@ -1028,7 +1041,7 @@ public class Principal extends JFrame {
 				g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
 			}
 		};
-		pacientesListPanel.setBounds(57, 487, 225, 225);
+		pacientesListPanel.setBounds(57, 432, 225, 225);
 		pacientesListPanel.setBackground(Color.WHITE);
 		pacientesListPanel.setVisible(false);
 		pacientesListPanel.setLayout(null);
@@ -1065,13 +1078,13 @@ public class Principal extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				pacientesListPanel.setBackground(new Color(207, 207, 207));
-				/*try {
-					ListarDoctores listDoctor = new ListarDoctores();
-					listDoctor.setVisible(true);
+				try {
+					ListarPacientes listPaciente = new ListarPacientes();
+					listPaciente.setVisible(true);
 				} catch (Exception e2) {
 					e2.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Error inesperado al abrir la ventana", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
-				}*/
+				}
 			}
 		};		
 		ImageIcon imgPacienteList = new ImageIcon(getClass().getResource("/Imagenes/pacientList.png"));

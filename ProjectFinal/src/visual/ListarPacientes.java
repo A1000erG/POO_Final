@@ -61,7 +61,7 @@ public class ListarPacientes extends JDialog {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    ListarPacientes dialog = new ListarPacientes(null);
+                    ListarPacientes dialog = new ListarPacientes(/*null*/);
                     dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     dialog.setVisible(true);
                 } catch (Exception e) { e.printStackTrace(); }
@@ -69,7 +69,7 @@ public class ListarPacientes extends JDialog {
         });
     }
 
-    public ListarPacientes(Personal usuarioLogueado) {
+    public ListarPacientes(/*Personal usuarioLogueado*/) {
         setTitle("Gestión de Pacientes");
         setModal(true);
         setBounds(100, 100, 1366, 768);

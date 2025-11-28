@@ -58,7 +58,7 @@ public class ListarVacunas extends JDialog {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    ListarVacunas dialog = new ListarVacunas(null);
+                    ListarVacunas dialog = new ListarVacunas(/*null*/);
                     dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     dialog.setVisible(true);
                 } catch (Exception e) { e.printStackTrace(); }
@@ -66,7 +66,7 @@ public class ListarVacunas extends JDialog {
         });
     }
 
-    public ListarVacunas(Personal usuarioLogueado) {
+    public ListarVacunas(/*Personal usuarioLogueado*/) {
         setTitle("Gestión de Vacunas");
         setModal(true);
         setBounds(100, 100, 1366, 768);
