@@ -15,12 +15,17 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.io.File;
-
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.awt.Toolkit;
 
 import Utilidades.FuenteUtil;
@@ -349,7 +354,6 @@ public class RegAdmin extends JFrame {
 		    //String cupoTexto = txtCupoDia.getText();
 		    
 		    String rutaFotoOriginal = (String) lblAvatar.getClientProperty("rutaFoto");
-			
 		    boolean ok = controlador.registrarAdminDesdeFormulario(
 		    		usuario, contrasenia, nombre, cargo, rutaFotoOriginal);
 
@@ -447,5 +451,6 @@ public class RegAdmin extends JFrame {
 
 		panelContenido.add(btnVolver);
 	}
+
 
 }

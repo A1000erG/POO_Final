@@ -20,8 +20,10 @@ import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import Utilidades.FuenteUtil;
+import logico.Cita;
 import logico.Clinica;
 import logico.Enfermedad;
+import sun.util.resources.LocaleData;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -36,7 +38,13 @@ import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.RoundRectangle2D;
+import java.io.File;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -95,13 +103,25 @@ public class Principal extends JFrame {
 	public Principal(int mode, String idUser) {
 		getToolkit().getScreenSize();
 		setResizable(false);
-
+		
 		setTitle("Compile Salud");
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setResizable(false);
 		setLocationRelativeTo(null);		
 
+		addWindowListener(new WindowAdapter(){
+			@Override
+			public void windowClosing(WindowEvent e) {
+				int opcion = JOptionPane.showConfirmDialog(null, "¿Estás seguro de que deseas salir de la aplicación?", 
+						"Confirmar Cierre", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if(opcion == JOptionPane.YES_OPTION) {
+					clinic.guardarDatosLocal();
+					dispose();
+					System.exit(0);
+				}
+			}
+		});
 		contentPane = new JPanel();
 		contentPane.setPreferredSize(new Dimension(820, 3100));
 		//contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -109,7 +129,7 @@ public class Principal extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 
 		bkgPanel = new JPanel();
-		bkgPanel.setBackground(Color.LIGHT_GRAY);
+		bkgPanel.setBackground(new Color(211,211,211));
 		contentPane.add(bkgPanel, BorderLayout.CENTER);
 		bkgPanel.setLayout(null);
 
@@ -325,11 +345,22 @@ public class Principal extends JFrame {
 		infoUserPanel.setBounds(0, 0, 1131, 120);
 		infoPanel.add(infoUserPanel);
 		infoUserPanel.setLayout(null);
-		JLabel lblNombreUser = new JLabel("Nombre Usuario");
+		
+		String idCod = "";
+		String nombreUsuario = "";
+		if(mode==0) {
+			if(Clinica.getInstance().getAdministrativos().size()>0) {
+				nombreUsuario = Clinica.getInstance().getAdministrativoPorUsuario(idUser).getNombre();
+				idCod = String.format("ID: A-%03d", Clinica.getInstance().getAdministrativoPorUsuario(idUser).getIdAdmin()); 
+			}else nombreUsuario = "Admin";	
+		}else {
+			if(Clinica.getInstance().getDoctores().size()>0) {
+				nombreUsuario = Clinica.getInstance().getDoctorPorUsuario(idUser).getNombre();
+				idCod = String.format("ID: D-%03d", Clinica.getInstance().getDoctorPorUsuario(idUser).getIdDoctor());
+			}else nombreUsuario = "Doctor";
+		}
+		JLabel lblNombreUser = new JLabel(nombreUsuario);
 		lblNombreUser.setForeground(Color.WHITE);
-		/*if(mode==0) {
-			lblNombreUser.setText(Clinica.getInstance().getDoctorPorUsuario(idUser).getNombre());
-		}*/
 		lblNombreUser.setFont(nameUser);
 		lblNombreUser.setBounds(846, 37, 153, 14);
 		infoUserPanel.add(lblNombreUser);
@@ -344,10 +375,18 @@ public class Principal extends JFrame {
 		}
 		lblRolUser.setBounds(846, 62, 119, 14);
 		infoUserPanel.add(lblRolUser);
-
+		
+		String dirImagen = imagenEncontrada(idUser);
+		ImageIcon imgUser;
+		if(dirImagen.equalsIgnoreCase("")) {
+			imgUser = new ImageIcon(getClass().getResource("/Imagenes/useResi.png"));
+		}else {
+			imgUser = new ImageIcon(idCod);
+		}
+		Image imgEscalada = imgUser.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
 		JLabel lblFotoUser = new JLabel("");
-		lblFotoUser.setBounds(1020, 11, 90, 90);
-		lblFotoUser.setIcon(new ImageIcon("Recursos/Imagenes/useResi.png"));
+		lblFotoUser.setBounds(1020, 11, 80, 80);
+		lblFotoUser.setIcon(new ImageIcon(imgEscalada));
 		infoUserPanel.add(lblFotoUser);
 
 		//================================PANELES PARA DOCTORES====================================
@@ -531,7 +570,8 @@ public class Principal extends JFrame {
 		lblDescripEnf.setFont(normalUse);
 		cantEnfermPanel.add(lblDescripEnf);
 
-		JLabel lblCountEnf = new JLabel("25");
+		Integer cantEnf = Clinica.getInstance().getCatalogoEnfermedades().size();
+		JLabel lblCountEnf = new JLabel(cantEnf.toString());
 		lblCountEnf.setFont(indicativeNumber);
 		lblCountEnf.setBounds(10, 11, 80, 50);
 		cantEnfermPanel.add(lblCountEnf);
@@ -573,7 +613,8 @@ public class Principal extends JFrame {
 		lblDescripVacuna.setBounds(10, 105, 151, 14);
 		cantVacunasPanel.add(lblDescripVacuna);
 
-		JLabel lblCountVac = new JLabel("13");
+		Integer cantVacunas = Clinica.getInstance().getVacunas().size();
+		JLabel lblCountVac = new JLabel(cantVacunas.toString());
 		lblCountVac.setFont(indicativeNumber);
 		lblCountVac.setBounds(10, 11, 80, 50);
 		cantVacunasPanel.add(lblCountVac);
@@ -614,7 +655,12 @@ public class Principal extends JFrame {
 		lblDescripCitas.setBounds(10, 105, 151, 14);
 		cantCitasHoyPanel.add(lblDescripCitas);
 
-		JLabel lblCountCitas = new JLabel("34");
+		LocalDate hoy = LocalDate.now();
+		Integer cantCitasHoy = 0;
+		for (Cita cita : Clinica.getInstance().getCitas()) {
+			if(cita.getFecha()==hoy) cantCitasHoy++;
+		}
+		JLabel lblCountCitas = new JLabel(cantCitasHoy.toString());
 		lblCountCitas.setFont(indicativeNumber);
 		lblCountCitas.setBounds(10, 11, 80, 50);
 		cantCitasHoyPanel.add(lblCountCitas);
@@ -1107,5 +1153,28 @@ public class Principal extends JFrame {
 		pacientesListPanel.addMouseListener(eventoPaciente);
 		pacientesListPanel.add(iconPacienteList);
 		pacientesListPanel.add(lblPacienteList);
+	}
+
+	private String imagenEncontrada(String id) {
+		File carpeta = new File("FotosAdmin");
+		File[] archivos = carpeta.listFiles();
+		boolean encontrada = false;
+		String ruta="";
+		int i=0;
+		if (archivos != null) {
+			while(!encontrada && i<archivos.length) {
+				if (archivos[i].isFile()) {
+					String nombreArchivo = archivos[i].getName();
+					if(nombreArchivo.equalsIgnoreCase(id+".png") 
+							|| nombreArchivo.equalsIgnoreCase(id+".jpg") 
+							|| nombreArchivo.equalsIgnoreCase(id+".jpeg")) {
+						encontrada = true;
+						ruta = "FotosAdmin/" + nombreArchivo;
+					}
+				}
+				i++;
+			}
+        }
+		return ruta;
 	}
 }

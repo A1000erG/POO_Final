@@ -86,6 +86,7 @@ public class Clinica implements Serializable {
 	// --- Autenticación ---
 
 	public Personal login(String usuario, String contrasenia) {
+		
 		if (usuario.equals("admin") && contrasenia.equals("admin")) {
 			Administrativo adminTemp = new Administrativo();
 			adminTemp.setNombre("Super Admin");
@@ -389,7 +390,7 @@ public class Clinica implements Serializable {
 				
 				int idParaFoto = this.proximoIdAdmin;
 				String extension = obtenerExtension(rutaFotoOriginal);
-				String nombreArchivo = String.format("admin_%03d%s", idParaFoto, extension);
+				String nombreArchivo = String.format("A-%03d%s", idParaFoto, extension);
 				File destino = new File(carpeta, nombreArchivo);
 				
 				Path origenPath = Paths.get(rutaFotoOriginal);
@@ -433,6 +434,13 @@ public class Clinica implements Serializable {
 		return null;
 	}
 
+	public Administrativo getAdministrativoPorUsuario(String usuario) {
+		for (Administrativo admin : administrativos) {
+			if (admin.getUsuario().equals(usuario)) return admin;
+		}
+		return null;
+	}
+	
 	public int getProximoIdDoctor() { return proximoIdDoctor; }
 	public int getProximoIdAdmin() { return proximoIdAdmin; }
 	public String getUltimoMensajeError() { return ultimoMensajeError; }
