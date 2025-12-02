@@ -60,8 +60,6 @@ public class Principal extends JFrame {
     private static Color paletaGrisClaro = new Color(240, 245, 250);
     private static Color paletaBlanco = new Color(255, 255, 255);
     private static Color paletaRojo = new Color(220, 38, 38);
-    private static Color paletaAlerta = new Color(255, 140, 0);
-
     private static Font fuenteTituloGrafico = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 18f);
     private static Font fuenteNumeroIndicativo = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 20f);
     private static Font fuenteUsoNormal = FuenteUtil.cargarFuente("/Fuentes/Roboto-Light.ttf", 11f);
