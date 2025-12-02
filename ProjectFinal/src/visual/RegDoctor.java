@@ -2,7 +2,6 @@ package visual;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -12,8 +11,8 @@ import java.awt.RenderingHints;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -21,13 +20,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.io.File;
 
-import java.awt.Toolkit;
-
 import Utilidades.FuenteUtil;
 import logico.Clinica;
 
-public class RegDoctor extends JFrame {
-
+public class RegDoctor extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -39,8 +35,9 @@ public class RegDoctor extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					RegDoctor frame = new RegDoctor(0,"");
-					frame.setVisible(true);
+					RegDoctor dialog = new RegDoctor(0,"");
+					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -48,15 +45,17 @@ public class RegDoctor extends JFrame {
 		});
 	}
 
-
 	public RegDoctor(int mode, String idUser) {
-		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setResizable(false);
+		// --- CONFIGURACIÓN SOLICITADA ---
+		setModal(true);
+		setBounds(100, 100, 1366, 768);
 		setLocationRelativeTo(null);
+		// --------------------------------
+		
+		setResizable(false);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
 		contentPane = new JPanel();
-		//contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 		
@@ -68,10 +67,8 @@ public class RegDoctor extends JFrame {
 		
 		contentPane.add(panelSuperior, BorderLayout.NORTH);
 		
-		
-		Dimension tamanioPantalla = Toolkit.getDefaultToolkit().getScreenSize();
-		int anchoPantalla = (int) tamanioPantalla.getWidth();
-		
+		// Ajustamos el ancho de referencia al tamaño de la ventana (1366) para centrar elementos
+		int anchoPantalla = 1366;
 		
 		// LOGO IZQUIERDO
 		ImageIcon iconLogo = new ImageIcon(getClass().getResource("/Imagenes/logoBlanco.png"));
@@ -103,7 +100,7 @@ public class RegDoctor extends JFrame {
 		
 		
 		// ------------------ PANEL CENTRAL (CONTENIDO) -------------------
-		JPanel panelContenido  = new JPanel();
+		JPanel panelContenido = new JPanel();
 		panelContenido.setBackground(java.awt.Color.WHITE);
 		panelContenido.setLayout(null);
 		
@@ -111,7 +108,6 @@ public class RegDoctor extends JFrame {
 		
 		
 		// ID DOCTOR
-		
 		Clinica controlador = Clinica.getInstance();
 		int nextIdDoctor = controlador.getProximoIdDoctor();
 		String codigoDoctor = String.format("ID: D-%03d", nextIdDoctor);
@@ -120,7 +116,7 @@ public class RegDoctor extends JFrame {
 		lblIdDoctor.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 20f));
 		lblIdDoctor.setForeground(new Color(50, 50, 50));
 		
-		int xID = (anchoPantalla  / 2) - 100;
+		int xID = (anchoPantalla / 2) - 100;
 		lblIdDoctor.setBounds (xID , 50 , 200, 40);
 		
 		lblIdDoctor.setHorizontalAlignment(JLabel.CENTER);
@@ -161,46 +157,46 @@ public class RegDoctor extends JFrame {
 		
 		// OPCION CAMBIAR FOTO
 		lblAvatar.addMouseListener(new java.awt.event.MouseAdapter() {
-		    @Override
-		    public void mouseClicked(java.awt.event.MouseEvent e) {
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent e) {
 
-		        JFileChooser chooser = new JFileChooser();
-		        chooser.setFileFilter(
-		            new FileNameExtensionFilter(
-		                "Imágenes (JPG, PNG)", "jpg", "jpeg", "png"
-		            )
-		        );
+				JFileChooser chooser = new JFileChooser();
+				chooser.setFileFilter(
+					new FileNameExtensionFilter(
+						"Imágenes (JPG, PNG)", "jpg", "jpeg", "png"
+					)
+				);
 
-		        int resultado = chooser.showOpenDialog(RegDoctor.this);
-		        if (resultado != JFileChooser.APPROVE_OPTION) {
-		            return; // uusuario canceló
-		        }
+				int resultado = chooser.showOpenDialog(RegDoctor.this);
+				if (resultado != JFileChooser.APPROVE_OPTION) {
+					return; // uusuario canceló
+				}
 
-		        File archivo = chooser.getSelectedFile();
+				File archivo = chooser.getSelectedFile();
 
-		        // Cargar y escalar la imagen cuadardo
-		        ImageIcon iconOriginal = new ImageIcon(archivo.getAbsolutePath());
-		        Image imgEscalada = iconOriginal.getImage().getScaledInstance(
-		                lblAvatar.getWidth(),
-		                lblAvatar.getHeight(),
-		                Image.SCALE_SMOOTH
-		        );
-		        ImageIcon iconFinal = new ImageIcon(imgEscalada);
+				// Cargar y escalar la imagen cuadardo
+				ImageIcon iconOriginal = new ImageIcon(archivo.getAbsolutePath());
+				Image imgEscalada = iconOriginal.getImage().getScaledInstance(
+						lblAvatar.getWidth(),
+						lblAvatar.getHeight(),
+						Image.SCALE_SMOOTH
+				);
+				ImageIcon iconFinal = new ImageIcon(imgEscalada);
 
-		        lblAvatar.setIcon(iconFinal);
+				lblAvatar.setIcon(iconFinal);
 
-		        lblAvatar.putClientProperty("rutaFoto", archivo.getAbsolutePath());
-		    }
+				lblAvatar.putClientProperty("rutaFoto", archivo.getAbsolutePath());
+			}
 		});
 
 		lblFotoTexto.addMouseListener(new java.awt.event.MouseAdapter() {
-		    @Override
-		    public void mouseClicked(java.awt.event.MouseEvent e) {
-		        // mismo click del avatar
-		        for (java.awt.event.MouseListener ml : lblAvatar.getMouseListeners()) {
-		            ml.mouseClicked(e);
-		        }
-		    }
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent e) {
+				// mismo click del avatar
+				for (java.awt.event.MouseListener ml : lblAvatar.getMouseListeners()) {
+					ml.mouseClicked(e);
+				}
+			}
 		});
 
 		
@@ -228,7 +224,7 @@ public class RegDoctor extends JFrame {
 		JTextField txtUsuario = new JTextField();
 		txtUsuario.setBounds(xIzq, yFila1, anchoCampo, altoCampo);
 		txtUsuario.setBorder(
-		    BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
+			BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
 		);
 		txtUsuario.setForeground(new Color(55,65,81));
 		txtUsuario.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
@@ -245,7 +241,7 @@ public class RegDoctor extends JFrame {
 		JTextField txtContrasenia = new JTextField();
 		txtContrasenia.setBounds(xIzq, yFila2, anchoCampo, altoCampo);
 		txtContrasenia.setBorder(
-		    BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
+			BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
 		);
 		txtContrasenia.setForeground(new Color(55,65,81));
 		txtContrasenia.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
@@ -265,7 +261,7 @@ public class RegDoctor extends JFrame {
 		JTextField txtNombre = new JTextField();
 		txtNombre.setBounds(xDer, yFila1, anchoCampo, altoCampo);
 		txtNombre.setBorder(
-		    BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
+			BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
 		);
 		txtNombre.setForeground(new Color(55,65,81));
 		txtNombre.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
@@ -282,7 +278,7 @@ public class RegDoctor extends JFrame {
 		JTextField txtEspecialidad = new JTextField();
 		txtEspecialidad.setBounds(xDer, yFila2, anchoCampo, altoCampo);
 		txtEspecialidad.setBorder(
-		    BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
+			BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
 		);
 		txtEspecialidad.setForeground(new Color(55,65,81));
 		txtEspecialidad.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
@@ -299,7 +295,7 @@ public class RegDoctor extends JFrame {
 		JTextField txtCupoDia = new JTextField();
 		txtCupoDia.setBounds(xDer, yFila3, anchoCampo, altoCampo);
 		txtCupoDia.setBorder(
-		    BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
+			BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
 		);
 		txtCupoDia.setForeground(new Color(55,65,81));
 		txtCupoDia.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
@@ -346,61 +342,61 @@ public class RegDoctor extends JFrame {
 
 		// EFECTO DEL MAUSE EN BOTON
 		btnRegistrar.addMouseListener(new java.awt.event.MouseAdapter() {
-		    @Override
-		    public void mouseEntered(java.awt.event.MouseEvent e) {
-		        btnRegistrar.setBackground(verdeHover);
-		    }
-		    @Override
-		    public void mouseExited(java.awt.event.MouseEvent e) {
-		        btnRegistrar.setBackground(verdeBtn);
-		    }
+			@Override
+			public void mouseEntered(java.awt.event.MouseEvent e) {
+				btnRegistrar.setBackground(verdeHover);
+			}
+			@Override
+			public void mouseExited(java.awt.event.MouseEvent e) {
+				btnRegistrar.setBackground(verdeBtn);
+			}
 		});
 		
 		btnRegistrar.addActionListener(e -> {
 			String usuario = txtUsuario.getText();
-		    String contrasenia = txtContrasenia.getText();
-		    String nombre = txtNombre.getText();
-		    String especialidad = txtEspecialidad.getText();
-		    String cupoTexto = txtCupoDia.getText();
-		    
-		    String rutaFotoOriginal = (String) lblAvatar.getClientProperty("rutaFoto");
+			String contrasenia = txtContrasenia.getText();
+			String nombre = txtNombre.getText();
+			String especialidad = txtEspecialidad.getText();
+			String cupoTexto = txtCupoDia.getText();
 			
-		    boolean ok = controlador.registrarDoctorDesdeFormulario(
-		    		usuario, contrasenia, nombre, especialidad, cupoTexto, rutaFotoOriginal);
+			String rutaFotoOriginal = (String) lblAvatar.getClientProperty("rutaFoto");
+			
+			boolean ok = controlador.registrarDoctorDesdeFormulario(
+					usuario, contrasenia, nombre, especialidad, cupoTexto, rutaFotoOriginal);
 
-		    if (!ok) {
-		        //  error
-		        lblMensaje.setForeground(new Color(220, 38, 38)); // rojo
-		        lblMensaje.setText(controlador.getUltimoMensajeError());
-		        timerMensaje.restart();
-		    } else {
-		        // éxito
-		        lblMensaje.setForeground(new Color(22, 163, 74)); // verde
-		        lblMensaje.setText("Doctor registrado correctamente.");
-		        timerMensaje.restart();
+			if (!ok) {
+				//  error
+				lblMensaje.setForeground(new Color(220, 38, 38)); // rojo
+				lblMensaje.setText(controlador.getUltimoMensajeError());
+				timerMensaje.restart();
+			} else {
+				// éxito
+				lblMensaje.setForeground(new Color(22, 163, 74)); // verde
+				lblMensaje.setText("Doctor registrado correctamente.");
+				timerMensaje.restart();
 
-		        txtUsuario.setText("");
-		        txtContrasenia.setText("");
-		        txtNombre.setText("");
-		        txtEspecialidad.setText("");
-		        txtCupoDia.setText("");
-		        
-		        // Avatar de inicio
-		        ImageIcon iconUsuarioGris = new ImageIcon(
-		                getClass().getResource("/Imagenes/UsuarioGris.png")
-		        );
-		        Image imgUsuarioGris = iconUsuarioGris.getImage().getScaledInstance(
-		                lblAvatar.getWidth(),
-		                lblAvatar.getHeight(),
-		                Image.SCALE_SMOOTH
-		        );
-		        lblAvatar.setIcon(new ImageIcon(imgUsuarioGris));
-		        lblAvatar.putClientProperty("rutaFoto", null);
-		        
-		        int siguienteId = controlador.getProximoIdDoctor();
-		        String nuevoCodigo = String.format("ID: D-%03d", siguienteId);
-		        lblIdDoctor.setText(nuevoCodigo);
-		    }
+				txtUsuario.setText("");
+				txtContrasenia.setText("");
+				txtNombre.setText("");
+				txtEspecialidad.setText("");
+				txtCupoDia.setText("");
+				
+				// Avatar de inicio
+				ImageIcon iconUsuarioGris = new ImageIcon(
+						getClass().getResource("/Imagenes/UsuarioGris.png")
+				);
+				Image imgUsuarioGris = iconUsuarioGris.getImage().getScaledInstance(
+						lblAvatar.getWidth(),
+						lblAvatar.getHeight(),
+						Image.SCALE_SMOOTH
+				);
+				lblAvatar.setIcon(new ImageIcon(imgUsuarioGris));
+				lblAvatar.putClientProperty("rutaFoto", null);
+				
+				int siguienteId = controlador.getProximoIdDoctor();
+				String nuevoCodigo = String.format("ID: D-%03d", siguienteId);
+				lblIdDoctor.setText(nuevoCodigo);
+			}
 		});
 		
 		
@@ -415,14 +411,14 @@ public class RegDoctor extends JFrame {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-		    protected void paintComponent(Graphics g) {
+			protected void paintComponent(Graphics g) {
 
-		        Graphics2D g2 = (Graphics2D) g;
-		        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		        g2.setColor(getBackground());
-		        g2.fillOval(0, 0, getWidth(), getHeight());
-		    }
+				g2.setColor(getBackground());
+				g2.fillOval(0, 0, getWidth(), getHeight());
+			}
 		};
 		btnVolver.setOpaque(false);
 		btnVolver.setLayout(null);
@@ -432,23 +428,23 @@ public class RegDoctor extends JFrame {
 		btnVolver.setBackground(new Color(0, 64, 44));
 		
 		btnVolver.addMouseListener(new java.awt.event.MouseAdapter() {
-		    @Override
-		    public void mouseClicked(java.awt.event.MouseEvent e) {
-		        dispose();
-		    }
-		    
-		    @Override
-		    public void mouseEntered(java.awt.event.MouseEvent e) {
-		        btnVolver.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-		        btnVolver.setBackground(new Color(4, 120, 62)); // Verde mas claro
-		        btnVolver.repaint();
-		    }
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent e) {
+				dispose();
+			}
+			
+			@Override
+			public void mouseEntered(java.awt.event.MouseEvent e) {
+				btnVolver.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+				btnVolver.setBackground(new Color(4, 120, 62)); // Verde mas claro
+				btnVolver.repaint();
+			}
 
-		    @Override
-		    public void mouseExited(java.awt.event.MouseEvent e) {
-		        btnVolver.setBackground(new Color(0, 64, 44));
-		        btnVolver.repaint();
-		    }
+			@Override
+			public void mouseExited(java.awt.event.MouseEvent e) {
+				btnVolver.setBackground(new Color(0, 64, 44));
+				btnVolver.repaint();
+			}
 		});
 		
 		// Flecha
@@ -463,5 +459,4 @@ public class RegDoctor extends JFrame {
 
 		panelContenido.add(btnVolver);
 	}
-
 }

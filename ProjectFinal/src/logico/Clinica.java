@@ -26,6 +26,7 @@ public class Clinica implements Serializable {
 	private ArrayList<Vacuna> vacunas;
 	private ArrayList<Solicitante> solicitantes;
 	private ArrayList<Administrativo> administrativos;
+
 	
 	private ArrayList<Enfermedad> catalogoEnfermedades;
 
@@ -126,8 +127,11 @@ public class Clinica implements Serializable {
 		if (historial == null || historial.isEmpty()) return false;
 		
 		Consulta ultimaConsulta = historial.get(historial.size() - 1);
-		if (ultimaConsulta.getDiagnostico() != null) {
-			return ultimaConsulta.getDiagnostico().requiereNotificacion();
+		// Actualización: Verificar lista de diagnósticos
+		if (ultimaConsulta.getDiagnosticos() != null) {
+			for (Diagnostico d : ultimaConsulta.getDiagnosticos()) {
+				if(d.requiereNotificacion()) return true;
+			}
 		}
 		return false;
 	}
@@ -257,6 +261,39 @@ public class Clinica implements Serializable {
 			consulta.getCitaAsociada().setEstado("Realizada");
 		}
 	}
+	
+	// =========================================================================
+	//  MÉTODOS DE COMPATIBILIDAD AÑADIDOS PARA SOPORTE VISUAL (RegConsulta / ListarCitas)
+	// =========================================================================
+	
+	public void insertarConsulta(Consulta consulta) {
+		registrarConsulta(consulta);
+	}
+	
+	public Cita buscarCitaPorId(String idStr) {
+		try {
+			int id = Integer.parseInt(idStr);
+			for (Cita c : citas) {
+				if (c.getIdCita() == id) {
+					return c;
+				}
+			}
+		} catch (NumberFormatException e) {
+			return null;
+		}
+		return null;
+	}
+	
+	public Enfermedad buscarEnfermedadPorNombre(String nombre) {
+		for (Enfermedad enf : catalogoEnfermedades) {
+			if (enf.getNombre().equalsIgnoreCase(nombre)) {
+				return enf;
+			}
+		}
+		return null;
+	}
+	
+	// =========================================================================
 
 	// --- Persistencia y Archivos ---
 
@@ -305,7 +342,7 @@ public class Clinica implements Serializable {
 	}
 
 	// --- Registro Avanzado con Fotos ---
-
+	
 	public boolean existeUsuario(String usuario) {
 		if (usuario == null) return false;
 		for (Doctor d : doctores) {
@@ -458,4 +495,76 @@ public class Clinica implements Serializable {
 	public void setProximoIdCita(int proximoIdCita) { this.proximoIdCita = proximoIdCita; }
 	public void setProximoIdConsulta(int proximoIdConsulta) { this.proximoIdConsulta = proximoIdConsulta; }
 	public void setProximoIdVacuna(int proximoIdVacuna) { this.proximoIdVacuna = proximoIdVacuna; }
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public int getProximoIdPaciente() {
+		return proximoIdPaciente;
+	}
+
+	public int getProximoIdCita() {
+		return proximoIdCita;
+	}
+
+	public int getProximoIdConsulta() {
+		return proximoIdConsulta;
+	}
+
+	public int getProximoIdVacuna() {
+		return proximoIdVacuna;
+	}
+
+	public static String getArchivoDatos() {
+		return ARCHIVO_DATOS;
+	}
+
+	public static void setInstance(Clinica instance) {
+		Clinica.instance = instance;
+	}
+
+	public void setDoctores(ArrayList<Doctor> doctores) {
+		this.doctores = doctores;
+	}
+
+	public void setPacientes(ArrayList<Paciente> pacientes) {
+		this.pacientes = pacientes;
+	}
+
+	public void setCitas(ArrayList<Cita> citas) {
+		this.citas = citas;
+	}
+
+	public void setConsultas(ArrayList<Consulta> consultas) {
+		this.consultas = consultas;
+	}
+
+	public void setVacunas(ArrayList<Vacuna> vacunas) {
+		this.vacunas = vacunas;
+	}
+
+	public void setSolicitantes(ArrayList<Solicitante> solicitantes) {
+		this.solicitantes = solicitantes;
+	}
+
+	public void setAdministrativos(ArrayList<Administrativo> administrativos) {
+		this.administrativos = administrativos;
+	}
+
+	public void setCatalogoEnfermedades(ArrayList<Enfermedad> catalogoEnfermedades) {
+		this.catalogoEnfermedades = catalogoEnfermedades;
+	}
+
+	public void setProximoIdDoctor(int proximoIdDoctor) {
+		this.proximoIdDoctor = proximoIdDoctor;
+	}
+
+	public void setProximoIdAdmin(int proximoIdAdmin) {
+		this.proximoIdAdmin = proximoIdAdmin;
+	}
+
+	public void setUltimoMensajeError(String ultimoMensajeError) {
+		this.ultimoMensajeError = ultimoMensajeError;
+	}
 }

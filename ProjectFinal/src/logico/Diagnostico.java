@@ -15,12 +15,18 @@ public class Diagnostico implements Serializable {
 	private String notasObservacion;
 	private TipoSeveridad severidad;
 	private Enfermedad enfermedadDetectada;
+	
+	// Agregados para compatibilidad visual
+	private String tratamiento;
+	private String nombre;
 
 	public Diagnostico() {
 		this.idDiagnostico = 0;
 		this.notasObservacion = "";
 		this.severidad = null;
 		this.enfermedadDetectada = null;
+		this.tratamiento = "";
+		this.nombre = "";
 	}
 
 	/*
@@ -32,6 +38,9 @@ public class Diagnostico implements Serializable {
 		this.notasObservacion = notasObservacion;
 		this.enfermedadDetectada = enfermedadDetectada;
 		this.severidad = severidad;
+		if (enfermedadDetectada != null) {
+			this.nombre = enfermedadDetectada.getNombre();
+		}
 	}
 
 	public boolean requiereNotificacion() {
@@ -71,6 +80,31 @@ public class Diagnostico implements Serializable {
 
 	public void setEnfermedadDetectada(Enfermedad enfermedadDetectada) {
 		this.enfermedadDetectada = enfermedadDetectada;
+		// Sincronizar nombre si es necesario
+		if(enfermedadDetectada != null) {
+			this.nombre = enfermedadDetectada.getNombre();
+		}
+	}
+	
+	// --- Métodos agregados para compatibilidad ---
+	public void setEnfermedad(Enfermedad enfermedad) {
+		setEnfermedadDetectada(enfermedad);
+	}
+	
+	public String getTratamiento() {
+		return tratamiento;
+	}
+
+	public void setTratamiento(String tratamiento) {
+		this.tratamiento = tratamiento;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
 	}
 
 	public static long getSerialversionuid() {

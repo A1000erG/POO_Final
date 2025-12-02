@@ -34,7 +34,6 @@ import javax.swing.text.MaskFormatter; // Importado
 import Utilidades.FuenteUtil;
 import logico.Clinica;
 import logico.Paciente;
-import logico.Personal;
 
 public class ListarPacientes extends JDialog {
 

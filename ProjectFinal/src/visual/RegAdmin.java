@@ -2,7 +2,6 @@ package visual;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -12,27 +11,19 @@ import java.awt.RenderingHints;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.awt.Toolkit;
 
 import Utilidades.FuenteUtil;
 import logico.Clinica;
 
-public class RegAdmin extends JFrame {
-
+public class RegAdmin extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -44,8 +35,9 @@ public class RegAdmin extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					RegAdmin frame = new RegAdmin(0,"");
-					frame.setVisible(true);
+					RegAdmin dialog = new RegAdmin(0,"");
+					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -55,13 +47,16 @@ public class RegAdmin extends JFrame {
 
 
 	public RegAdmin(int mode, String idUser) {
-		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setResizable(false);
+		// --- CONFIGURACIÓN SOLICITADA ---
+		setModal(true);
+		setBounds(100, 100, 1366, 768);
 		setLocationRelativeTo(null);
+		// --------------------------------
+
+		setResizable(false);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
 		contentPane = new JPanel();
-		//contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 		
@@ -73,9 +68,8 @@ public class RegAdmin extends JFrame {
 		
 		contentPane.add(panelSuperior, BorderLayout.NORTH);
 		
-		
-		Dimension tamanioPantalla = Toolkit.getDefaultToolkit().getScreenSize();
-		int anchoPantalla = (int) tamanioPantalla.getWidth();
+		// Ajustamos el ancho de referencia al tamaño de la ventana (1366)
+		int anchoPantalla = 1366;
 		
 		
 		// LOGO IZQUIERDO
@@ -108,7 +102,7 @@ public class RegAdmin extends JFrame {
 		
 		
 		// ------------------ PANEL CENTRAL (CONTENIDO) -------------------
-		JPanel panelContenido  = new JPanel();
+		JPanel panelContenido = new JPanel();
 		panelContenido.setBackground(java.awt.Color.WHITE);
 		panelContenido.setLayout(null);
 		
@@ -126,7 +120,7 @@ public class RegAdmin extends JFrame {
 		lblIdAdmin.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 20f));
 		lblIdAdmin.setForeground(new Color(50, 50, 50));
 		
-		int xID = (anchoPantalla  / 2) - 100;
+		int xID = (anchoPantalla / 2) - 100;
 		lblIdAdmin.setBounds (xID , 50 , 200, 40);
 		
 		lblIdAdmin.setHorizontalAlignment(JLabel.CENTER);
@@ -166,46 +160,46 @@ public class RegAdmin extends JFrame {
 		
 		// OPCION CAMBIAR FOTO
 		lblAvatar.addMouseListener(new java.awt.event.MouseAdapter() {
-		    @Override
-		    public void mouseClicked(java.awt.event.MouseEvent e) {
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent e) {
 
-		        JFileChooser chooser = new JFileChooser();
-		        chooser.setFileFilter(
-		            new FileNameExtensionFilter(
-		                "Imágenes (JPG, PNG)", "jpg", "jpeg", "png"
-		            )
-		        );
+				JFileChooser chooser = new JFileChooser();
+				chooser.setFileFilter(
+					new FileNameExtensionFilter(
+						"Imágenes (JPG, PNG)", "jpg", "jpeg", "png"
+					)
+				);
 
-		        int resultado = chooser.showOpenDialog(RegAdmin.this);
-		        if (resultado != JFileChooser.APPROVE_OPTION) {
-		            return; // uusuario canceló
-		        }
+				int resultado = chooser.showOpenDialog(RegAdmin.this);
+				if (resultado != JFileChooser.APPROVE_OPTION) {
+					return; // uusuario canceló
+				}
 
-		        File archivo = chooser.getSelectedFile();
+				File archivo = chooser.getSelectedFile();
 
-		        // Cargar y escalar la imagen cuadardo
-		        ImageIcon iconOriginal = new ImageIcon(archivo.getAbsolutePath());
-		        Image imgEscalada = iconOriginal.getImage().getScaledInstance(
-		                lblAvatar.getWidth(),
-		                lblAvatar.getHeight(),
-		                Image.SCALE_SMOOTH
-		        );
-		        ImageIcon iconFinal = new ImageIcon(imgEscalada);
+				// Cargar y escalar la imagen cuadardo
+				ImageIcon iconOriginal = new ImageIcon(archivo.getAbsolutePath());
+				Image imgEscalada = iconOriginal.getImage().getScaledInstance(
+						lblAvatar.getWidth(),
+						lblAvatar.getHeight(),
+						Image.SCALE_SMOOTH
+				);
+				ImageIcon iconFinal = new ImageIcon(imgEscalada);
 
-		        lblAvatar.setIcon(iconFinal);
+				lblAvatar.setIcon(iconFinal);
 
-		        lblAvatar.putClientProperty("rutaFoto", archivo.getAbsolutePath());
-		    }
+				lblAvatar.putClientProperty("rutaFoto", archivo.getAbsolutePath());
+			}
 		});
 
 		lblFotoTexto.addMouseListener(new java.awt.event.MouseAdapter() {
-		    @Override
-		    public void mouseClicked(java.awt.event.MouseEvent e) {
-		        // mismo click del avatar
-		        for (java.awt.event.MouseListener ml : lblAvatar.getMouseListeners()) {
-		            ml.mouseClicked(e);
-		        }
-		    }
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent e) {
+				// mismo click del avatar
+				for (java.awt.event.MouseListener ml : lblAvatar.getMouseListeners()) {
+					ml.mouseClicked(e);
+				}
+			}
 		});
 
 		
@@ -233,7 +227,7 @@ public class RegAdmin extends JFrame {
 		JTextField txtUsuario = new JTextField();
 		txtUsuario.setBounds(xIzq, yFila1, anchoCampo, altoCampo);
 		txtUsuario.setBorder(
-		    BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
+			BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
 		);
 		txtUsuario.setForeground(new Color(55,65,81));
 		txtUsuario.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
@@ -250,7 +244,7 @@ public class RegAdmin extends JFrame {
 		JTextField txtContrasenia = new JTextField();
 		txtContrasenia.setBounds(xIzq, yFila2, anchoCampo, altoCampo);
 		txtContrasenia.setBorder(
-		    BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
+			BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
 		);
 		txtContrasenia.setForeground(new Color(55,65,81));
 		txtContrasenia.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
@@ -270,7 +264,7 @@ public class RegAdmin extends JFrame {
 		JTextField txtNombre = new JTextField();
 		txtNombre.setBounds(xDer, yFila1, anchoCampo, altoCampo);
 		txtNombre.setBorder(
-		    BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
+			BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
 		);
 		txtNombre.setForeground(new Color(55,65,81));
 		txtNombre.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
@@ -287,7 +281,7 @@ public class RegAdmin extends JFrame {
 		JTextField txtCargo = new JTextField();
 		txtCargo.setBounds(xDer, yFila2, anchoCampo, altoCampo);
 		txtCargo.setBorder(
-		    BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
+			BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK)
 		);
 		txtCargo.setForeground(new Color(55,65,81));
 		txtCargo.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
@@ -336,59 +330,59 @@ public class RegAdmin extends JFrame {
 
 		// EFECTO DEL MAUSE EN BOTON
 		btnRegistrar.addMouseListener(new java.awt.event.MouseAdapter() {
-		    @Override
-		    public void mouseEntered(java.awt.event.MouseEvent e) {
-		        btnRegistrar.setBackground(verdeHover);
-		    }
-		    @Override
-		    public void mouseExited(java.awt.event.MouseEvent e) {
-		        btnRegistrar.setBackground(verdeBtn);
-		    }
+			@Override
+			public void mouseEntered(java.awt.event.MouseEvent e) {
+				btnRegistrar.setBackground(verdeHover);
+			}
+			@Override
+			public void mouseExited(java.awt.event.MouseEvent e) {
+				btnRegistrar.setBackground(verdeBtn);
+			}
 		});
 		
 		btnRegistrar.addActionListener(e -> {
 			String usuario = txtUsuario.getText();
-		    String contrasenia = txtContrasenia.getText();
-		    String nombre = txtNombre.getText();
-		    String cargo = txtCargo.getText();
-		    //String cupoTexto = txtCupoDia.getText();
-		    
-		    String rutaFotoOriginal = (String) lblAvatar.getClientProperty("rutaFoto");
-		    boolean ok = controlador.registrarAdminDesdeFormulario(
-		    		usuario, contrasenia, nombre, cargo, rutaFotoOriginal);
+			String contrasenia = txtContrasenia.getText();
+			String nombre = txtNombre.getText();
+			String cargo = txtCargo.getText();
+			//String cupoTexto = txtCupoDia.getText();
+			
+			String rutaFotoOriginal = (String) lblAvatar.getClientProperty("rutaFoto");
+			boolean ok = controlador.registrarAdminDesdeFormulario(
+					usuario, contrasenia, nombre, cargo, rutaFotoOriginal);
 
-		    if (!ok) {
-		        //  error
-		        lblMensaje.setForeground(new Color(220, 38, 38)); // rojo
-		        lblMensaje.setText(controlador.getUltimoMensajeError());
-		        timerMensaje.restart();
-		    } else {
-		        // éxito
-		        lblMensaje.setForeground(new Color(22, 163, 74)); // verde
-		        lblMensaje.setText("Administrativo registrado correctamente.");
-		        timerMensaje.restart();
+			if (!ok) {
+				//  error
+				lblMensaje.setForeground(new Color(220, 38, 38)); // rojo
+				lblMensaje.setText(controlador.getUltimoMensajeError());
+				timerMensaje.restart();
+			} else {
+				// éxito
+				lblMensaje.setForeground(new Color(22, 163, 74)); // verde
+				lblMensaje.setText("Administrativo registrado correctamente.");
+				timerMensaje.restart();
 
-		        txtUsuario.setText("");
-		        txtContrasenia.setText("");
-		        txtNombre.setText("");
-		        txtCargo.setText("");
-		        
-		        // Avatar de inicio
-		        ImageIcon iconUsuarioGris = new ImageIcon(
-		                getClass().getResource("/Imagenes/UsuarioGris.png")
-		        );
-		        Image imgUsuarioGris = iconUsuarioGris.getImage().getScaledInstance(
-		                lblAvatar.getWidth(),
-		                lblAvatar.getHeight(),
-		                Image.SCALE_SMOOTH
-		        );
-		        lblAvatar.setIcon(new ImageIcon(imgUsuarioGris));
-		        lblAvatar.putClientProperty("rutaFoto", null);
-		        
-		        int siguienteId = controlador.getProximoIdAdmin();
-		        String nuevoCodigo = String.format("ID: D-%03d", siguienteId);
-		        lblIdAdmin.setText(nuevoCodigo);
-		    }
+				txtUsuario.setText("");
+				txtContrasenia.setText("");
+				txtNombre.setText("");
+				txtCargo.setText("");
+				
+				// Avatar de inicio
+				ImageIcon iconUsuarioGris = new ImageIcon(
+						getClass().getResource("/Imagenes/UsuarioGris.png")
+				);
+				Image imgUsuarioGris = iconUsuarioGris.getImage().getScaledInstance(
+						lblAvatar.getWidth(),
+						lblAvatar.getHeight(),
+						Image.SCALE_SMOOTH
+				);
+				lblAvatar.setIcon(new ImageIcon(imgUsuarioGris));
+				lblAvatar.putClientProperty("rutaFoto", null);
+				
+				int siguienteId = controlador.getProximoIdAdmin();
+				String nuevoCodigo = String.format("ID: D-%03d", siguienteId);
+				lblIdAdmin.setText(nuevoCodigo);
+			}
 		});
 		
 		
@@ -403,14 +397,14 @@ public class RegAdmin extends JFrame {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-		    protected void paintComponent(Graphics g) {
+			protected void paintComponent(Graphics g) {
 
-		        Graphics2D g2 = (Graphics2D) g;
-		        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		        g2.setColor(getBackground());
-		        g2.fillOval(0, 0, getWidth(), getHeight());
-		    }
+				g2.setColor(getBackground());
+				g2.fillOval(0, 0, getWidth(), getHeight());
+			}
 		};
 		btnVolver.setOpaque(false);
 		btnVolver.setLayout(null);
@@ -420,23 +414,23 @@ public class RegAdmin extends JFrame {
 		btnVolver.setBackground(new Color(0, 64, 44));
 		
 		btnVolver.addMouseListener(new java.awt.event.MouseAdapter() {
-		    @Override
-		    public void mouseClicked(java.awt.event.MouseEvent e) {
-		        dispose();
-		    }
-		    
-		    @Override
-		    public void mouseEntered(java.awt.event.MouseEvent e) {
-		        btnVolver.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-		        btnVolver.setBackground(new Color(4, 120, 62)); // Verde mas claro
-		        btnVolver.repaint();
-		    }
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent e) {
+				dispose();
+			}
+			
+			@Override
+			public void mouseEntered(java.awt.event.MouseEvent e) {
+				btnVolver.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+				btnVolver.setBackground(new Color(4, 120, 62)); // Verde mas claro
+				btnVolver.repaint();
+			}
 
-		    @Override
-		    public void mouseExited(java.awt.event.MouseEvent e) {
-		        btnVolver.setBackground(new Color(0, 64, 44));
-		        btnVolver.repaint();
-		    }
+			@Override
+			public void mouseExited(java.awt.event.MouseEvent e) {
+				btnVolver.setBackground(new Color(0, 64, 44));
+				btnVolver.repaint();
+			}
 		});
 		
 		// Flecha

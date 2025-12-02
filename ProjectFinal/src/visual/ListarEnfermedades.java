@@ -25,15 +25,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
-import Utilidades.FuenteUtil;
+import Utilidades.FuenteUtil; 
 import logico.Clinica;
-import logico.Vacuna;
+import logico.Enfermedad;
 
-public class ListarVacunas extends JDialog {
+public class ListarEnfermedades extends JDialog {
 
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
@@ -42,22 +43,21 @@ public class ListarVacunas extends JDialog {
     private DefaultTableModel model;
     private Object[] rows;
     
+    // Campos de detalle
+    private JTextField txtId;
     private JTextField txtNombre;
-    private JTextField txtStock;
-    private JTextField txtFechaVenc;
-    private JLabel lblFoto; 
     
     private JButton btnModificar;
-    private JButton btnEstado; // Botón nuevo para deshabilitar vacunas
+    private JButton btnEliminar;
     
-    private Vacuna selectedVacuna = null;
+    private Enfermedad selectedEnfermedad = null;
     private boolean buscar = false;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    ListarVacunas dialog = new ListarVacunas(/*null*/);
+                    ListarEnfermedades dialog = new ListarEnfermedades();
                     dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     dialog.setVisible(true);
                 } catch (Exception e) { e.printStackTrace(); }
@@ -65,8 +65,8 @@ public class ListarVacunas extends JDialog {
         });
     }
 
-    public ListarVacunas(/*Personal usuarioLogueado*/) {
-        setTitle("Gestión de Vacunas");
+    public ListarEnfermedades() {
+        setTitle("Gestión de Enfermedades");
         setModal(true);
         setBounds(100, 100, 1366, 768);
         setLocationRelativeTo(null);
@@ -76,11 +76,11 @@ public class ListarVacunas extends JDialog {
         contentPane.setLayout(new BorderLayout(0, 0));
         setContentPane(contentPane);
 
-        // PANEL SUPERIOR
+        // ------------------ PANEL SUPERIOR -------------------
         JPanel panelSuperior = new JPanel();
-        panelSuperior.setBackground(new java.awt.Color(4, 111, 67));
+        panelSuperior.setBackground(new java.awt.Color(4, 111, 67)); 
         panelSuperior.setLayout(null);
-        panelSuperior.setPreferredSize(new java.awt.Dimension(0, 120));
+        panelSuperior.setPreferredSize(new java.awt.Dimension(0, 120)); 
         contentPane.add(panelSuperior, BorderLayout.NORTH);
         
         ImageIcon iconLogo = new ImageIcon(getClass().getResource("/Imagenes/logoBlanco.png"));
@@ -89,24 +89,25 @@ public class ListarVacunas extends JDialog {
         lblLogo.setBounds(40, 25, 70, 70);
         panelSuperior.add(lblLogo);
         
-        JLabel lblTitulo = new JLabel("INVENTARIO DE VACUNAS");
+        JLabel lblTitulo = new JLabel("GESTIÓN DE ENFERMEDADES");
         lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 34f));
         lblTitulo.setBounds(130, 35, 800, 50);
         panelSuperior.add(lblTitulo);
 
-        // PANEL CENTRAL
+        // ------------------ PANEL CENTRAL -------------------
         JPanel panelCentral = new JPanel();
         panelCentral.setBackground(Color.WHITE);
         panelCentral.setLayout(null);
-        panelCentral.setBorder(new EmptyBorder(20, 20, 20, 20));
+        panelCentral.setBorder(new EmptyBorder(20, 20, 20, 20)); 
         contentPane.add(panelCentral, BorderLayout.CENTER);
 
         int margenX = 40;
         int margenY = 30;
 
-        // IZQUIERDA
-        JLabel lblBuscar = new JLabel("Buscar (Nombre):");
+        // === SECCIÓN IZQUIERDA (LISTADO) ===
+        
+        JLabel lblBuscar = new JLabel("Buscar (ID o Nombre):");
         lblBuscar.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Regular.ttf", 16f));
         lblBuscar.setForeground(new Color(55, 65, 81));
         lblBuscar.setBounds(margenX, margenY, 250, 20);
@@ -131,7 +132,7 @@ public class ListarVacunas extends JDialog {
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 230)));
         panelCentral.add(scrollPane);
 
-        String[] headers = { "ID", "Nombre", "Stock", "Vencimiento", "Estado" }; // Agregado Estado
+        String[] headers = { "ID", "Nombre Enfermedad" };
         model = new DefaultTableModel();
         model.setColumnIdentifiers(headers);
         table = new JTable();
@@ -140,7 +141,7 @@ public class ListarVacunas extends JDialog {
         table.setRowHeight(35);
         table.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f));
         
-        table.getTableHeader().setBackground(new Color(4, 111, 67));
+        table.getTableHeader().setBackground(new Color(4, 111, 67)); 
         table.getTableHeader().setForeground(Color.WHITE);
         table.getTableHeader().setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 14f));
         
@@ -150,77 +151,84 @@ public class ListarVacunas extends JDialog {
                 int index = table.getSelectedRow();
                 if (index != -1) {
                     String id = table.getValueAt(index, 0).toString();
-                    selectedVacuna = buscarVacunaPorId(Integer.parseInt(id));
-                    cargarDatosVacuna();
+                    String idNum = id.replace("E-", ""); 
+                    try {
+                        selectedEnfermedad = buscarEnfermedadPorId(Integer.parseInt(idNum));
+                        cargarDatosEnfermedad();
+                    } catch (NumberFormatException ex) { }
                 }
             }
         });
         scrollPane.setViewportView(table);
 
-        // DERECHA
-        JPanel panelDetalle = new JPanel();
+        // === SECCIÓN DERECHA (DETALLES) ===
+        
+        JPanel panelDetalle = new JPanel(); 
         panelDetalle.setBackground(new Color(245, 245, 245));
         panelDetalle.setBorder(new LineBorder(new Color(220, 220, 220), 1, true));
-        panelDetalle.setBounds(900, margenY, 400, 568);
+        
+        // Ajustamos altura del panel de detalle ya que tiene menos campos
+        panelDetalle.setBounds(900, margenY, 400, 400); 
         panelDetalle.setLayout(null);
         panelCentral.add(panelDetalle);
 
-        JLabel lblDetalleTitulo = new JLabel("DETALLES DE LA VACUNA");
+        JLabel lblDetalleTitulo = new JLabel("DETALLES ENFERMEDAD");
         lblDetalleTitulo.setHorizontalAlignment(JLabel.CENTER);
         lblDetalleTitulo.setForeground(new Color(4, 111, 67));
         lblDetalleTitulo.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 18f));
-        lblDetalleTitulo.setBounds(20, 20, 360, 30);
+        lblDetalleTitulo.setBounds(20, 25, 360, 30);
         panelDetalle.add(lblDetalleTitulo);
 
-        // Icono
-        lblFoto = new JLabel("");
-        lblFoto.setBounds(125, 60, 150, 150);
-        lblFoto.setBorder(new LineBorder(new Color(200, 200, 200), 1));
-        lblFoto.setOpaque(true);
-        lblFoto.setBackground(Color.WHITE);
-        try {
-            ImageIcon icon = new ImageIcon(getClass().getResource("/Imagenes/syringe.png"));
-            Image img = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-            lblFoto.setIcon(new ImageIcon(img));
-            lblFoto.setHorizontalAlignment(JLabel.CENTER);
-        } catch(Exception e) {}
-        panelDetalle.add(lblFoto);
+        // Icono decorativo (Genérico)
+        JLabel lblIcono = new JLabel("");
+        lblIcono.setBounds(150, 70, 100, 100);
+        // Intentamos cargar un icono genérico de virus/bacteria o similar si existe, si no uno por defecto
+        ImageIcon iconGen = new ImageIcon(getClass().getResource("/Imagenes/thermometer.png")); // Reutilizamos icono existente
+        if (iconGen.getImage() != null) {
+             Image img = iconGen.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+             lblIcono.setIcon(new ImageIcon(img));
+        }
+        lblIcono.setHorizontalAlignment(SwingConstants.CENTER);
+        panelDetalle.add(lblIcono);
 
-        int yStart = 230;
+        int yStart = 200;
         int gap = 60;
         
-        createLabelAndInput(panelDetalle, "NOMBRE:", yStart, txtNombre = new JTextField());
-        createLabelAndInput(panelDetalle, "STOCK DISPONIBLE:", yStart + gap, txtStock = new JTextField());
-        createLabelAndInput(panelDetalle, "FECHA VENC. (AAAA-MM-DD):", yStart + gap * 2, txtFechaVenc = new JTextField());
-
-        // Botones alineados
-        int btnY = 510;
+        createLabelAndInput(panelDetalle, "ID:", yStart, txtId = new JTextField());
+        txtId.setEditable(false);
+        txtId.setBackground(new Color(230,230,230));
+        
+        createLabelAndInput(panelDetalle, "NOMBRE:", yStart + gap, txtNombre = new JTextField());
+        
+        // BOTONES
+        int btnY = 330;
         int btnWidth = 145;
 
         btnModificar = new JButton("MODIFICAR");
         btnModificar.setBounds(50, btnY, btnWidth, 40);
-        btnModificar.setBackground(new Color(22, 163, 74));
+        btnModificar.setBackground(new Color(22, 163, 74)); 
         btnModificar.setForeground(Color.WHITE);
         btnModificar.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 13f));
         btnModificar.setFocusPainted(false);
         btnModificar.setEnabled(false);
-        btnModificar.addActionListener(e -> modificarVacuna());
+        btnModificar.addActionListener(e -> modificarEnfermedad());
         panelDetalle.add(btnModificar);
 
-        btnEstado = new JButton("DESHABILITAR");
-        btnEstado.setBounds(50 + btnWidth + 10, btnY, btnWidth, 40);
-        btnEstado.setBackground(new Color(220, 38, 38));
-        btnEstado.setForeground(Color.WHITE);
-        btnEstado.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 13f));
-        btnEstado.setFocusPainted(false);
-        btnEstado.setEnabled(false);
-        btnEstado.addActionListener(e -> cambiarEstadoVacuna());
-        panelDetalle.add(btnEstado);
+        btnEliminar = new JButton("ELIMINAR");
+        btnEliminar.setBounds(50 + btnWidth + 10, btnY, btnWidth, 40); 
+        btnEliminar.setBackground(new Color(220, 38, 38)); 
+        btnEliminar.setForeground(Color.WHITE);
+        btnEliminar.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 13f));
+        btnEliminar.setFocusPainted(false);
+        btnEliminar.setEnabled(false);
+        btnEliminar.addActionListener(e -> eliminarEnfermedad());
+        panelDetalle.add(btnEliminar);
 
-        // Botón Volver
+        // BOTÓN VOLVER (Fuera del panel de detalle, abajo a la izquierda)
         ImageIcon iconFlecha = new ImageIcon(getClass().getResource("/Imagenes/FlechaAtras.png"));
         Image imgFlechaScaled = iconFlecha.getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
-        
+        ImageIcon iconFlechaFinal = new ImageIcon(imgFlechaScaled);
+
         JPanel btnVolver = new JPanel() {
             private static final long serialVersionUID = 1L;
             @Override
@@ -234,32 +242,35 @@ public class ListarVacunas extends JDialog {
         };
         btnVolver.setOpaque(false);
         btnVolver.setLayout(null);
-        btnVolver.setBounds(40, 528, 70, 70);
-        btnVolver.setBackground(new Color(4, 111, 67));
-        
+        btnVolver.setBounds(40, 550, 70, 70); 
+        btnVolver.setBackground(new Color(4, 111, 67)); 
+
         btnVolver.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) { dispose(); }
+            public void mouseClicked(MouseEvent e) {
+                dispose();
+            }
             @Override
             public void mouseEntered(MouseEvent e) {
                 btnVolver.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                btnVolver.setBackground(new Color(6, 140, 85));
+                btnVolver.setBackground(new Color(6, 140, 85)); 
                 btnVolver.repaint();
             }
             @Override
             public void mouseExited(MouseEvent e) {
-                btnVolver.setBackground(new Color(4, 111, 67));
+                btnVolver.setBackground(new Color(4, 111, 67)); 
                 btnVolver.repaint();
             }
         });
-        
-        JLabel lblFlecha = new JLabel(new ImageIcon(imgFlechaScaled));
-        lblFlecha.setBounds(17, 17, 35, 35);
+
+        JLabel lblFlecha = new JLabel(iconFlechaFinal);
+        lblFlecha.setBounds(17, 17, 35, 35); 
         btnVolver.add(lblFlecha);
+
         panelCentral.add(btnVolver);
 
-        loadVacunas("");
-        limpiarFormulario();
+        loadEnfermedades("");
+        limpiarFormulario(); 
         iniciarHiloBuscador();
     }
 
@@ -281,9 +292,9 @@ public class ListarVacunas extends JDialog {
             while (true) {
                 if (buscar) {
                     try {
-                        Thread.sleep(150);
+                        Thread.sleep(150); 
                         String texto = txtBuscador.getText();
-                        EventQueue.invokeLater(() -> loadVacunas(texto));
+                        EventQueue.invokeLater(() -> loadEnfermedades(texto));
                         buscar = false;
                     } catch (InterruptedException e) { e.printStackTrace(); }
                 }
@@ -293,112 +304,100 @@ public class ListarVacunas extends JDialog {
         hilo.start();
     }
 
-    private void loadVacunas(String filtro) {
+    private void loadEnfermedades(String filtro) {
         model.setRowCount(0);
         rows = new Object[model.getColumnCount()];
-        ArrayList<Vacuna> lista = Clinica.getInstance().getVacunas();
+        ArrayList<Enfermedad> lista = Clinica.getInstance().getCatalogoEnfermedades();
+        int coincidencias = 0;
+        Enfermedad unicoEncontrado = null;
 
-        for (Vacuna v : lista) {
-            String nombre = v.getNombre().toLowerCase();
+        for (Enfermedad enf : lista) {
+            String nombre = enf.getNombre().toLowerCase();
             String filtroMin = filtro.toLowerCase();
+            
+            String idRaw = String.valueOf(enf.getIdEnfermedad());
+            String idFormatted = String.format("%03d", enf.getIdEnfermedad());
+            String idFull = String.format("E-%03d", enf.getIdEnfermedad()).toLowerCase();
 
-            if (filtro.isEmpty() || nombre.contains(filtroMin)) {
-                rows[0] = v.getId();
-                rows[1] = v.getNombre();
-                rows[2] = v.getCantidadDisponible();
-                rows[3] = v.getFechaCaducidad();
-                rows[4] = v.isActivo() ? "Activo" : "Descontinuada"; // Mostrar estado
+            if (filtro.isEmpty() || 
+                nombre.contains(filtroMin) || 
+                idRaw.contains(filtroMin) ||
+                idFormatted.contains(filtroMin) ||
+                idFull.contains(filtroMin)) {
+
+                rows[0] = String.format("E-%03d", enf.getIdEnfermedad());
+                rows[1] = enf.getNombre();
                 model.addRow(rows);
+                coincidencias++;
+                unicoEncontrado = enf;
             }
+        }
+        
+        if (coincidencias == 1 && !filtro.isEmpty()) {
+            table.setRowSelectionInterval(0, 0);
+            selectedEnfermedad = unicoEncontrado;
+            cargarDatosEnfermedad();
+        } else if (coincidencias != 1) {
+            limpiarFormulario();
         }
     }
 
-    private void cargarDatosVacuna() {
-        if (selectedVacuna != null) {
-            txtNombre.setText(selectedVacuna.getNombre());
-            txtStock.setText(String.valueOf(selectedVacuna.getCantidadDisponible()));
-            txtFechaVenc.setText(selectedVacuna.getFechaCaducidad().toString());
+    private void cargarDatosEnfermedad() {
+        if (selectedEnfermedad != null) {
+            txtId.setText(String.format("E-%03d", selectedEnfermedad.getIdEnfermedad()));
+            txtNombre.setText(selectedEnfermedad.getNombre());
             
             txtNombre.setEnabled(true);
-            txtStock.setEnabled(true);
-            txtFechaVenc.setEnabled(true);
-            
             btnModificar.setEnabled(true);
-            btnEstado.setEnabled(true);
-            
-            if (selectedVacuna.isActivo()) {
-                btnEstado.setText("DESHABILITAR");
-                btnEstado.setBackground(new Color(220, 38, 38));
-            } else {
-                btnEstado.setText("HABILITAR");
-                btnEstado.setBackground(new Color(22, 163, 74));
-            }
+            btnEliminar.setEnabled(true);
         }
     }
 
     private void limpiarFormulario() {
+        txtId.setText("");
         txtNombre.setText("");
-        txtStock.setText("");
-        txtFechaVenc.setText("");
         
         txtNombre.setEnabled(false);
-        txtStock.setEnabled(false);
-        txtFechaVenc.setEnabled(false);
-        
         btnModificar.setEnabled(false);
-        btnEstado.setEnabled(false);
-        btnEstado.setText("DESHABILITAR");
-        btnEstado.setBackground(new Color(220, 38, 38));
-        selectedVacuna = null;
+        btnEliminar.setEnabled(false);
+        selectedEnfermedad = null;
     }
 
-    private Vacuna buscarVacunaPorId(int id) {
-        for (Vacuna v : Clinica.getInstance().getVacunas()) {
-            if (v.getId() == id) return v;
+    private Enfermedad buscarEnfermedadPorId(int id) {
+        for (Enfermedad e : Clinica.getInstance().getCatalogoEnfermedades()) {
+            if (e.getIdEnfermedad() == id) return e;
         }
         return null;
     }
 
-    private void modificarVacuna() {
-        if (selectedVacuna == null) return;
+    private void modificarEnfermedad() {
+        if (selectedEnfermedad == null) return;
         
-        try {
-            selectedVacuna.setNombre(txtNombre.getText());
-            selectedVacuna.setCantidadDisponible(Integer.parseInt(txtStock.getText()));
-            selectedVacuna.setFechaCaducidad(java.time.LocalDate.parse(txtFechaVenc.getText()));
-            
-            Clinica.getInstance().guardarDatos();
-            JOptionPane.showMessageDialog(this, "Vacuna actualizada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            loadVacunas(txtBuscador.getText());
-            
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error en datos. Verifique Stock y Fecha.", "Error", JOptionPane.ERROR_MESSAGE);
+        if(txtNombre.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El nombre no puede estar vacío.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
         }
+
+        selectedEnfermedad.setNombre(txtNombre.getText());
+        
+        Clinica.getInstance().guardarDatos();
+        JOptionPane.showMessageDialog(this, "Enfermedad modificada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        loadEnfermedades(txtBuscador.getText());
     }
 
-    private void cambiarEstadoVacuna() {
-        if (selectedVacuna == null) return;
+    private void eliminarEnfermedad() {
+        if (selectedEnfermedad == null) return;
 
-        if (selectedVacuna.isActivo()) {
-            int confirm = JOptionPane.showConfirmDialog(this, 
-                    "¿Seguro que desea descontinuar esta vacuna?", 
-                    "Confirmar", JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                selectedVacuna.setActivo(false);
-                Clinica.getInstance().guardarDatos();
-                cargarDatosVacuna();
-                loadVacunas(txtBuscador.getText());
-            }
-        } else {
-            int confirm = JOptionPane.showConfirmDialog(this, 
-                    "¿Reactivar el uso de esta vacuna?", 
-                    "Confirmar", JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                selectedVacuna.setActivo(true);
-                Clinica.getInstance().guardarDatos();
-                cargarDatosVacuna();
-                loadVacunas(txtBuscador.getText());
-            }
+        int confirm = JOptionPane.showConfirmDialog(this, 
+                "¿Estás seguro de que deseas eliminar esta enfermedad?\nEsta acción no se puede deshacer.", 
+                "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
+        
+        if (confirm == JOptionPane.YES_OPTION) {
+            Clinica.getInstance().getCatalogoEnfermedades().remove(selectedEnfermedad);
+            Clinica.getInstance().guardarDatos();
+            limpiarFormulario();
+            loadEnfermedades(txtBuscador.getText());
+            JOptionPane.showMessageDialog(this, "Enfermedad eliminada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 }

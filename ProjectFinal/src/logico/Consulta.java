@@ -2,17 +2,20 @@ package logico;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class Consulta implements Serializable {
 
 	private static final long serialVersionUID = 9L;
 	private int idConsulta;
+	private String codigo; // Agregado para manejo visual de ID (ej: "CNS-001")
 	private Cita citaAsociada;
 	private Doctor doctor;
 	private String sintomas;
+	private Enfermedad enfermedad;
 
-	// CAMBIO: Ahora es objeto Diagnostico, NO String
-	private Diagnostico diagnostico;
+	// CAMBIO: Ahora soporta lista de diagnósticos para compatibilidad con RegConsulta
+	private ArrayList<Diagnostico> diagnosticos;
 
 	private boolean agregarAlHistorial;
 	private boolean transferida;
@@ -22,11 +25,12 @@ public class Consulta implements Serializable {
 		this.idConsulta = 0;
 		this.citaAsociada = null;
 		this.doctor = null;
-		this.sintomas = null;
-		this.diagnostico = null;
+		this.sintomas = "";
+		this.diagnosticos = new ArrayList<Diagnostico>(); // Inicializar lista
 		this.agregarAlHistorial = true;
 		this.transferida = false;
 		this.fecha = LocalDate.now();
+		this.codigo = "";
 	}
 
 	public int getIdConsulta() {
@@ -35,6 +39,14 @@ public class Consulta implements Serializable {
 
 	public void setIdConsulta(int idConsulta) {
 		this.idConsulta = idConsulta;
+	}
+	
+	public String getCodigo() {
+		return codigo;
+	}
+
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
 	}
 
 	public Cita getCitaAsociada() {
@@ -60,13 +72,31 @@ public class Consulta implements Serializable {
 	public void setSintomas(String sintomas) {
 		this.sintomas = sintomas;
 	}
-
-	public Diagnostico getDiagnostico() {
-		return diagnostico;
+	
+	// Alias para compatibilidad singular/plural
+	public void setSintoma(String sintoma) {
+		this.sintomas = sintoma;
+	}
+	
+	public String getSintoma() {
+		return this.sintomas;
 	}
 
-	public void setDiagnostico(Diagnostico diagnostico) {
-		this.diagnostico = diagnostico;
+	public ArrayList<Diagnostico> getDiagnosticos() {
+		return diagnosticos;
+	}
+
+	public void setDiagnosticos(ArrayList<Diagnostico> diagnosticos) {
+		this.diagnosticos = diagnosticos;
+	}
+	
+	// Método de compatibilidad por si alguna parte antigua pide un solo diagnóstico
+	// Retorna el primero o null
+	public Diagnostico getDiagnostico() {
+		if (diagnosticos != null && !diagnosticos.isEmpty()) {
+			return diagnosticos.get(0);
+		}
+		return null;
 	}
 
 	public boolean isAgregarAlHistorial() {
@@ -95,5 +125,13 @@ public class Consulta implements Serializable {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+
+	public Enfermedad getEnfermedad() {
+		return enfermedad;
+	}
+
+	public void setEnfermedad(Enfermedad enfermedad) {
+		this.enfermedad = enfermedad;
 	}
 }
