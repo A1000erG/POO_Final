@@ -114,4 +114,8 @@ public class Vacuna implements Serializable {
 	public int hashCode() {
 		return Objects.hash(id);
 	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 }

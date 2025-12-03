@@ -331,7 +331,7 @@ public class Principal extends JFrame {
         etiquetaNombreApp.setForeground(paletaBlanco);
         etiquetaNombreApp.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 20f));
         etiquetaNombreApp.setHorizontalAlignment(SwingConstants.CENTER);
-        etiquetaNombreApp.setBounds(0, 110, 240, 30);
+        etiquetaNombreApp.setBounds(0, 125, 240, 30);
         panelOpciones.add(etiquetaNombreApp);
 
         int posicionVertical = 177;
@@ -350,6 +350,10 @@ public class Principal extends JFrame {
         posicionVertical += separacion;
 
         if (modoOperacion == 0) {
+            // --- NUEVO BOTÓN: Gestión de Vacunas/Recursos (Solo Admin) ---
+            agregarBotonMenu("Gestión de Recursos", posicionVertical, e -> abrirVentanaGestionRecursos());
+            posicionVertical += separacion;
+            
             agregarBotonMenu("Gestionar Citas", posicionVertical, e -> abrirVentanaListarCitas(null));
             posicionVertical += separacion;
 
@@ -417,13 +421,15 @@ public class Principal extends JFrame {
         JLabel etiquetaNombre = new JLabel(nombreUsuario);
         etiquetaNombre.setForeground(paletaBlanco);
         etiquetaNombre.setFont(fuenteNombreUsuario);
-        etiquetaNombre.setBounds(777, 39, 153, 14);
+        etiquetaNombre.setHorizontalAlignment(SwingConstants.RIGHT);
+        etiquetaNombre.setBounds(680, 37, 250, 20);
         panelInfoUsuario.add(etiquetaNombre);
 
         JLabel etiquetaRol = new JLabel(rolUsuario);
         etiquetaRol.setForeground(paletaBlanco);
         etiquetaRol.setFont(fuenteUsoNormal);
-        etiquetaRol.setBounds(777, 64, 119, 14);
+        etiquetaRol.setHorizontalAlignment(SwingConstants.RIGHT);
+        etiquetaRol.setBounds(680, 62, 250, 20);
         panelInfoUsuario.add(etiquetaRol);
 
         ImageIcon iconoUsuario = cargarImagenUsuarioSegura(modoOperacion, idUsuario);
@@ -476,9 +482,9 @@ public class Principal extends JFrame {
        Retorno: (void): Añade el panel de bienvenida.
     */
     private void construirBienvenidaDoctor() {
-        JPanel panelBienvenida = new JPanel(null);
-        panelBienvenida.setOpaque(false);
+        JPanel panelBienvenida = crearPanelRedondeado(paletaBlanco, 30);
         panelBienvenida.setBounds(57, 177, 1014, 250);
+        panelBienvenida.setLayout(null); 
 
         JLabel etiquetaDoctora = new JLabel(cargarIcono("/Imagenes/doctora.png", 200, 220));
         etiquetaDoctora.setBounds(30, 15, 200, 220);
@@ -495,7 +501,7 @@ public class Principal extends JFrame {
 
         JLabel etiquetaMarca = new JLabel("<html><font color='#16A34A'>COMPILE</font> <span style='background-color:#16A34A; color:white'>&nbsp;SALUD&nbsp;</span></html>");
         etiquetaMarca.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 36f));
-        etiquetaMarca.setBounds(680, 60, 320, 50);
+        etiquetaMarca.setBounds(680, 60, 350, 300);
 
         panelBienvenida.add(etiquetaDoctora);
         panelBienvenida.add(etiquetaTitulo);
@@ -1010,6 +1016,15 @@ public class Principal extends JFrame {
                 case "Enfermedades": new ListarEnfermedades().setVisible(true); break;
             }
         } catch (Exception e) { e.printStackTrace(); }
+    }
+    
+    // --- NUEVO MÉTODO PARA ABRIR GESTIÓN DE RECURSOS ---
+    private void abrirVentanaGestionRecursos() {
+        try {
+            new GestionRecursos().setVisible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void confirmarCierreAplicacion() {

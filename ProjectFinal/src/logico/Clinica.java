@@ -26,6 +26,8 @@ public class Clinica implements Serializable {
 	private ArrayList<Vacuna> vacunas;
 	private ArrayList<Solicitante> solicitantes;
 	private ArrayList<Administrativo> administrativos;
+    private ArrayList<String> solicitudesVacunas = new ArrayList<>();
+
 
 	
 	private ArrayList<Enfermedad> catalogoEnfermedades;
@@ -137,6 +139,10 @@ public class Clinica implements Serializable {
 	}
 
 	// --- Métodos CRUD Básicos ---
+	
+	 public void insertarEnfermedad(Enfermedad enfermedad) {
+	     catalogoEnfermedades.add(enfermedad);
+	 }
 
 	public void registrarDoctor(Doctor doctor) {
 		doctor.setIdDoctor(this.proximoIdDoctor);
@@ -188,6 +194,19 @@ public class Clinica implements Serializable {
 	}
 
 	// --- Gestión de Citas ---
+	
+    /*
+    Función: getSolicitudesVacunas
+    Argumentos: Ninguno.
+    Objetivo: Obtener la lista de solicitudes de vacunas pendientes.
+    Retorno: (ArrayList<String>): Lista de mensajes de solicitud.
+	 */
+	 public ArrayList<String> getSolicitudesVacunas() {
+	     if (solicitudesVacunas == null) {
+	         solicitudesVacunas = new ArrayList<>();
+	     }
+	     return solicitudesVacunas;
+	 }
 
 	public boolean programarCita(Paciente paciente, Doctor doctor, LocalDate fecha, String hora) {
 		if (paciente == null || doctor == null || fecha == null || hora == null) {
@@ -566,5 +585,11 @@ public class Clinica implements Serializable {
 
 	public void setUltimoMensajeError(String ultimoMensajeError) {
 		this.ultimoMensajeError = ultimoMensajeError;
+	}
+
+	public void limpiarSolicitudes() {
+        if (solicitudesVacunas != null) {
+            solicitudesVacunas.clear();
+        }
 	}
 }
