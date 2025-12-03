@@ -55,6 +55,9 @@ public class Principal extends JFrame {
     private static final long serialVersionUID = 1L;
 
     // Constantes de diseño
+    private static Color paleteGreen = new Color(22, 163, 74);
+	private static Color paleteDarkGreen = new Color(18, 140, 64);
+	private static Color paleteBeautyBlu = new Color(21, 129, 191);
     private static Color paletaAzulBonito = new Color(21, 129, 191);
     private static Color paletaAzulOscuro = new Color(15, 90, 140);
     private static Color paletaGrisClaro = new Color(240, 245, 250);

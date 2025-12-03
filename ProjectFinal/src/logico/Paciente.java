@@ -9,12 +9,20 @@ public class Paciente extends Persona {
 	private int idPaciente;
 	private ArrayList<Consulta> historialClinico;
 	private ArrayList<Vacuna> vacunasAplicadas;
+	//private String tipoSangre;
+	//private Float peso;
+	//private Float estatura;
+	//private Float IMC;
 
 	public Paciente() {
 		super();
 		this.idPaciente = 0;
 		this.historialClinico = new ArrayList<Consulta>();
 		this.vacunasAplicadas = new ArrayList<Vacuna>();
+		//this.peso=0.0f;
+		//this.estatura=0.0f;
+		//this.tipoSangre="O+";
+		//this.IMC=0.0f;
 	}
 
 	/*
@@ -32,6 +40,38 @@ public class Paciente extends Persona {
 	public void setIdPaciente(int idPaciente) {
 		this.idPaciente = idPaciente;
 	}
+
+	/*public String getTipoSangre() {
+		return tipoSangre;
+	}
+
+	public void setTipoSangre(String tipoSangre) {
+		this.tipoSangre = tipoSangre;
+	}
+
+	public Float getPeso() {
+		return peso;
+	}
+
+	public void setPeso(Float peso) {
+		this.peso = peso;
+	}
+
+	public Float getEstatura() {
+		return estatura;
+	}
+
+	public void setEstatura(Float estatura) {
+		this.estatura = estatura;
+	}
+
+	public Float getIMC() {
+		return IMC;
+	}
+
+	public void setIMC(Float iMC) {
+		IMC = iMC;
+	}*/
 
 	public void setHistorialClinico(ArrayList<Consulta> historialClinico) {
 		this.historialClinico = historialClinico;
