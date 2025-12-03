@@ -55,12 +55,15 @@ public class Principal extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	// Colores Originales [cite: 7, 8]
+	// Colores 
 	private static Color paleteGreen = new Color(22, 163, 74);
 	private static Color paleteDarkGreen = new Color(18, 140, 64);
 	private static Color paleteBeautyBlu = new Color(21, 129, 191);
+	private static Color paleteLightGrey = new Color(240, 245, 250);
+	private static Color paletaRojo = new Color(220, 38, 38);
+	private static Color paletaRojoOscuro = new Color(180, 0, 0);
 	
-	// Fuentes Originales [cite: 8-11]
+	// Fuentes 
 	private static Font fuenteTituloGraph = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 22f);
 	private static Font fuenteEjesGraph = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 14f);
 	private static Font fuenteDatosGraph  = FuenteUtil.cargarFuente("/Fuentes/Roboto-Light.ttf", 12f);
@@ -136,7 +139,7 @@ public class Principal extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 
 		bkgPanel = new JPanel();
-		bkgPanel.setBackground(new Color(211,211,211));
+		bkgPanel.setBackground(paleteLightGrey);
 		contentPane.add(bkgPanel, BorderLayout.CENTER);
 		bkgPanel.setLayout(null);
 
@@ -213,6 +216,21 @@ public class Principal extends JFrame {
 		JButton btnReportes = new JButton("New button");
 		configurarBotonMenu(btnReportes, "Reportes", 318);
 		if (mode != 0) btnReportes.setVisible(false);
+		btnReportes.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(mode==0) {
+					try {
+						Reportes report = new Reportes();
+						report.setVisible(true);
+						report.setModal(true);
+					} catch (Exception e2) {
+						e2.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Error inesperado al abrir la ventana.", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+		});
 		optionPanel.add(btnReportes);
 
 		JButton btnListados = new JButton("Listados");
@@ -244,6 +262,38 @@ public class Principal extends JFrame {
 		});
 		optionPanel.add(btnGestionRecursos);
 
+		JButton btnCerrarSesion = new JButton("Cerrar Sesión");
+		btnCerrarSesion.setForeground(Color.WHITE);
+		btnCerrarSesion.setFont(buttonFont);
+		btnCerrarSesion.setBackground(paletaRojo);
+		btnCerrarSesion.setBounds(0, 650, 240, 47); 
+		btnCerrarSesion.setVisible(true);
+		btnCerrarSesion.setBorderPainted(false);
+		btnCerrarSesion.setFocusPainted(false);
+		btnCerrarSesion.addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseEntered(MouseEvent e) {
+		        btnCerrarSesion.setBackground(paletaRojoOscuro);
+		    }
+
+		    @Override
+		    public void mouseExited(MouseEvent e) {
+		        btnCerrarSesion.setBackground(paletaRojo);
+		    }
+
+		    @Override
+		    public void mouseClicked(MouseEvent e) {
+		        int opcion = JOptionPane.showConfirmDialog(null, 
+		                "¿Estás seguro de que deseas salir de la aplicación?", 
+		                "Confirmar Cierre", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+		        if(opcion == JOptionPane.YES_OPTION) {
+		            Clinica.getInstance().guardarDatosLocal();
+		            dispose();
+		            System.exit(0);
+		        }
+		    }
+		});
+		optionPanel.add(btnCerrarSesion);
 
 		// ================= INFO USER PANEL =================
 		
