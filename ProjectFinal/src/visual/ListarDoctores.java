@@ -84,7 +84,7 @@ public class ListarDoctores extends JDialog {
 
     public ListarDoctores(/*Personal usuarioLogueado*/) {
         /*this.usuarioActual = usuarioLogueado;*/
-        setTitle("Gestión de Doctores");
+        setTitle("GestiÃ³n de Doctores");
         setModal(true);
         setBounds(100, 100, 1366, 768); 
         setLocationRelativeTo(null);
@@ -440,7 +440,7 @@ public class ListarDoctores extends JDialog {
             if (esAdmin) {
                 txtContrasenia.setEchoChar((char)0); 
             } else {
-                txtContrasenia.setEchoChar('•'); 
+                txtContrasenia.setEchoChar('â€¢'); 
             }
             
             cargarFotoEnLabel(selectedDoctor.getRutaFoto());
