@@ -8,13 +8,12 @@ public class Consulta implements Serializable {
 
 	private static final long serialVersionUID = 9L;
 	private int idConsulta;
-	private String codigo; // Agregado para manejo visual de ID (ej: "CNS-001")
+	private String codigo;
 	private Cita citaAsociada;
 	private Doctor doctor;
 	private String sintomas;
 	private Enfermedad enfermedad;
 
-	// CAMBIO: Ahora soporta lista de diagnósticos para compatibilidad con RegConsulta
 	private ArrayList<Diagnostico> diagnosticos;
 
 	private boolean agregarAlHistorial;
@@ -26,7 +25,7 @@ public class Consulta implements Serializable {
 		this.citaAsociada = null;
 		this.doctor = null;
 		this.sintomas = "";
-		this.diagnosticos = new ArrayList<Diagnostico>(); // Inicializar lista
+		this.diagnosticos = new ArrayList<Diagnostico>();
 		this.agregarAlHistorial = true;
 		this.transferida = false;
 		this.fecha = LocalDate.now();
@@ -40,7 +39,7 @@ public class Consulta implements Serializable {
 	public void setIdConsulta(int idConsulta) {
 		this.idConsulta = idConsulta;
 	}
-	
+
 	public String getCodigo() {
 		return codigo;
 	}
@@ -72,12 +71,11 @@ public class Consulta implements Serializable {
 	public void setSintomas(String sintomas) {
 		this.sintomas = sintomas;
 	}
-	
-	// Alias para compatibilidad singular/plural
+
 	public void setSintoma(String sintoma) {
 		this.sintomas = sintoma;
 	}
-	
+
 	public String getSintoma() {
 		return this.sintomas;
 	}
@@ -89,9 +87,7 @@ public class Consulta implements Serializable {
 	public void setDiagnosticos(ArrayList<Diagnostico> diagnosticos) {
 		this.diagnosticos = diagnosticos;
 	}
-	
-	// Método de compatibilidad por si alguna parte antigua pide un solo diagnóstico
-	// Retorna el primero o null
+
 	public Diagnostico getDiagnostico() {
 		if (diagnosticos != null && !diagnosticos.isEmpty()) {
 			return diagnosticos.get(0);

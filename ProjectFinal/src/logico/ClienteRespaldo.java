@@ -11,12 +11,6 @@ public class ClienteRespaldo {
 	private static final String HOST = "127.0.0.1";
 	private static final int PUERTO = 7001;
 
-	/*
-	 * Función: enviarRespaldo Argumentos: (File) ficheroBinario: El archivo local
-	 * clinica.dat a enviar. (String) reporteTexto: El resumen estadístico generado.
-	 * Objetivo: Conectar al socket del servidor y transmitir los datos. Retorno:
-	 * (boolean): true si el envío fue exitoso, false si falló.
-	 */
 	public static boolean enviarRespaldo(File ficheroBinario, String reporteTexto) {
 		Socket socket = null;
 		DataOutputStream dataOutput = null;
@@ -31,10 +25,8 @@ public class ClienteRespaldo {
 			dataOutput = new DataOutputStream(socket.getOutputStream());
 			fileInput = new FileInputStream(ficheroBinario);
 
-			// 1. Enviar tamaño del archivo
 			dataOutput.writeLong(ficheroBinario.length());
 
-			// 2. Enviar bytes del archivo
 			byte[] buffer = new byte[4096];
 			int leidos;
 			while ((leidos = fileInput.read(buffer)) != -1) {
@@ -42,7 +34,6 @@ public class ClienteRespaldo {
 			}
 			dataOutput.flush();
 
-			// 3. Enviar reporte de texto
 			dataOutput.writeUTF(reporteTexto);
 			dataOutput.flush();
 

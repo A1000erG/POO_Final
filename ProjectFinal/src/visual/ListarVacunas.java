@@ -41,445 +41,446 @@ import logico.Vacuna;
 
 public class ListarVacunas extends JDialog {
 
-    private static final long serialVersionUID = 1L;
-    private JPanel contentPane;
-    private JTextField txtBuscador;
-    private JTable table;
-    private DefaultTableModel model;
-    private Object[] rows;
-    
-    private JTextField txtNombre;
-    private JTextField txtStock;
-    private JFormattedTextField txtFechaVenc; // Cambiado a JFormattedTextField
-    private JLabel lblFoto; 
-    
-    private JButton btnModificar;
-    private JButton btnEstado; 
-    
-    private Vacuna selectedVacuna = null;
-    private boolean buscar = false;
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
+	private JTextField txtBuscador;
+	private JTable table;
+	private DefaultTableModel model;
+	private Object[] rows;
 
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    ListarVacunas dialog = new ListarVacunas(/*null*/);
-                    dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-                    dialog.setVisible(true);
-                } catch (Exception e) { e.printStackTrace(); }
-            }
-        });
-    }
+	private JTextField txtNombre;
+	private JTextField txtStock;
+	private JFormattedTextField txtFechaVenc;
+	private JLabel lblFoto;
 
-    public ListarVacunas(/*Personal usuarioLogueado*/) {
-        setTitle("Gestión de Vacunas");
-        setModal(true);
-        setBounds(100, 100, 1366, 768);
-        setLocationRelativeTo(null);
-        
-        contentPane = new JPanel();
-        contentPane.setBackground(Color.WHITE);
-        contentPane.setLayout(new BorderLayout(0, 0));
-        setContentPane(contentPane);
+	private JButton btnModificar;
+	private JButton btnEstado;
 
-        // PANEL SUPERIOR
-        JPanel panelSuperior = new JPanel();
-        panelSuperior.setBackground(new java.awt.Color(4, 111, 67));
-        panelSuperior.setLayout(null);
-        panelSuperior.setPreferredSize(new java.awt.Dimension(0, 120));
-        contentPane.add(panelSuperior, BorderLayout.NORTH);
-        
-        ImageIcon iconLogo = new ImageIcon(getClass().getResource("/Imagenes/logoBlanco.png"));
-        Image imgLogoEscalada = iconLogo.getImage().getScaledInstance(70, 70, Image.SCALE_SMOOTH);
-        JLabel lblLogo = new JLabel(new ImageIcon(imgLogoEscalada));
-        lblLogo.setBounds(40, 25, 70, 70);
-        panelSuperior.add(lblLogo);
-        
-        JLabel lblTitulo = new JLabel("INVENTARIO DE VACUNAS");
-        lblTitulo.setForeground(Color.WHITE);
-        lblTitulo.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 34f));
-        lblTitulo.setBounds(130, 35, 800, 50);
-        panelSuperior.add(lblTitulo);
+	private Vacuna selectedVacuna = null;
+	private boolean buscar = false;
 
-        // PANEL CENTRAL
-        JPanel panelCentral = new JPanel();
-        panelCentral.setBackground(Color.WHITE);
-        panelCentral.setLayout(null);
-        panelCentral.setBorder(new EmptyBorder(20, 20, 20, 20));
-        contentPane.add(panelCentral, BorderLayout.CENTER);
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					ListarVacunas dialog = new ListarVacunas();
+					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
-        int margenX = 40;
-        int margenY = 30;
+	public ListarVacunas() {
+		setTitle("Gestión de Vacunas");
+		setModal(true);
+		setBounds(100, 100, 1366, 768);
+		setLocationRelativeTo(null);
 
-        // IZQUIERDA
-        JLabel lblBuscar = new JLabel("Buscar (Nombre):");
-        lblBuscar.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Regular.ttf", 16f));
-        lblBuscar.setForeground(new Color(55, 65, 81));
-        lblBuscar.setBounds(margenX, margenY, 250, 20);
-        panelCentral.add(lblBuscar);
+		contentPane = new JPanel();
+		contentPane.setBackground(Color.WHITE);
+		contentPane.setLayout(new BorderLayout(0, 0));
+		setContentPane(contentPane);
 
-        txtBuscador = new JTextField();
-        txtBuscador.setBounds(margenX, margenY + 30, 450, 40);
-        txtBuscador.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(new Color(200, 200, 200), 1, true), 
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-        txtBuscador.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
-        txtBuscador.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                buscar = true;
-            }
-        });
-        panelCentral.add(txtBuscador);
+		JPanel panelSuperior = new JPanel();
+		panelSuperior.setBackground(new java.awt.Color(4, 111, 67));
+		panelSuperior.setLayout(null);
+		panelSuperior.setPreferredSize(new java.awt.Dimension(0, 120));
+		contentPane.add(panelSuperior, BorderLayout.NORTH);
 
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(40, 120, 820, 402);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 230)));
-        panelCentral.add(scrollPane);
+		ImageIcon iconLogo = new ImageIcon(getClass().getResource("/Imagenes/logoBlanco.png"));
+		Image imgLogoEscalada = iconLogo.getImage().getScaledInstance(70, 70, Image.SCALE_SMOOTH);
+		JLabel lblLogo = new JLabel(new ImageIcon(imgLogoEscalada));
+		lblLogo.setBounds(40, 25, 70, 70);
+		panelSuperior.add(lblLogo);
 
-        String[] headers = { "ID", "Nombre", "Stock", "Vencimiento", "Estado" }; 
-        
-        model = new DefaultTableModel() {
-            /**
+		JLabel lblTitulo = new JLabel("INVENTARIO DE VACUNAS");
+		lblTitulo.setForeground(Color.WHITE);
+		lblTitulo.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 34f));
+		lblTitulo.setBounds(130, 35, 800, 50);
+		panelSuperior.add(lblTitulo);
+
+		JPanel panelCentral = new JPanel();
+		panelCentral.setBackground(Color.WHITE);
+		panelCentral.setLayout(null);
+		panelCentral.setBorder(new EmptyBorder(20, 20, 20, 20));
+		contentPane.add(panelCentral, BorderLayout.CENTER);
+
+		int margenX = 40;
+		int margenY = 30;
+
+		JLabel lblBuscar = new JLabel("Buscar (Nombre):");
+		lblBuscar.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Regular.ttf", 16f));
+		lblBuscar.setForeground(new Color(55, 65, 81));
+		lblBuscar.setBounds(margenX, margenY, 250, 20);
+		panelCentral.add(lblBuscar);
+
+		txtBuscador = new JTextField();
+		txtBuscador.setBounds(margenX, margenY + 30, 450, 40);
+		txtBuscador.setBorder(BorderFactory.createCompoundBorder(new LineBorder(new Color(200, 200, 200), 1, true),
+				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+		txtBuscador.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 16f));
+		txtBuscador.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				buscar = true;
+			}
+		});
+		panelCentral.add(txtBuscador);
+
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(40, 120, 820, 402);
+		scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 230)));
+		panelCentral.add(scrollPane);
+
+		String[] headers = { "ID", "Nombre", "Stock", "Vencimiento", "Estado" };
+
+		model = new DefaultTableModel() {
+			/**
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        model.setColumnIdentifiers(headers);
-        table = new JTable();
-        table.setModel(model);
-        table.setFillsViewportHeight(true);
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.setRowHeight(35);
-        table.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f));
-        
-        table.getTableHeader().setBackground(new Color(4, 111, 67));
-        table.getTableHeader().setForeground(Color.WHITE);
-        table.getTableHeader().setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 14f));
-        
-        table.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (table.rowAtPoint(e.getPoint()) == -1) {
-                    table.clearSelection();
-                    limpiarFormulario();
-                } else {
-                    int index = table.getSelectedRow();
-                    if (index != -1) {
-                        String id = table.getValueAt(index, 0).toString();
-                        selectedVacuna = buscarVacunaPorId(Integer.parseInt(id));
-                        cargarDatosVacuna();
-                    }
-                }
-            }
-        });
-        scrollPane.setViewportView(table);
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		model.setColumnIdentifiers(headers);
+		table = new JTable();
+		table.setModel(model);
+		table.setFillsViewportHeight(true);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table.setRowHeight(35);
+		table.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f));
 
-        // DERECHA
-        JPanel panelDetalle = new JPanel();
-        panelDetalle.setBackground(new Color(245, 245, 245));
-        panelDetalle.setBorder(new LineBorder(new Color(220, 220, 220), 1, true));
-        panelDetalle.setBounds(900, margenY, 400, 568);
-        panelDetalle.setLayout(null);
-        panelCentral.add(panelDetalle);
+		table.getTableHeader().setBackground(new Color(4, 111, 67));
+		table.getTableHeader().setForeground(Color.WHITE);
+		table.getTableHeader().setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 14f));
 
-        JLabel lblDetalleTitulo = new JLabel("DETALLES DE LA VACUNA");
-        lblDetalleTitulo.setHorizontalAlignment(JLabel.CENTER);
-        lblDetalleTitulo.setForeground(new Color(4, 111, 67));
-        lblDetalleTitulo.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 18f));
-        lblDetalleTitulo.setBounds(20, 20, 360, 30);
-        panelDetalle.add(lblDetalleTitulo);
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (table.rowAtPoint(e.getPoint()) == -1) {
+					table.clearSelection();
+					limpiarFormulario();
+				} else {
+					int index = table.getSelectedRow();
+					if (index != -1) {
+						String id = table.getValueAt(index, 0).toString();
+						selectedVacuna = buscarVacunaPorId(Integer.parseInt(id));
+						cargarDatosVacuna();
+					}
+				}
+			}
+		});
+		scrollPane.setViewportView(table);
 
-        // Icono
-        lblFoto = new JLabel("");
-        lblFoto.setBounds(125, 60, 150, 150);
-        lblFoto.setBorder(new LineBorder(new Color(200, 200, 200), 1));
-        lblFoto.setOpaque(true);
-        lblFoto.setBackground(Color.WHITE);
-        try {
-            ImageIcon icon = new ImageIcon(getClass().getResource("/Imagenes/syringe.png"));
-            Image img = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-            lblFoto.setIcon(new ImageIcon(img));
-            lblFoto.setHorizontalAlignment(JLabel.CENTER);
-        } catch(Exception e) {}
-        panelDetalle.add(lblFoto);
+		JPanel panelDetalle = new JPanel();
+		panelDetalle.setBackground(new Color(245, 245, 245));
+		panelDetalle.setBorder(new LineBorder(new Color(220, 220, 220), 1, true));
+		panelDetalle.setBounds(900, margenY, 400, 568);
+		panelDetalle.setLayout(null);
+		panelCentral.add(panelDetalle);
 
-        int yStart = 230;
-        int gap = 60;
-        
-        createLabelAndInput(panelDetalle, "NOMBRE:", yStart, txtNombre = new JTextField());
-        createLabelAndInput(panelDetalle, "STOCK DISPONIBLE:", yStart + gap, txtStock = new JTextField());
-        
-        // --- CAMPO DE FECHA CON MÁSCARA ---
-        try {
-            MaskFormatter dateMask = new MaskFormatter("####-##-##");
-            dateMask.setPlaceholderCharacter('_');
-            txtFechaVenc = new JFormattedTextField(dateMask);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            txtFechaVenc = new JFormattedTextField(); // Fallback sin máscara
-        }
-        createLabelAndInput(panelDetalle, "FECHA VENC. (AAAA-MM-DD):", yStart + gap * 2, txtFechaVenc);
+		JLabel lblDetalleTitulo = new JLabel("DETALLES DE LA VACUNA");
+		lblDetalleTitulo.setHorizontalAlignment(JLabel.CENTER);
+		lblDetalleTitulo.setForeground(new Color(4, 111, 67));
+		lblDetalleTitulo.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 18f));
+		lblDetalleTitulo.setBounds(20, 20, 360, 30);
+		panelDetalle.add(lblDetalleTitulo);
 
-        // Botones alineados
-        int btnY = 510;
-        int btnWidth = 145;
+		lblFoto = new JLabel("");
+		lblFoto.setBounds(125, 60, 150, 150);
+		lblFoto.setBorder(new LineBorder(new Color(200, 200, 200), 1));
+		lblFoto.setOpaque(true);
+		lblFoto.setBackground(Color.WHITE);
+		try {
+			ImageIcon icon = new ImageIcon(getClass().getResource("/Imagenes/syringe.png"));
+			Image img = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+			lblFoto.setIcon(new ImageIcon(img));
+			lblFoto.setHorizontalAlignment(JLabel.CENTER);
+		} catch (Exception e) {
+		}
+		panelDetalle.add(lblFoto);
 
-        btnModificar = new JButton("MODIFICAR");
-        btnModificar.setBounds(50, btnY, btnWidth, 40);
-        btnModificar.setBackground(new Color(22, 163, 74));
-        btnModificar.setForeground(Color.WHITE);
-        btnModificar.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 13f));
-        btnModificar.setFocusPainted(false);
-        btnModificar.setEnabled(false);
-        btnModificar.addActionListener(e -> modificarVacuna());
-        panelDetalle.add(btnModificar);
+		int yStart = 230;
+		int gap = 60;
 
-        btnEstado = new JButton("DESHABILITAR");
-        btnEstado.setBounds(50 + btnWidth + 10, btnY, btnWidth, 40);
-        btnEstado.setBackground(new Color(220, 38, 38));
-        btnEstado.setForeground(Color.WHITE);
-        btnEstado.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 13f));
-        btnEstado.setFocusPainted(false);
-        btnEstado.setEnabled(false);
-        btnEstado.addActionListener(e -> cambiarEstadoVacuna());
-        panelDetalle.add(btnEstado);
+		createLabelAndInput(panelDetalle, "NOMBRE:", yStart, txtNombre = new JTextField());
+		createLabelAndInput(panelDetalle, "STOCK DISPONIBLE:", yStart + gap, txtStock = new JTextField());
 
-        // Botón Volver
-        ImageIcon iconFlecha = new ImageIcon(getClass().getResource("/Imagenes/FlechaAtras.png"));
-        Image imgFlechaScaled = iconFlecha.getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
-        
-        JPanel btnVolver = new JPanel() {
-            private static final long serialVersionUID = 1L;
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g;
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(getBackground());
-                g2.fillOval(0, 0, getWidth(), getHeight());
-                super.paintComponent(g);
-            }
-        };
-        btnVolver.setOpaque(false);
-        btnVolver.setLayout(null);
-        btnVolver.setBounds(40, 528, 70, 70);
-        btnVolver.setBackground(new Color(4, 111, 67));
-        
-        btnVolver.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) { dispose(); }
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                btnVolver.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                btnVolver.setBackground(new Color(6, 140, 85));
-                btnVolver.repaint();
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-                btnVolver.setBackground(new Color(4, 111, 67));
-                btnVolver.repaint();
-            }
-        });
-        
-        JLabel lblFlecha = new JLabel(new ImageIcon(imgFlechaScaled));
-        lblFlecha.setBounds(17, 17, 35, 35);
-        btnVolver.add(lblFlecha);
-        panelCentral.add(btnVolver);
+		try {
+			MaskFormatter dateMask = new MaskFormatter("####-##-##");
+			dateMask.setPlaceholderCharacter('_');
+			txtFechaVenc = new JFormattedTextField(dateMask);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			txtFechaVenc = new JFormattedTextField();
+		}
+		createLabelAndInput(panelDetalle, "FECHA VENC. (AAAA-MM-DD):", yStart + gap * 2, txtFechaVenc);
 
-        loadVacunas("");
-        limpiarFormulario();
-        iniciarHiloBuscador();
-    }
+		int btnY = 510;
+		int btnWidth = 145;
 
-    private void createLabelAndInput(JPanel panel, String title, int y, JTextField field) {
-        JLabel lbl = new JLabel(title);
-        lbl.setBounds(50, y, 300, 20);
-        lbl.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 13f));
-        lbl.setForeground(new Color(100, 100, 100));
-        panel.add(lbl);
+		btnModificar = new JButton("MODIFICAR");
+		btnModificar.setBounds(50, btnY, btnWidth, 40);
+		btnModificar.setBackground(new Color(22, 163, 74));
+		btnModificar.setForeground(Color.WHITE);
+		btnModificar.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 13f));
+		btnModificar.setFocusPainted(false);
+		btnModificar.setEnabled(false);
+		btnModificar.addActionListener(e -> modificarVacuna());
+		panelDetalle.add(btnModificar);
 
-        field.setBounds(50, y + 20, 300, 35);
-        field.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
-        field.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Regular.ttf", 15f));
-        panel.add(field);
-    }
+		btnEstado = new JButton("DESHABILITAR");
+		btnEstado.setBounds(50 + btnWidth + 10, btnY, btnWidth, 40);
+		btnEstado.setBackground(new Color(220, 38, 38));
+		btnEstado.setForeground(Color.WHITE);
+		btnEstado.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 13f));
+		btnEstado.setFocusPainted(false);
+		btnEstado.setEnabled(false);
+		btnEstado.addActionListener(e -> cambiarEstadoVacuna());
+		panelDetalle.add(btnEstado);
 
-    private void iniciarHiloBuscador() {
-        Thread hilo = new Thread(() -> {
-            while (true) {
-                if (buscar) {
-                    try {
-                        Thread.sleep(150);
-                        String texto = txtBuscador.getText();
-                        EventQueue.invokeLater(() -> loadVacunas(texto));
-                        buscar = false;
-                    } catch (InterruptedException e) { e.printStackTrace(); }
-                }
-                try { Thread.sleep(100); } catch (InterruptedException e) { break; }
-            }
-        });
-        hilo.start();
-    }
+		ImageIcon iconFlecha = new ImageIcon(getClass().getResource("/Imagenes/FlechaAtras.png"));
+		Image imgFlechaScaled = iconFlecha.getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
 
-    private void loadVacunas(String filtro) {
-        model.setRowCount(0);
-        rows = new Object[model.getColumnCount()];
-        ArrayList<Vacuna> lista = Clinica.getInstance().getVacunas();
+		JPanel btnVolver = new JPanel() {
+			private static final long serialVersionUID = 1L;
 
-        for (Vacuna v : lista) {
-            String nombre = v.getNombre().toLowerCase();
-            String filtroMin = filtro.toLowerCase();
+			@Override
+			protected void paintComponent(Graphics g) {
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.setColor(getBackground());
+				g2.fillOval(0, 0, getWidth(), getHeight());
+				super.paintComponent(g);
+			}
+		};
+		btnVolver.setOpaque(false);
+		btnVolver.setLayout(null);
+		btnVolver.setBounds(40, 528, 70, 70);
+		btnVolver.setBackground(new Color(4, 111, 67));
 
-            if (filtro.isEmpty() || nombre.contains(filtroMin)) {
-                rows[0] = v.getId();
-                rows[1] = v.getNombre();
-                rows[2] = v.getCantidadDisponible();
-                rows[3] = v.getFechaCaducidad();
-                rows[4] = v.isActivo() ? "Activo" : "Descontinuada"; 
-                model.addRow(rows);
-            }
-        }
-    }
+		btnVolver.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				dispose();
+			}
 
-    private void cargarDatosVacuna() {
-        if (selectedVacuna != null) {
-            txtNombre.setText(selectedVacuna.getNombre());
-            txtStock.setText(String.valueOf(selectedVacuna.getCantidadDisponible()));
-            
-            // CORRECCIÓN NULLPOINTEREXCEPTION
-            if (selectedVacuna.getFechaCaducidad() != null) {
-                txtFechaVenc.setText(selectedVacuna.getFechaCaducidad().toString());
-            } else {
-                txtFechaVenc.setText("");
-            }
-            
-            // Aseguramos habilitación Y edición explícita
-            txtNombre.setEnabled(true);
-            txtNombre.setEditable(true);
-            
-            txtStock.setEnabled(true);
-            txtStock.setEditable(true);
-            
-            txtFechaVenc.setEnabled(true);
-            txtFechaVenc.setEditable(true);
-            
-            btnModificar.setEnabled(true);
-            btnEstado.setEnabled(true);
-            
-            if (selectedVacuna.isActivo()) {
-                btnEstado.setText("DESHABILITAR");
-                btnEstado.setBackground(new Color(220, 38, 38));
-            } else {
-                btnEstado.setText("HABILITAR");
-                btnEstado.setBackground(new Color(22, 163, 74));
-            }
-        }
-    }
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				btnVolver.setCursor(new Cursor(Cursor.HAND_CURSOR));
+				btnVolver.setBackground(new Color(6, 140, 85));
+				btnVolver.repaint();
+			}
 
-    private void limpiarFormulario() {
-        txtNombre.setText("");
-        txtStock.setText("");
-        txtFechaVenc.setText("");
-        
-        // Deshabilitar completamente
-        txtNombre.setEnabled(false);
-        txtNombre.setEditable(false);
-        
-        txtStock.setEnabled(false);
-        txtStock.setEditable(false);
-        
-        txtFechaVenc.setEnabled(false);
-        txtFechaVenc.setEditable(false);
-        
-        btnModificar.setEnabled(false);
-        btnEstado.setEnabled(false);
-        btnEstado.setText("DESHABILITAR");
-        btnEstado.setBackground(new Color(220, 38, 38));
-        selectedVacuna = null;
-    }
+			@Override
+			public void mouseExited(MouseEvent e) {
+				btnVolver.setBackground(new Color(4, 111, 67));
+				btnVolver.repaint();
+			}
+		});
 
-    private Vacuna buscarVacunaPorId(int id) {
-        for (Vacuna v : Clinica.getInstance().getVacunas()) {
-            if (v.getId() == id) return v;
-        }
-        return null;
-    }
+		JLabel lblFlecha = new JLabel(new ImageIcon(imgFlechaScaled));
+		lblFlecha.setBounds(17, 17, 35, 35);
+		btnVolver.add(lblFlecha);
+		panelCentral.add(btnVolver);
 
-    private void modificarVacuna() {
-        if (selectedVacuna == null) return;
-        
-        try {
-            // Validación de Nombre
-            if (txtNombre.getText().trim().isEmpty()) {
-                throw new Exception("El nombre no puede estar vacío.");
-            }
+		loadVacunas("");
+		limpiarFormulario();
+		iniciarHiloBuscador();
+	}
 
-            // Validación de Stock
-            int stock;
-            try {
-                stock = Integer.parseInt(txtStock.getText());
-                if (stock < 0) throw new Exception("El stock no puede ser negativo.");
-            } catch (NumberFormatException e) {
-                throw new Exception("El stock debe ser un número entero válido.");
-            }
+	private void createLabelAndInput(JPanel panel, String title, int y, JTextField field) {
+		JLabel lbl = new JLabel(title);
+		lbl.setBounds(50, y, 300, 20);
+		lbl.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 13f));
+		lbl.setForeground(new Color(100, 100, 100));
+		panel.add(lbl);
 
-            // Validación de Fecha (Formato y lógica)
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate fecha;
-            try {
-                fecha = LocalDate.parse(txtFechaVenc.getText(), formatter);
-            } catch (DateTimeParseException e) {
-                throw new Exception("Formato de fecha inválido. Use AAAA-MM-DD.");
-            }
+		field.setBounds(50, y + 20, 300, 35);
+		field.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
+		field.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Regular.ttf", 15f));
+		panel.add(field);
+	}
 
-            // Validación de "Fechas Raras"
-            int anio = fecha.getYear();
-            if (anio < 2020 || anio > 2100) {
-                throw new Exception("El año de vencimiento parece incorrecto (" + anio + ").\nPor favor verifique la fecha.");
-            }
-            
-            // Aplicar cambios
-            selectedVacuna.setNombre(txtNombre.getText());
-            selectedVacuna.setCantidadDisponible(stock);
-            selectedVacuna.setFechaCaducidad(fecha);
-            
-            Clinica.getInstance().guardarDatos();
-            JOptionPane.showMessageDialog(this, "Vacuna actualizada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            loadVacunas(txtBuscador.getText());
-            
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error en datos", JOptionPane.ERROR_MESSAGE);
-        }
-    }
+	private void iniciarHiloBuscador() {
+		Thread hilo = new Thread(() -> {
+			while (true) {
+				if (buscar) {
+					try {
+						Thread.sleep(150);
+						String texto = txtBuscador.getText();
+						EventQueue.invokeLater(() -> loadVacunas(texto));
+						buscar = false;
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					break;
+				}
+			}
+		});
+		hilo.start();
+	}
 
-    private void cambiarEstadoVacuna() {
-        if (selectedVacuna == null) return;
+	private void loadVacunas(String filtro) {
+		model.setRowCount(0);
+		rows = new Object[model.getColumnCount()];
+		ArrayList<Vacuna> lista = Clinica.getInstance().getVacunas();
 
-        if (selectedVacuna.isActivo()) {
-            int confirm = JOptionPane.showConfirmDialog(this, 
-                    "¿Seguro que desea descontinuar esta vacuna?", 
-                    "Confirmar", JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                selectedVacuna.setActivo(false);
-                Clinica.getInstance().guardarDatos();
-                cargarDatosVacuna();
-                loadVacunas(txtBuscador.getText());
-            }
-        } else {
-            int confirm = JOptionPane.showConfirmDialog(this, 
-                    "¿Reactivar el uso de esta vacuna?", 
-                    "Confirmar", JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                selectedVacuna.setActivo(true);
-                Clinica.getInstance().guardarDatos();
-                cargarDatosVacuna();
-                loadVacunas(txtBuscador.getText());
-            }
-        }
-    }
+		for (Vacuna v : lista) {
+			String nombre = v.getNombre().toLowerCase();
+			String filtroMin = filtro.toLowerCase();
+
+			if (filtro.isEmpty() || nombre.contains(filtroMin)) {
+				rows[0] = v.getId();
+				rows[1] = v.getNombre();
+				rows[2] = v.getCantidadDisponible();
+				rows[3] = v.getFechaCaducidad();
+				rows[4] = v.isActivo() ? "Activo" : "Descontinuada";
+				model.addRow(rows);
+			}
+		}
+	}
+
+	private void cargarDatosVacuna() {
+		if (selectedVacuna != null) {
+			txtNombre.setText(selectedVacuna.getNombre());
+			txtStock.setText(String.valueOf(selectedVacuna.getCantidadDisponible()));
+
+			if (selectedVacuna.getFechaCaducidad() != null) {
+				txtFechaVenc.setText(selectedVacuna.getFechaCaducidad().toString());
+			} else {
+				txtFechaVenc.setText("");
+			}
+
+			txtNombre.setEnabled(true);
+			txtNombre.setEditable(true);
+
+			txtStock.setEnabled(true);
+			txtStock.setEditable(true);
+
+			txtFechaVenc.setEnabled(true);
+			txtFechaVenc.setEditable(true);
+
+			btnModificar.setEnabled(true);
+			btnEstado.setEnabled(true);
+
+			if (selectedVacuna.isActivo()) {
+				btnEstado.setText("DESHABILITAR");
+				btnEstado.setBackground(new Color(220, 38, 38));
+			} else {
+				btnEstado.setText("HABILITAR");
+				btnEstado.setBackground(new Color(22, 163, 74));
+			}
+		}
+	}
+
+	private void limpiarFormulario() {
+		txtNombre.setText("");
+		txtStock.setText("");
+		txtFechaVenc.setText("");
+
+		txtNombre.setEnabled(false);
+		txtNombre.setEditable(false);
+
+		txtStock.setEnabled(false);
+		txtStock.setEditable(false);
+
+		txtFechaVenc.setEnabled(false);
+		txtFechaVenc.setEditable(false);
+
+		btnModificar.setEnabled(false);
+		btnEstado.setEnabled(false);
+		btnEstado.setText("DESHABILITAR");
+		btnEstado.setBackground(new Color(220, 38, 38));
+		selectedVacuna = null;
+	}
+
+	private Vacuna buscarVacunaPorId(int id) {
+		for (Vacuna v : Clinica.getInstance().getVacunas()) {
+			if (v.getId() == id)
+				return v;
+		}
+		return null;
+	}
+
+	private void modificarVacuna() {
+		if (selectedVacuna == null)
+			return;
+
+		try {
+			if (txtNombre.getText().trim().isEmpty()) {
+				throw new Exception("El nombre no puede estar vacío.");
+			}
+
+			int stock;
+			try {
+				stock = Integer.parseInt(txtStock.getText());
+				if (stock < 0)
+					throw new Exception("El stock no puede ser negativo.");
+			} catch (NumberFormatException e) {
+				throw new Exception("El stock debe ser un número entero válido.");
+			}
+
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			LocalDate fecha;
+			try {
+				fecha = LocalDate.parse(txtFechaVenc.getText(), formatter);
+			} catch (DateTimeParseException e) {
+				throw new Exception("Formato de fecha inválido. Use AAAA-MM-DD.");
+			}
+
+			int anio = fecha.getYear();
+			if (anio < 2020 || anio > 2100) {
+				throw new Exception(
+						"El año de vencimiento parece incorrecto (" + anio + ").\nPor favor verifique la fecha.");
+			}
+
+			selectedVacuna.setNombre(txtNombre.getText());
+			selectedVacuna.setCantidadDisponible(stock);
+			selectedVacuna.setFechaCaducidad(fecha);
+
+			Clinica.getInstance().guardarDatos();
+			JOptionPane.showMessageDialog(this, "Vacuna actualizada correctamente.", "Éxito",
+					JOptionPane.INFORMATION_MESSAGE);
+			loadVacunas(txtBuscador.getText());
+
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Error en datos", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private void cambiarEstadoVacuna() {
+		if (selectedVacuna == null)
+			return;
+
+		if (selectedVacuna.isActivo()) {
+			int confirm = JOptionPane.showConfirmDialog(this, "¿Seguro que desea descontinuar esta vacuna?",
+					"Confirmar", JOptionPane.YES_NO_OPTION);
+			if (confirm == JOptionPane.YES_OPTION) {
+				selectedVacuna.setActivo(false);
+				Clinica.getInstance().guardarDatos();
+				cargarDatosVacuna();
+				loadVacunas(txtBuscador.getText());
+			}
+		} else {
+			int confirm = JOptionPane.showConfirmDialog(this, "¿Reactivar el uso de esta vacuna?", "Confirmar",
+					JOptionPane.YES_NO_OPTION);
+			if (confirm == JOptionPane.YES_OPTION) {
+				selectedVacuna.setActivo(true);
+				Clinica.getInstance().guardarDatos();
+				cargarDatosVacuna();
+				loadVacunas(txtBuscador.getText());
+			}
+		}
+	}
 }

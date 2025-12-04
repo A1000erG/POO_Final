@@ -6,7 +6,6 @@ public class Diagnostico implements Serializable {
 
 	private static final long serialVersionUID = 13L;
 
-	// Enum interno para la severidad
 	public enum TipoSeveridad {
 		LEVE, MODERADO, GRAVE
 	}
@@ -15,8 +14,7 @@ public class Diagnostico implements Serializable {
 	private String notasObservacion;
 	private TipoSeveridad severidad;
 	private Enfermedad enfermedadDetectada;
-	
-	// Agregados para compatibilidad visual
+
 	private String tratamiento;
 	private String nombre;
 
@@ -29,12 +27,8 @@ public class Diagnostico implements Serializable {
 		this.nombre = "";
 	}
 
-	/*
-	 * Función: Diagnostico (Constructor) Objetivo: Crear el resultado médico de una
-	 * consulta.
-	 */
 	public Diagnostico(String notasObservacion, Enfermedad enfermedadDetectada, TipoSeveridad severidad) {
-		this.idDiagnostico = 0; // Se asigna luego si es necesario
+		this.idDiagnostico = 0;
 		this.notasObservacion = notasObservacion;
 		this.enfermedadDetectada = enfermedadDetectada;
 		this.severidad = severidad;
@@ -80,17 +74,15 @@ public class Diagnostico implements Serializable {
 
 	public void setEnfermedadDetectada(Enfermedad enfermedadDetectada) {
 		this.enfermedadDetectada = enfermedadDetectada;
-		// Sincronizar nombre si es necesario
-		if(enfermedadDetectada != null) {
+		if (enfermedadDetectada != null) {
 			this.nombre = enfermedadDetectada.getNombre();
 		}
 	}
-	
-	// --- Métodos agregados para compatibilidad ---
+
 	public void setEnfermedad(Enfermedad enfermedad) {
 		setEnfermedadDetectada(enfermedad);
 	}
-	
+
 	public String getTratamiento() {
 		return tratamiento;
 	}

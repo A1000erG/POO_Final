@@ -7,7 +7,7 @@ public class Enfermedad implements Serializable {
 	private static final long serialVersionUID = 12L;
 	private int idEnfermedad;
 	private String nombre;
-	private boolean esBajoVigilancia; // true = Controlada/Epidémica
+	private boolean esBajoVigilancia;
 
 	public Enfermedad() {
 		this.idEnfermedad = 0;
@@ -15,10 +15,6 @@ public class Enfermedad implements Serializable {
 		this.esBajoVigilancia = false;
 	}
 
-	/*
-	 * Función: Enfermedad (Constructor) Argumentos: (int) id, (String) nombre,
-	 * (boolean) vigilancia Objetivo: Crear una enfermedad para el catálogo.
-	 */
 	public Enfermedad(int idEnfermedad, String nombre, boolean esBajoVigilancia) {
 		this.idEnfermedad = idEnfermedad;
 		this.nombre = nombre;
@@ -51,7 +47,7 @@ public class Enfermedad implements Serializable {
 
 	@Override
 	public String toString() {
-		return nombre; // Para que se vea bien en los JComboBox
+		return nombre;
 	}
 
 	public static long getSerialversionuid() {

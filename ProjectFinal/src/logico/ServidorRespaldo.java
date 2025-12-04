@@ -12,20 +12,11 @@ public class ServidorRespaldo extends Thread {
 	private boolean running;
 	private int puerto;
 
-	/*
-	 * Función: ServidorRespaldo (Constructor) Argumentos: (int) puerto: El puerto
-	 * TCP donde escuchar (ej. 7001). Objetivo: Configurar el servidor de respaldo.
-	 * Retorno: Ninguno.
-	 */
 	public ServidorRespaldo(int puerto) {
 		this.puerto = puerto;
 		this.running = true;
 	}
 
-	/*
-	 * Función: run (De Thread) Argumentos: Ninguno. Objetivo: Bucle principal que
-	 * acepta conexiones entrantes de la clínica. Retorno: (void).
-	 */
 	@Override
 	public void run() {
 		try {
@@ -35,15 +26,9 @@ public class ServidorRespaldo extends Thread {
 				recibirDatos(socketCliente);
 			}
 		} catch (IOException excepcionIO) {
-			// Manejo interno silencioso o log
 		}
 	}
 
-	/*
-	 * Función: recibirDatos Argumentos: (Socket) socketCliente: La conexión con la
-	 * aplicación Cliente. Objetivo: Leer el archivo binario y el reporte de texto
-	 * enviados por la red y guardarlos en disco. Retorno: (void).
-	 */
 	private void recibirDatos(Socket socketCliente) {
 		DataInputStream dataInput = null;
 		FileOutputStream fileOutBin = null;
@@ -52,7 +37,6 @@ public class ServidorRespaldo extends Thread {
 		try {
 			dataInput = new DataInputStream(socketCliente.getInputStream());
 
-			// Paso 1: Leer tamaño y datos del binario
 			long tamanoArchivo = dataInput.readLong();
 			byte[] buffer = new byte[4096];
 			fileOutBin = new FileOutputStream("empresa_respaldo.dat");
@@ -65,13 +49,11 @@ public class ServidorRespaldo extends Thread {
 				totalLeido += leidos;
 			}
 
-			// Paso 2: Leer reporte de texto (Puntos extra)
 			String reporteTexto = dataInput.readUTF();
 			fileOutTxt = new FileOutputStream("reporte_enfermedades.txt");
 			fileOutTxt.write(reporteTexto.getBytes());
 
 		} catch (IOException e) {
-			// Error en transmisión
 		} finally {
 			try {
 				if (fileOutBin != null)
