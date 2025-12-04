@@ -281,12 +281,24 @@ public class Principal extends JFrame {
 		    @Override
 		    public void mouseClicked(MouseEvent e) {
 		        int opcion = JOptionPane.showConfirmDialog(null, 
-		                "¿Estás seguro de que deseas salir de la aplicación?", 
-		                "Confirmar Cierre", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+		        		"¿Estás seguro de que deseas salir?\n\n" +
+		        	            "• SI: Cerrar sesión y volver al login\n" +
+		        	            "• NO: Salir completamente de la aplicación\n" +
+		        	            "• CANCELAR: Volver a la aplicación", 
+		        	            "Confirmar Salida", 
+		        	            JOptionPane.YES_NO_CANCEL_OPTION, 
+		        	            JOptionPane.WARNING_MESSAGE);
 		        if(opcion == JOptionPane.YES_OPTION) {
 		            Clinica.getInstance().guardarDatosLocal();
 		            dispose();
-		            System.exit(0);
+		            try { 
+		                new Login().setVisible(true); 
+		            } catch (Exception ex) { 
+		                ex.printStackTrace(); 
+		            } 
+		        }else if (opcion == JOptionPane.NO_OPTION) {
+	                Clinica.getInstance().guardarDatosLocal();
+	                dispose();
 		        }
 		    }
 		});
