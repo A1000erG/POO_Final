@@ -179,6 +179,10 @@ public class RegCita extends JFrame {
         dchFechaNacimiento.setBounds(30, 340, 430, 35);
         dchFechaNacimiento.setDateFormatString("dd/MM/yyyy"); // Formato visual
         dchFechaNacimiento.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Regular.ttf", 15f));
+        
+        // --- SOLUCIÓN: Limitar la fecha máxima a la fecha actual ---
+        dchFechaNacimiento.setMaxSelectableDate(new Date());
+        
         // Opcional: Establecer un borde similar a los otros campos si se desea
         dchFechaNacimiento.getCalendarButton().setBackground(Color.WHITE);
         dchFechaNacimiento.setEnabled(false); 

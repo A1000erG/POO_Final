@@ -135,10 +135,23 @@ public class ListarPacientes extends JDialog {
         panelCentral.add(scrollPane);
 
         String[] headers = { "ID", "Cédula", "Nombre", "Teléfono", "Estado" };
-        model = new DefaultTableModel();
+        
+        // CAMBIO 1: Modelo anónimo para desactivar edición
+        model = new DefaultTableModel() {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         model.setColumnIdentifiers(headers);
         table = new JTable();
         table.setModel(model);
+        table.setFillsViewportHeight(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setRowHeight(35);
         table.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f));
@@ -147,16 +160,22 @@ public class ListarPacientes extends JDialog {
         table.getTableHeader().setForeground(Color.WHITE);
         table.getTableHeader().setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 14f));
         
+        // CAMBIO 2: Lógica de deselección
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int index = table.getSelectedRow();
-                if (index != -1) {
-                    // Usamos cédula como clave única, eliminando posibles caracteres de formato si es necesario
-                    // Pero la tabla mostrará la cédula tal cual está guardada.
-                    String cedula = table.getValueAt(index, 1).toString(); 
-                    selectedPaciente = Clinica.getInstance().getPacientePorCedula(cedula);
-                    cargarDatosPaciente();
+                if (table.rowAtPoint(e.getPoint()) == -1) {
+                    table.clearSelection();
+                    limpiarFormulario();
+                } else {
+                    int index = table.getSelectedRow();
+                    if (index != -1) {
+                        // Usamos cédula como clave única, eliminando posibles caracteres de formato si es necesario
+                        // Pero la tabla mostrará la cédula tal cual está guardada.
+                        String cedula = table.getValueAt(index, 1).toString(); 
+                        selectedPaciente = Clinica.getInstance().getPacientePorCedula(cedula);
+                        cargarDatosPaciente();
+                    }
                 }
             }
         });

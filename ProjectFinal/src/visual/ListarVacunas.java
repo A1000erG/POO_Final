@@ -12,12 +12,17 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -28,6 +33,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.MaskFormatter;
 
 import Utilidades.FuenteUtil;
 import logico.Clinica;
@@ -44,11 +50,11 @@ public class ListarVacunas extends JDialog {
     
     private JTextField txtNombre;
     private JTextField txtStock;
-    private JTextField txtFechaVenc;
+    private JFormattedTextField txtFechaVenc; // Cambiado a JFormattedTextField
     private JLabel lblFoto; 
     
     private JButton btnModificar;
-    private JButton btnEstado; // Botón nuevo para deshabilitar vacunas
+    private JButton btnEstado; 
     
     private Vacuna selectedVacuna = null;
     private boolean buscar = false;
@@ -131,11 +137,23 @@ public class ListarVacunas extends JDialog {
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 230)));
         panelCentral.add(scrollPane);
 
-        String[] headers = { "ID", "Nombre", "Stock", "Vencimiento", "Estado" }; // Agregado Estado
-        model = new DefaultTableModel();
+        String[] headers = { "ID", "Nombre", "Stock", "Vencimiento", "Estado" }; 
+        
+        model = new DefaultTableModel() {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         model.setColumnIdentifiers(headers);
         table = new JTable();
         table.setModel(model);
+        table.setFillsViewportHeight(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setRowHeight(35);
         table.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f));
@@ -147,11 +165,16 @@ public class ListarVacunas extends JDialog {
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int index = table.getSelectedRow();
-                if (index != -1) {
-                    String id = table.getValueAt(index, 0).toString();
-                    selectedVacuna = buscarVacunaPorId(Integer.parseInt(id));
-                    cargarDatosVacuna();
+                if (table.rowAtPoint(e.getPoint()) == -1) {
+                    table.clearSelection();
+                    limpiarFormulario();
+                } else {
+                    int index = table.getSelectedRow();
+                    if (index != -1) {
+                        String id = table.getValueAt(index, 0).toString();
+                        selectedVacuna = buscarVacunaPorId(Integer.parseInt(id));
+                        cargarDatosVacuna();
+                    }
                 }
             }
         });
@@ -191,7 +214,17 @@ public class ListarVacunas extends JDialog {
         
         createLabelAndInput(panelDetalle, "NOMBRE:", yStart, txtNombre = new JTextField());
         createLabelAndInput(panelDetalle, "STOCK DISPONIBLE:", yStart + gap, txtStock = new JTextField());
-        createLabelAndInput(panelDetalle, "FECHA VENC. (AAAA-MM-DD):", yStart + gap * 2, txtFechaVenc = new JTextField());
+        
+        // --- CAMPO DE FECHA CON MÁSCARA ---
+        try {
+            MaskFormatter dateMask = new MaskFormatter("####-##-##");
+            dateMask.setPlaceholderCharacter('_');
+            txtFechaVenc = new JFormattedTextField(dateMask);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            txtFechaVenc = new JFormattedTextField(); // Fallback sin máscara
+        }
+        createLabelAndInput(panelDetalle, "FECHA VENC. (AAAA-MM-DD):", yStart + gap * 2, txtFechaVenc);
 
         // Botones alineados
         int btnY = 510;
@@ -307,7 +340,7 @@ public class ListarVacunas extends JDialog {
                 rows[1] = v.getNombre();
                 rows[2] = v.getCantidadDisponible();
                 rows[3] = v.getFechaCaducidad();
-                rows[4] = v.isActivo() ? "Activo" : "Descontinuada"; // Mostrar estado
+                rows[4] = v.isActivo() ? "Activo" : "Descontinuada"; 
                 model.addRow(rows);
             }
         }
@@ -317,11 +350,23 @@ public class ListarVacunas extends JDialog {
         if (selectedVacuna != null) {
             txtNombre.setText(selectedVacuna.getNombre());
             txtStock.setText(String.valueOf(selectedVacuna.getCantidadDisponible()));
-            txtFechaVenc.setText(selectedVacuna.getFechaCaducidad().toString());
             
+            // CORRECCIÓN NULLPOINTEREXCEPTION
+            if (selectedVacuna.getFechaCaducidad() != null) {
+                txtFechaVenc.setText(selectedVacuna.getFechaCaducidad().toString());
+            } else {
+                txtFechaVenc.setText("");
+            }
+            
+            // Aseguramos habilitación Y edición explícita
             txtNombre.setEnabled(true);
+            txtNombre.setEditable(true);
+            
             txtStock.setEnabled(true);
+            txtStock.setEditable(true);
+            
             txtFechaVenc.setEnabled(true);
+            txtFechaVenc.setEditable(true);
             
             btnModificar.setEnabled(true);
             btnEstado.setEnabled(true);
@@ -341,9 +386,15 @@ public class ListarVacunas extends JDialog {
         txtStock.setText("");
         txtFechaVenc.setText("");
         
+        // Deshabilitar completamente
         txtNombre.setEnabled(false);
+        txtNombre.setEditable(false);
+        
         txtStock.setEnabled(false);
+        txtStock.setEditable(false);
+        
         txtFechaVenc.setEnabled(false);
+        txtFechaVenc.setEditable(false);
         
         btnModificar.setEnabled(false);
         btnEstado.setEnabled(false);
@@ -363,16 +414,46 @@ public class ListarVacunas extends JDialog {
         if (selectedVacuna == null) return;
         
         try {
+            // Validación de Nombre
+            if (txtNombre.getText().trim().isEmpty()) {
+                throw new Exception("El nombre no puede estar vacío.");
+            }
+
+            // Validación de Stock
+            int stock;
+            try {
+                stock = Integer.parseInt(txtStock.getText());
+                if (stock < 0) throw new Exception("El stock no puede ser negativo.");
+            } catch (NumberFormatException e) {
+                throw new Exception("El stock debe ser un número entero válido.");
+            }
+
+            // Validación de Fecha (Formato y lógica)
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate fecha;
+            try {
+                fecha = LocalDate.parse(txtFechaVenc.getText(), formatter);
+            } catch (DateTimeParseException e) {
+                throw new Exception("Formato de fecha inválido. Use AAAA-MM-DD.");
+            }
+
+            // Validación de "Fechas Raras"
+            int anio = fecha.getYear();
+            if (anio < 2020 || anio > 2100) {
+                throw new Exception("El año de vencimiento parece incorrecto (" + anio + ").\nPor favor verifique la fecha.");
+            }
+            
+            // Aplicar cambios
             selectedVacuna.setNombre(txtNombre.getText());
-            selectedVacuna.setCantidadDisponible(Integer.parseInt(txtStock.getText()));
-            selectedVacuna.setFechaCaducidad(java.time.LocalDate.parse(txtFechaVenc.getText()));
+            selectedVacuna.setCantidadDisponible(stock);
+            selectedVacuna.setFechaCaducidad(fecha);
             
             Clinica.getInstance().guardarDatos();
             JOptionPane.showMessageDialog(this, "Vacuna actualizada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             loadVacunas(txtBuscador.getText());
             
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error en datos. Verifique Stock y Fecha.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error en datos", JOptionPane.ERROR_MESSAGE);
         }
     }
 

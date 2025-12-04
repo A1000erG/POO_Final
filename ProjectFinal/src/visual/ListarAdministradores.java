@@ -70,7 +70,7 @@ public class ListarAdministradores extends JDialog {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    ListarAdministradores dialog = new ListarAdministradores(/*null*/);
+                    ListarAdministradores dialog = new ListarAdministradores(null);
                     dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     dialog.setVisible(true);
                 } catch (Exception e) { e.printStackTrace(); }
@@ -79,9 +79,9 @@ public class ListarAdministradores extends JDialog {
     }
 
 
-    public ListarAdministradores(/*Personal usuarioLogueado*/) {
-        //this.usuarioActual = usuarioLogueado;
-        setTitle("Gesti�n de Administradores");
+    public ListarAdministradores(Personal usuarioLogueado) {
+        this.usuarioActual = usuarioLogueado;
+        setTitle("Gestión de Administradores");
         setModal(true);
         setBounds(100, 100, 1366, 768);
         setLocationRelativeTo(null);
@@ -148,7 +148,16 @@ public class ListarAdministradores extends JDialog {
         panelCentral.add(scrollPane);
 
         String[] headers = { "ID", "Nombre", "Cargo", "Estado" };
-        model = new DefaultTableModel();
+        
+        // CORRECCIÓN 1: Evitar edición por doble clic
+        model = new DefaultTableModel() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; 
+            }
+        };
+        
         model.setColumnIdentifiers(headers);
         table = new JTable();
         table.setModel(model);
@@ -156,21 +165,34 @@ public class ListarAdministradores extends JDialog {
         table.setRowHeight(35);
         table.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f));
         
+        // CORRECCIÓN 2: Llenar viewport para que el clic en vacío funcione
+        table.setFillsViewportHeight(true); 
+        
         table.getTableHeader().setBackground(new Color(4, 111, 67)); 
         table.getTableHeader().setForeground(Color.WHITE);
         table.getTableHeader().setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 14f));
         
+        // CORRECCIÓN 3: MouseListener para deseleccionar
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int index = table.getSelectedRow();
+                int index = table.rowAtPoint(e.getPoint());
                 if (index != -1) {
+                    // Clic en fila válida: cargar datos
                     String id = table.getValueAt(index, 0).toString();
                     String idNum = id.replace("A-", ""); 
                     try {
                         selectedAdmin = (Administrativo) buscarAdminPorId(Integer.parseInt(idNum));
                         cargarDatosAdmin();
                     } catch (NumberFormatException ex) { }
+                }
+            }
+            @Override
+            public void mousePressed(MouseEvent e) {
+                // Clic en espacio vacío
+                if (table.rowAtPoint(e.getPoint()) == -1) {
+                    table.clearSelection();
+                    limpiarFormulario();
                 }
             }
         });
@@ -371,7 +393,6 @@ public class ListarAdministradores extends JDialog {
         hilo.start();
     }
 
-    // --- LÓGICA DE BÚSQUEDA MEJORADA ---
     private void loadAdmins(String filtro) {
         model.setRowCount(0);
         rows = new Object[model.getColumnCount()];
@@ -382,12 +403,6 @@ public class ListarAdministradores extends JDialog {
         for (Administrativo adm : lista) {
             String nombre = adm.getNombre().toLowerCase();
             String filtroMin = filtro.toLowerCase();
-            
-            // Lógica de búsqueda mejorada:
-            // 1. Por nombre
-            // 2. Por ID crudo ("1")
-            // 3. Por ID formateado ("001")
-            // 4. Por Código completo ("A-001")
             
             String idRaw = String.valueOf(adm.getId());
             String idFormatted = String.format("%03d", adm.getId());
@@ -428,17 +443,9 @@ public class ListarAdministradores extends JDialog {
             txtNombre.setEnabled(true);
             txtCargo.setEnabled(true);
             
-            // --- VALIDACIÓN DE SEGURIDAD ---
-            // Solo habilita la contraseña si el usuario logueado es un Administrativo
-            boolean esAdmin = (usuarioActual instanceof Administrativo);
-            txtContrasenia.setEnabled(esAdmin);
-            
-            // --- VISIBILIDAD DE CONTRASEÑA ---
-            if (esAdmin) {
-                txtContrasenia.setEchoChar((char)0); // Visible (texto plano) para quien puede editar
-            } else {
-                txtContrasenia.setEchoChar('�'); // Oculta para quien no tiene permiso
-            }
+            // CORRECCIÓN: Como es panel de Admins, siempre visible y editable
+            txtContrasenia.setEnabled(true);
+            txtContrasenia.setEchoChar((char)0); // Visible
             
             cargarFotoEnLabel(selectedAdmin.getRutaFoto());
             nuevaRutaFotoTemp = null;
@@ -509,11 +516,7 @@ public class ListarAdministradores extends JDialog {
 
         selectedAdmin.setNombre(txtNombre.getText());
         selectedAdmin.setCargo(txtCargo.getText());
-        
-        // Solo guardamos contraseña si el campo estaba habilitado
-        if (txtContrasenia.isEnabled()) {
-            selectedAdmin.setContrasenia(pass); 
-        }
+        selectedAdmin.setContrasenia(pass); // Siempre guarda la contraseña
         
         if (nuevaRutaFotoTemp != null) {
             try {

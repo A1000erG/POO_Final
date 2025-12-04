@@ -8,12 +8,16 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -25,6 +29,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.MaskFormatter;
 
 import Utilidades.FuenteUtil;
 import logico.Clinica;
@@ -52,13 +57,23 @@ public class GestionRecursos extends JDialog {
     // Estilos
     private Color colorPrimario = new Color(21, 129, 191);
     private Color colorVerde = new Color(22, 163, 74);
-    private Color colorHeader = new Color(4, 111, 67);
     private Color colorRojo = new Color(220, 38, 38);
     private Color colorBlanco = Color.WHITE;
     private Color colorFondoGris = new Color(245, 245, 245);
+    
     private Font fuenteHeader = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 14f);
     private Font fuenteNormal = FuenteUtil.cargarFuente("/Fuentes/Roboto-Regular.ttf", 13f);
     private Font fuenteTitulo = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Black.ttf", 24f);
+
+    public static void main(String[] args) {
+        try {
+            GestionRecursos dialog = new GestionRecursos();
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.setVisible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public GestionRecursos() {
         setTitle("Gestión de Recursos Clínicos");
@@ -71,7 +86,7 @@ public class GestionRecursos extends JDialog {
         
         // --- HEADER ---
         JPanel panelHeader = new JPanel();
-        panelHeader.setBackground(colorHeader);
+        panelHeader.setBackground(colorPrimario);
         panelHeader.setPreferredSize(new Dimension(0, 80));
         panelHeader.setLayout(null);
         getContentPane().add(panelHeader, BorderLayout.NORTH);
@@ -113,37 +128,34 @@ public class GestionRecursos extends JDialog {
         btnCerrar.addActionListener(e -> dispose());
         buttonPane.add(btnCerrar);
         
-        cargarVacunas();
-        cargarEnfermedades();
+        try {
+            cargarVacunas();
+            cargarEnfermedades();
+        } catch (Exception e) {
+            System.out.println("Modo diseño: No se cargaron datos.");
+        }
     }
 
-    /*
-       Función: crearPanelVacunas
-       Objetivo: Crear panel con tabla y botones para gestión de vacunas.
-    */
     private JPanel crearPanelVacunas() {
         JPanel panel = new JPanel();
         panel.setLayout(null);
         panel.setBackground(colorBlanco);
         panel.setBorder(new LineBorder(new Color(220, 220, 220), 1));
         
-        // Panel Izquierdo (Tabla)
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBounds(30, 30, 650, 480);
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
         panel.add(scrollPane);
         
-        String[] headers = {"ID", "Nombre de Vacuna", "Stock Disponible"};
-        // Modelo no editable
+        // Se agregó "Fecha Caducidad" al encabezado de la tabla
+        String[] headers = {"ID", "Nombre de Vacuna", "Stock Disponible", "Fecha Caducidad"};
+        
         modelVacunas = new DefaultTableModel(null, headers) {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
+            private static final long serialVersionUID = 1L;
+            @Override
             public boolean isCellEditable(int row, int column) { return false; }
         };
+        
         tableVacunas = new JTable(modelVacunas);
         configurarTabla(tableVacunas);
         scrollPane.setViewportView(tableVacunas);
@@ -176,10 +188,6 @@ public class GestionRecursos extends JDialog {
         return panel;
     }
 
-    /*
-       Función: crearPanelEnfermedades
-       Objetivo: Crear panel para gestión de enfermedades.
-    */
     private JPanel crearPanelEnfermedades() {
         JPanel panel = new JPanel();
         panel.setLayout(null);
@@ -192,15 +200,13 @@ public class GestionRecursos extends JDialog {
         panel.add(scrollPane);
         
         String[] headers = {"ID", "Nombre Enfermedad", "Estado de Vigilancia"};
+        
         modelEnfermedades = new DefaultTableModel(null, headers) {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
+            private static final long serialVersionUID = 1L;
+            @Override
             public boolean isCellEditable(int row, int column) { return false; }
         };
+        
         tableEnfermedades = new JTable(modelEnfermedades);
         configurarTabla(tableEnfermedades);
         scrollPane.setViewportView(tableEnfermedades);
@@ -230,55 +236,69 @@ public class GestionRecursos extends JDialog {
     
     // --- LÓGICA DE NEGOCIO ---
 
-    /*
-       Función: cargarVacunas
-       Objetivo: Refrescar la tabla de vacunas desde la lógica.
-    */
     private void cargarVacunas() {
         modelVacunas.setRowCount(0);
-        // Validar lista nula
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         if (Clinica.getInstance().getVacunas() != null) {
             for (Vacuna v : Clinica.getInstance().getVacunas()) {
-                modelVacunas.addRow(new Object[]{v.getId(), v.getNombre(), v.getCantidadDisponible()});
+                String fechaMostrar = "N/A";
+                if (v.getFechaCaducidad() != null) {
+                    fechaMostrar = v.getFechaCaducidad().format(formatter);
+                }
+                
+                modelVacunas.addRow(new Object[]{
+                    v.getId(), 
+                    v.getNombre(), 
+                    v.getCantidadDisponible(), 
+                    fechaMostrar
+                });
             }
         }
         tableVacunas.revalidate();
         tableVacunas.repaint();
     }
     
-    /*
-       Función: registrarNuevaVacuna
-       Objetivo: Crear una nueva vacuna con ID autoincremental seguro y validación.
-    */
     private void registrarNuevaVacuna() {
         JTextField txtNombre = new JTextField();
         JTextField txtStock = new JTextField();
         
+        // Configuración del campo de fecha con máscara
+        MaskFormatter formatoFecha = null;
+        try {
+            formatoFecha = new MaskFormatter("##/##/####");
+            formatoFecha.setPlaceholderCharacter('_');
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        JFormattedTextField txtFechaCaducidad = new JFormattedTextField(formatoFecha);
+        
         Object[] message = {
             "Nombre de la Vacuna:", txtNombre,
-            "Stock Inicial:", txtStock
+            "Stock Inicial:", txtStock,
+            "Fecha de Caducidad (DD/MM/AAAA):", txtFechaCaducidad
         };
 
         int option = JOptionPane.showConfirmDialog(this, message, "Nueva Vacuna", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             String nombre = txtNombre.getText().trim();
             String stockStr = txtStock.getText().trim();
+            String fecha = txtFechaCaducidad.getText();
             
-            if (nombre.isEmpty() || stockStr.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+            // Validación simple para verificar si la fecha se completó (no contiene guiones bajos)
+            boolean fechaValida = fecha != null && !fecha.contains("_");
+            
+            if (nombre.isEmpty() || stockStr.isEmpty() || !fechaValida) {
+                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios y la fecha debe estar completa.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
             try {
-                // Validación de stock
                 int stock = Integer.parseInt(stockStr);
                 if (stock < 0) {
                     JOptionPane.showMessageDialog(this, "El stock no puede ser negativo.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 
-                // Validación de Duplicados y cálculo de ID seguro
-                int maxId = 0;
                 ArrayList<Vacuna> lista = Clinica.getInstance().getVacunas();
                 if (lista != null) {
                     for (Vacuna v : lista) {
@@ -286,26 +306,32 @@ public class GestionRecursos extends JDialog {
                             JOptionPane.showMessageDialog(this, "Ya existe una vacuna con ese nombre.", "Error", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
-                        if (v.getId() > maxId) {
-                            maxId = v.getId();
+                    }
+                }
+                
+                int nuevoId = 1;
+                if (lista != null && !lista.isEmpty()) {
+                    for (Vacuna v : lista) {
+                        if (v.getId() >= nuevoId) {
+                            nuevoId = v.getId() + 1;
                         }
                     }
                 }
-                int nuevoId = maxId + 1;
                 
-                // Creación de objeto (Try-Catch por si falla el constructor vacío)
                 try {
                     Vacuna nueva = new Vacuna(); 
                     nueva.setId(nuevoId);
                     nueva.setNombre(nombre);
                     nueva.setCantidadDisponible(stock);
                     
-                    // Registro
-                    // CAMBIO: Usamos getVacunas().add() directamente para evitar conflicto de métodos
-                    Clinica.getInstance().getVacunas().add(nueva);
-                    Clinica.getInstance().guardarDatos(); // Asegurar persistencia
+                    // CORRECCIÓN: Parsear String a LocalDate
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    LocalDate fechaDate = LocalDate.parse(fecha, formatter);
+                    nueva.setFechaCaducidad(fechaDate);
                     
-                    // Refresco visual inmediato
+                    Clinica.getInstance().getVacunas().add(nueva);
+                    Clinica.getInstance().guardarDatos();
+                    
                     cargarVacunas();
                     JOptionPane.showMessageDialog(this, "Vacuna registrada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                     
@@ -330,7 +356,6 @@ public class GestionRecursos extends JDialog {
             return;
         }
         
-        // Manejo seguro de la conversión de ID
         try {
             int idVacuna = Integer.parseInt(modelVacunas.getValueAt(selectedRow, 0).toString());
             Vacuna vacunaSel = null;
@@ -351,7 +376,6 @@ public class GestionRecursos extends JDialog {
                         int cant = Integer.parseInt(input);
                         if (cant > 0) {
                             vacunaSel.setCantidadDisponible(vacunaSel.getCantidadDisponible() + cant);
-                            // Guardado y refresco
                             Clinica.getInstance().guardarDatos(); 
                             cargarVacunas();
                             JOptionPane.showMessageDialog(this, "Stock actualizado correctamente.");
@@ -428,7 +452,6 @@ public class GestionRecursos extends JDialog {
                 return;
             }
             
-            // Generación de ID Enfermedad (Max + 1)
             int nuevoId = 1;
             ArrayList<Enfermedad> lista = Clinica.getInstance().getCatalogoEnfermedades();
             if (lista != null && !lista.isEmpty()) {
