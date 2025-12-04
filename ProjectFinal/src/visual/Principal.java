@@ -734,8 +734,8 @@ public class Principal extends JFrame {
 				panel.setBackground(new Color(207, 207, 207));
 				try {
 					switch(tipo) {
-						case "Doctores": new ListarDoctores().setVisible(true); break;
-						case "Administradores": new ListarAdministradores().setVisible(true); break;
+						case "Doctores": new ListarDoctores(null).setVisible(true); break;
+						case "Administradores": new ListarAdministradores(null).setVisible(true); break;
 						case "Vacunas": new ListarVacunas().setVisible(true); break;
 						case "Pacientes": new ListarPacientes().setVisible(true); break;
 					}
