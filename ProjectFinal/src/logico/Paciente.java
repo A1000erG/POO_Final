@@ -13,6 +13,9 @@ public class Paciente extends Persona {
 	private Float peso;
 	private Float estatura;
 	private Float IMC;
+	private String alergias;
+	private String antecedentesPatologicos;
+	private String antecedentesNoPatologicos;
 
 	public Paciente() {
 		super();
@@ -23,6 +26,9 @@ public class Paciente extends Persona {
 		this.estatura = 0.0f;
 		this.tipoSangre = "O+";
 		this.IMC = 0.0f;
+		this.alergias = "Ninguna conocida";
+		this.antecedentesPatologicos = "Ninguno registrado";
+		this.antecedentesNoPatologicos = "Ninguno registrado";
 	}
 
 	public ArrayList<Consulta> getHistorialClinico() {
@@ -93,5 +99,29 @@ public class Paciente extends Persona {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+
+	public String getAlergias() {
+		return alergias;
+	}
+
+	public void setAlergias(String alergias) {
+		this.alergias = alergias;
+	}
+
+	public String getAntecedentesPatologicos() {
+		return antecedentesPatologicos;
+	}
+
+	public void setAntecedentesPatologicos(String antecedentesPatologicos) {
+		this.antecedentesPatologicos = antecedentesPatologicos;
+	}
+
+	public String getAntecedentesNoPatologicos() {
+		return antecedentesNoPatologicos;
+	}
+
+	public void setAntecedentesNoPatologicos(String antecedentesNoPatologicos) {
+		this.antecedentesNoPatologicos = antecedentesNoPatologicos;
 	}
 }

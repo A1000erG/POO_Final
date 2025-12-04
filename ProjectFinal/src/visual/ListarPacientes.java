@@ -18,7 +18,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFormattedTextField; // Importado
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -29,7 +29,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.MaskFormatter; // Importado
+import javax.swing.text.MaskFormatter;
 
 import Utilidades.FuenteUtil;
 import logico.Clinica;
@@ -51,6 +51,7 @@ public class ListarPacientes extends JDialog {
 
 	private JButton btnModificar;
 	private JButton btnEstado;
+	private JButton btnHistorial;
 
 	private Paciente selectedPaciente = null;
 	private boolean buscar = false;
@@ -86,9 +87,8 @@ public class ListarPacientes extends JDialog {
 		panelSuperior.setPreferredSize(new java.awt.Dimension(0, 120));
 		contentPane.add(panelSuperior, BorderLayout.NORTH);
 
-		ImageIcon iconLogo = new ImageIcon(getClass().getResource("/Imagenes/logoBlanco.png"));
-		java.awt.Image imgLogoEscalada = iconLogo.getImage().getScaledInstance(70, 70, java.awt.Image.SCALE_SMOOTH);
-		JLabel lblLogo = new JLabel(new ImageIcon(imgLogoEscalada));
+		ImageIcon iconLogo = cargarIcono("/Imagenes/logoBlanco.png", 70, 70);
+		JLabel lblLogo = new JLabel(iconLogo);
 		lblLogo.setBounds(40, 25, 70, 70);
 		panelSuperior.add(lblLogo);
 
@@ -134,9 +134,6 @@ public class ListarPacientes extends JDialog {
 		String[] headers = { "ID", "Cédula", "Nombre", "Teléfono", "Estado" };
 
 		model = new DefaultTableModel() {
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -188,8 +185,8 @@ public class ListarPacientes extends JDialog {
 		lblDetalleTitulo.setBounds(20, 25, 360, 30);
 		panelDetalle.add(lblDetalleTitulo);
 
-		int yStart = 100;
-		int gap = 80;
+		int yStart = 80;
+		int gap = 70;
 
 		createLabelAndInput(panelDetalle, "NOMBRE:", yStart, txtNombre = new JTextField());
 
@@ -233,8 +230,19 @@ public class ListarPacientes extends JDialog {
 
 		createLabelAndInput(panelDetalle, "FECHA NAC. (AAAA-MM-DD):", yStart + gap * 3, txtFechaNac = new JTextField());
 
-		int btnY = 480;
+		int btnY = 430;
 		int btnWidth = 145;
+
+		btnHistorial = new JButton("VER HISTORIAL CLÍNICO");
+		btnHistorial.setBounds(50, 370, 305, 45);
+		btnHistorial.setBackground(new Color(21, 129, 191));
+		btnHistorial.setForeground(Color.WHITE);
+		btnHistorial.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 14f));
+		btnHistorial.setFocusPainted(false);
+		btnHistorial.setEnabled(false);
+		btnHistorial.setIcon(cargarIcono("/Imagenes/ver.png", 20, 20));
+		btnHistorial.addActionListener(e -> abrirHistorial());
+		panelDetalle.add(btnHistorial);
 
 		btnModificar = new JButton("MODIFICAR");
 		btnModificar.setBounds(50, btnY, btnWidth, 40);
@@ -247,7 +255,7 @@ public class ListarPacientes extends JDialog {
 		panelDetalle.add(btnModificar);
 
 		btnEstado = new JButton("DESHABILITAR");
-		btnEstado.setBounds(50 + btnWidth + 10, btnY, btnWidth, 40);
+		btnEstado.setBounds(50 + btnWidth + 15, btnY, btnWidth, 40);
 		btnEstado.setBackground(new Color(220, 38, 38));
 		btnEstado.setForeground(Color.WHITE);
 		btnEstado.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 13f));
@@ -256,50 +264,7 @@ public class ListarPacientes extends JDialog {
 		btnEstado.addActionListener(e -> cambiarEstadoPaciente());
 		panelDetalle.add(btnEstado);
 
-		ImageIcon iconFlecha = new ImageIcon(getClass().getResource("/Imagenes/FlechaAtras.png"));
-		java.awt.Image imgFlechaScaled = iconFlecha.getImage().getScaledInstance(35, 35, java.awt.Image.SCALE_SMOOTH);
-
-		JPanel btnVolver = new JPanel() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g;
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(getBackground());
-				g2.fillOval(0, 0, getWidth(), getHeight());
-				super.paintComponent(g);
-			}
-		};
-		btnVolver.setOpaque(false);
-		btnVolver.setLayout(null);
-		btnVolver.setBounds(40, 528, 70, 70);
-		btnVolver.setBackground(new Color(4, 111, 67));
-
-		btnVolver.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				dispose();
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				btnVolver.setCursor(new Cursor(Cursor.HAND_CURSOR));
-				btnVolver.setBackground(new Color(6, 140, 85));
-				btnVolver.repaint();
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				btnVolver.setBackground(new Color(4, 111, 67));
-				btnVolver.repaint();
-			}
-		});
-
-		JLabel lblFlecha = new JLabel(new ImageIcon(imgFlechaScaled));
-		lblFlecha.setBounds(17, 17, 35, 35);
-		btnVolver.add(lblFlecha);
-		panelCentral.add(btnVolver);
+		crearBotonVolver(panelCentral);
 
 		loadPacientes("");
 		limpiarFormulario();
@@ -346,6 +311,8 @@ public class ListarPacientes extends JDialog {
 		model.setRowCount(0);
 		rows = new Object[model.getColumnCount()];
 		ArrayList<Paciente> lista = Clinica.getInstance().getPacientes();
+		if (lista == null)
+			return;
 
 		for (Paciente pac : lista) {
 			String nombre = pac.getNombre().toLowerCase();
@@ -376,6 +343,7 @@ public class ListarPacientes extends JDialog {
 
 			btnModificar.setEnabled(true);
 			btnEstado.setEnabled(true);
+			btnHistorial.setEnabled(true);
 
 			if (selectedPaciente.isActivo()) {
 				btnEstado.setText("DESHABILITAR");
@@ -400,6 +368,8 @@ public class ListarPacientes extends JDialog {
 
 		btnModificar.setEnabled(false);
 		btnEstado.setEnabled(false);
+		btnHistorial.setEnabled(false);
+
 		btnEstado.setText("DESHABILITAR");
 		btnEstado.setBackground(new Color(220, 38, 38));
 		selectedPaciente = null;
@@ -458,5 +428,68 @@ public class ListarPacientes extends JDialog {
 				loadPacientes(txtBuscador.getText());
 			}
 		}
+	}
+
+	private void abrirHistorial() {
+		if (selectedPaciente != null) {
+			HistorialPaciente historial = new HistorialPaciente(selectedPaciente);
+			historial.setVisible(true);
+			loadPacientes(txtBuscador.getText());
+		}
+	}
+
+	private void crearBotonVolver(JPanel panel) {
+		JPanel btnVolver = new JPanel() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void paintComponent(Graphics g) {
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.setColor(getBackground());
+				g2.fillOval(0, 0, getWidth(), getHeight());
+				super.paintComponent(g);
+			}
+		};
+		btnVolver.setOpaque(false);
+		btnVolver.setLayout(null);
+		btnVolver.setBounds(40, 528, 70, 70);
+		btnVolver.setBackground(new Color(4, 111, 67));
+
+		btnVolver.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				dispose();
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				btnVolver.setCursor(new Cursor(Cursor.HAND_CURSOR));
+				btnVolver.setBackground(new Color(6, 140, 85));
+				btnVolver.repaint();
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				btnVolver.setBackground(new Color(4, 111, 67));
+				btnVolver.repaint();
+			}
+		});
+
+		ImageIcon iconFlecha = cargarIcono("/Imagenes/FlechaAtras.png", 30, 30);
+		JLabel lblFlecha = new JLabel(iconFlecha);
+		if (iconFlecha.getImage() == null)
+			lblFlecha.setText("<");
+		lblFlecha.setBounds(17, 17, 35, 35);
+		btnVolver.add(lblFlecha);
+		panel.add(btnVolver);
+	}
+
+	private ImageIcon cargarIcono(String ruta, int w, int h) {
+		java.net.URL url = getClass().getResource(ruta);
+		if (url != null) {
+			return new ImageIcon(new ImageIcon(url).getImage().getScaledInstance(w, h, java.awt.Image.SCALE_SMOOTH));
+		}
+		return new ImageIcon();
 	}
 }

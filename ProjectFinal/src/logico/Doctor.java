@@ -10,6 +10,7 @@ public class Doctor extends Personal {
 	private String especialidad;
 	private int cupoDia;
 	private String rutaFoto;
+	private int turnos;
 
 	public Doctor() {
 		super();
@@ -91,5 +92,17 @@ public class Doctor extends Personal {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+
+	public void setTurnos(int turnos) {
+		if (turnos < 0) {
+			this.turnos = 0;
+		} else {
+			this.turnos = turnos;
+		}
+	}
+
+	public int getTurnos() {
+		return turnos;
 	}
 }

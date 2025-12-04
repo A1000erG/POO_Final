@@ -426,16 +426,19 @@ public class ListarCitas extends JDialog {
 		}
 	}
 
-	private void abrirConsulta() {
-		if (citaSeleccionada != null) {
-			dispose();
-			try {
-				RegConsulta reg = new RegConsulta(citaSeleccionada);
-				reg.setModal(true);
-				reg.setVisible(true);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
+    private void abrirConsulta() {
+        if(citaSeleccionada != null) {
+            if (citaSeleccionada.getDoctor().getTurnos() <= 0) {
+                JOptionPane.showMessageDialog(this, "El doctor " + citaSeleccionada.getDoctor().getNombre() + " no tiene más turnos disponibles por hoy.", "Sin Turnos", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            dispose();
+            try {
+                RegConsulta reg = new RegConsulta(citaSeleccionada);
+                reg.setModal(true);
+                reg.setVisible(true);
+            } catch (Exception e) { e.printStackTrace(); }
+        }
+    }
 }

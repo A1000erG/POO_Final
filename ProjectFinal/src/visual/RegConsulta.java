@@ -37,6 +37,7 @@ import logico.Cita;
 import logico.Clinica;
 import logico.Consulta;
 import logico.Diagnostico;
+import logico.Doctor;
 import logico.Enfermedad;
 import logico.Vacuna;
 
@@ -62,9 +63,11 @@ public class RegConsulta extends JDialog {
 	private JLabel etiquetaStockVacuna;
 	private JButton botonAplicarVacuna;
 	private JButton botonSolicitarVacuna;
+	private JButton btnVerHistorial;
 
 	private Cita citaActual;
 	private ArrayList<Diagnostico> listaDiagnosticosTemporal;
+    private ArrayList<Vacuna> vacunasAplicadasEnSesion; 
 
 	private Color colorVerdeHeader = new Color(4, 111, 67);
 	private Color colorBordeGris = new Color(220, 220, 220);
@@ -76,6 +79,7 @@ public class RegConsulta extends JDialog {
 	public RegConsulta(Cita citaRecibida) {
 		this.citaActual = citaRecibida;
 		this.listaDiagnosticosTemporal = new ArrayList<>();
+		this.vacunasAplicadasEnSesion = new ArrayList<>();
 
 		setTitle("Registro de Consulta Médica");
 		setModal(true);
@@ -141,6 +145,18 @@ public class RegConsulta extends JDialog {
 		crearEtiquetaInformativa(panelIzquierdo, "Edad:",
 				calcularEdadPaciente(citaActual.getPaciente().getFechaNacimiento()) + " Años", 120);
 		crearEtiquetaInformativa(panelIzquierdo, "Fecha Cita:", citaActual.getFecha().toString(), 150);
+
+		btnVerHistorial = new JButton("Ver Historial Anterior");
+		btnVerHistorial.setBounds(20, 550, 360, 35);
+		btnVerHistorial.setBackground(new Color(255, 140, 0));
+		btnVerHistorial.setForeground(Color.WHITE);
+		btnVerHistorial.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 13f));
+		btnVerHistorial.setFocusPainted(false);
+		btnVerHistorial.addActionListener(e -> {
+			HistorialPaciente historial = new HistorialPaciente(citaActual.getPaciente());
+			historial.setVisible(true);
+		});
+		panelIzquierdo.add(btnVerHistorial);
 
 		JLabel lblVitales = new JLabel("SIGNOS VITALES / DATOS FÍSICOS");
 		lblVitales.setForeground(colorVerdeHeader);
@@ -496,26 +512,36 @@ public class RegConsulta extends JDialog {
 		}
 	}
 
-	private void aplicarVacunaPaciente() {
-		String nombreVacuna = (String) comboBoxVacunas.getSelectedItem();
-		Vacuna vacuna = buscarVacunaPorNombre(nombreVacuna);
+    private void aplicarVacunaPaciente() {
+        String nombreVacuna = (String) comboBoxVacunas.getSelectedItem();
+        Vacuna vacuna = buscarVacunaPorNombre(nombreVacuna);
+        
+        if (vacuna != null) {
+            for(Vacuna v : vacunasAplicadasEnSesion) {
+                if(v.getNombre().equalsIgnoreCase(vacuna.getNombre())) {
+                    JOptionPane.showMessageDialog(this, "No se puede aplicar la misma vacuna dos veces en la misma consulta.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            }
 
-		if (vacuna != null && vacuna.getCantidadDisponible() > 0) {
-			vacuna.setCantidadDisponible(vacuna.getCantidadDisponible() - 1);
-
-			actualizarStockVacuna();
-
-			String tratamientoActual = campoTextoTratamiento.getText();
-			String registroVacuna = "[Vacuna Aplicada: " + nombreVacuna + "]";
-			if (tratamientoActual.isEmpty()) {
-				campoTextoTratamiento.setText(registroVacuna);
-			} else {
-				campoTextoTratamiento.setText(tratamientoActual + ", " + registroVacuna);
-			}
-
-			JOptionPane.showMessageDialog(this, "Vacuna aplicada y registrada en tratamiento.");
-		}
-	}
+            if(vacuna.getCantidadDisponible() > 0) {
+                vacuna.setCantidadDisponible(vacuna.getCantidadDisponible() - 1);
+                vacunasAplicadasEnSesion.add(vacuna);
+                
+                actualizarStockVacuna();
+                
+                String tratamientoActual = campoTextoTratamiento.getText();
+                String registroVacuna = "[Vacuna Aplicada: " + nombreVacuna + "]";
+                if (tratamientoActual.isEmpty()) {
+                    campoTextoTratamiento.setText(registroVacuna);
+                } else {
+                    campoTextoTratamiento.setText(tratamientoActual + ", " + registroVacuna);
+                }
+                
+                JOptionPane.showMessageDialog(this, "Vacuna aplicada y agregada al registro.");
+            }
+        }
+    }
 
 	private void solicitarStockVacuna() {
 		String nombreVacuna = (String) comboBoxVacunas.getSelectedItem();
@@ -586,9 +612,18 @@ public class RegConsulta extends JDialog {
 				return;
 		}
 
+		// ACTUALIZAR DATOS FÍSICOS DEL PACIENTE
 		try {
 			float peso = Float.parseFloat(txtPeso.getText());
 			float estatura = Float.parseFloat(txtEstatura.getText());
+
+			// VALIDACIÓN DE NEGATIVOS (CORREGIDA)
+			if (peso < 0 || estatura < 0) {
+				JOptionPane.showMessageDialog(this, "El Peso y la Estatura no pueden ser valores negativos.",
+						"Error de Validación", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+
 			float imc = 0;
 			try {
 				imc = Float.parseFloat(txtIMC.getText().replace(',', '.'));
@@ -600,6 +635,13 @@ public class RegConsulta extends JDialog {
 			citaActual.getPaciente().setEstatura(estatura);
 			citaActual.getPaciente().setIMC(imc);
 			citaActual.getPaciente().setTipoSangre((String) cbTipoSangre.getSelectedItem());
+			
+            if(!vacunasAplicadasEnSesion.isEmpty()) {
+                if(citaActual.getPaciente().getVacunasAplicadas() == null) {
+                    citaActual.getPaciente().setVacunasAplicadas(new ArrayList<>());
+                }
+                citaActual.getPaciente().getVacunasAplicadas().addAll(vacunasAplicadasEnSesion);
+            }
 
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this, "Verifique que el Peso y Estatura sean numéricos.",
@@ -615,6 +657,11 @@ public class RegConsulta extends JDialog {
 		nuevaConsulta.setDoctor(citaActual.getDoctor());
 
 		Clinica.getInstance().insertarConsulta(nuevaConsulta);
+		
+        Doctor doc = citaActual.getDoctor();
+        if (doc != null) {
+            doc.setTurnos(doc.getTurnos() - 1);
+        }
 
 		citaActual.setEstado("Realizada");
 		Clinica.getInstance().guardarDatos();
