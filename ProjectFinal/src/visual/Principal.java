@@ -34,8 +34,6 @@ import javax.swing.Timer;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
@@ -46,7 +44,6 @@ import Utilidades.FuenteUtil;
 import logico.Administrativo;
 import logico.Cita;
 import logico.Clinica;
-import logico.Consulta;
 import logico.Doctor;
 import logico.Enfermedad;
 import logico.Vacuna;
@@ -553,7 +550,7 @@ public class Principal extends JFrame {
 	// Lógica para el gráfico de Enfermedades (Restaurada de Clinica.txt con pequeñas mejoras) [cite: 78-81]
 	private void configurarGraficoEnfermedades() {
 		DefaultCategoryDataset enfermedadesDataset = new DefaultCategoryDataset();
-		int maxEnfermedades = 5;
+		//int maxEnfermedades = 5;
 		int count = clinic.getCatalogoEnfermedades().size();
 		
 		if(count > 0) {
