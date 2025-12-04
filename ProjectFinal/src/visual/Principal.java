@@ -36,8 +36,6 @@ import javax.swing.Timer;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
@@ -48,7 +46,6 @@ import Utilidades.FuenteUtil;
 import logico.Administrativo;
 import logico.Cita;
 import logico.Clinica;
-import logico.Consulta;
 import logico.Doctor;
 import logico.Enfermedad;
 import logico.Vacuna;
@@ -202,6 +199,7 @@ public class Principal extends JFrame {
 
 		JButton btnConsultas = new JButton("New button");
 		configurarBotonMenu(btnConsultas, mode == 0 ? "Registrar Cita" : "Nueva Cita", 271);
+		if(mode==1) btnConsultas.setVisible(false);
 		btnConsultas.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -286,15 +284,24 @@ public class Principal extends JFrame {
 		    @Override
 		    public void mouseClicked(MouseEvent e) {
 		        int opcion = JOptionPane.showConfirmDialog(null, 
-		                "¿Estás seguro de que deseas salir de la aplicación?", 
-		                "Confirmar Cierre", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+		        		"¿Estás seguro de que deseas salir?\n\n" +
+		        	            "• SI: Cerrar sesión y volver al login\n" +
+		        	            "• NO: Salir completamente de la aplicación\n" +
+		        	            "• CANCELAR: Volver a la aplicación", 
+		        	            "Confirmar Salida", 
+		        	            JOptionPane.YES_NO_CANCEL_OPTION, 
+		        	            JOptionPane.WARNING_MESSAGE);
 		        if(opcion == JOptionPane.YES_OPTION) {
 		            Clinica.getInstance().guardarDatosLocal();
 		            dispose();
-		            System.exit(0);
-		            /*
-		             * 
-		             */
+		            try { 
+		                new Login().setVisible(true); 
+		            } catch (Exception ex) { 
+		                ex.printStackTrace(); 
+		            } 
+		        }else if (opcion == JOptionPane.NO_OPTION) {
+	                Clinica.getInstance().guardarDatosLocal();
+	                dispose();
 		        }
 		    }
 		});
@@ -558,7 +565,7 @@ public class Principal extends JFrame {
 	// Lógica para el gráfico de Enfermedades (Restaurada de Clinica.txt con pequeñas mejoras)
 	private void configurarGraficoEnfermedades() {
 		DefaultCategoryDataset enfermedadesDataset = new DefaultCategoryDataset();
-		int maxEnfermedades = 5;
+		//int maxEnfermedades = 5;
 		int count = clinic.getCatalogoEnfermedades().size();
 		
 		if(count > 0) {
