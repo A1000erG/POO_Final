@@ -117,8 +117,8 @@ public class Principal extends JFrame {
 	public Principal(int modo, String idUsuario) {
 		mode=modo;
 		idUser=idUsuario;
-		setBounds(100, 100, 1280, 720);
-		//setBounds(100, 100, 1366, 768);
+		//setBounds(100, 100, 1280, 720);
+		setBounds(100, 100, 1366, 768);
 		setLocationRelativeTo(null);
 
 		setTitle("Compile Salud");
