@@ -10,14 +10,13 @@ public class Doctor extends Personal {
 	private String especialidad;
 	private int cupoDia;
 	private String rutaFoto;
-	private int turnos;
 
 	public Doctor() {
 		super();
 		this.idDoctor = 0;
 		this.nombre = null;
 		this.especialidad = null;
-		this.cupoDia = 0;
+		this.cupoDia = 20;
 		this.rutaFoto = null;
 	}
 
@@ -64,7 +63,11 @@ public class Doctor extends Personal {
 	}
 
 	public void setCupoDia(int cupoDia) {
-		this.cupoDia = cupoDia;
+		if (cupoDia < 0) {
+			this.cupoDia = 0;
+		} else {
+			this.cupoDia = cupoDia;
+		}
 	}
 
 	public String getRutaFoto() {
@@ -92,17 +95,5 @@ public class Doctor extends Personal {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
-	}
-
-	public void setTurnos(int turnos) {
-		if (turnos < 0) {
-			this.turnos = 0;
-		} else {
-			this.turnos = turnos;
-		}
-	}
-
-	public int getTurnos() {
-		return turnos;
 	}
 }

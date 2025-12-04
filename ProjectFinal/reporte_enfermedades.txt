@@ -1,3 +1,3 @@
 REPORTE DE ENFERMEDADES - CLINICA
 Fecha: 2025-12-04
-Total Consultas: 5
+Total Consultas: 10
