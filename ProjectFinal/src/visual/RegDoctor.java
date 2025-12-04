@@ -46,7 +46,7 @@ public class RegDoctor extends JDialog {
 	}
 
 	public RegDoctor(int mode, String idUser) {
-		// --- CONFIGURACIÓN SOLICITADA ---
+
 		setModal(true);
 		setBounds(100, 100, 1366, 768);
 		setLocationRelativeTo(null);

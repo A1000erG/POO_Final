@@ -106,8 +106,8 @@ public class Principal extends JFrame {
 	}
 
 	public Principal(int mode, String idUser) {
-		getToolkit().getScreenSize();
-		setResizable(false);
+		setBounds(100, 100, 1366, 768);
+		setLocationRelativeTo(null);
 		
 		setTitle("Compile Salud");
 		setExtendedState(JFrame.MAXIMIZED_BOTH);

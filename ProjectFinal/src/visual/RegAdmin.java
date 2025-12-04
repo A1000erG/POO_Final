@@ -47,7 +47,7 @@ public class RegAdmin extends JDialog {
 
 
 	public RegAdmin(int mode, String idUser) {
-		// --- CONFIGURACIÓN SOLICITADA ---
+
 		setModal(true);
 		setBounds(100, 100, 1366, 768);
 		setLocationRelativeTo(null);
