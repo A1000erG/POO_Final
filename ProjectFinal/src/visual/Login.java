@@ -237,6 +237,13 @@ public class Login extends JFrame {
 		                } else {
 		                    mensajeError = "El administrativo está deshabilitado.";
 		                }
+		            }else {
+
+		                if (usuario.equals("admin") && pass.equals("admin")) {
+		                    usuarioHabilitado = true; // Permitir acceso al admin por defecto
+		                } else {
+		                    mensajeError = "Administrativo no encontrado.";
+		                }
 		            }
 					
 				} else if (tipoString.equals("Doctor")) {
