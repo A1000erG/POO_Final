@@ -45,6 +45,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import Utilidades.FuenteUtil;
 import logico.Administrativo;
 import logico.Cita;
+import logico.ClienteRespaldo;
 import logico.Clinica;
 import logico.Doctor;
 import logico.Enfermedad;
@@ -261,6 +262,18 @@ public class Principal extends JFrame {
 			}
 		});
 		optionPanel.add(btnGestionRecursos);
+		
+		JButton btnRespaldo = new JButton("Respaldar Datos");
+		configurarBotonMenu(btnRespaldo, "Respaldar Datos", 459);
+		if (mode != 0) btnRespaldo.setVisible(false);
+
+		btnRespaldo.addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseClicked(MouseEvent e) {
+		        new Thread(() -> realizarRespaldoRemoto()).start();
+		    }
+		});
+		optionPanel.add(btnRespaldo);
 
 		JButton btnCerrarSesion = new JButton("Cerrar Sesión");
 		btnCerrarSesion.setForeground(Color.WHITE);
@@ -791,8 +804,9 @@ public class Principal extends JFrame {
 		lblDesEnf.setFont(normalUse);
 		lblDesEnf.setBounds(10, 105, 151, 14);
 		listEnfPanel.add(lblDesEnf);
-
-		JLabel lblCEnf = new JLabel("25");
+		
+		Integer cantEnf = Clinica.getInstance().getCatalogoEnfermedades().size();
+		JLabel lblCEnf = new JLabel(cantEnf.toString());
 		lblCEnf.setFont(indicativeNumber);
 		lblCEnf.setBounds(10, 11, 80, 50);
 		listEnfPanel.add(lblCEnf);
@@ -818,8 +832,47 @@ public class Principal extends JFrame {
 		lblCitaIcon.setBounds(397,10,80,80);
 		citasHoyPanel.add(lblCitaIcon);
 	}
+	
+	private void realizarRespaldoRemoto() {
+	    Clinica.getInstance().guardarDatosLocal();
+	    File archivoBinario = new File("clinica.dat");
+	    
+	    if (!archivoBinario.exists()) {
+	        JOptionPane.showMessageDialog(this, 
+	            "No se encontró el archivo de datos local (clinica.dat) para enviar.", 
+	            "Error de Archivo", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("=== REPORTE DE RESPALDO ===\n");
+	    sb.append("Fecha: ").append(LocalDate.now()).append("\n");
+	    sb.append("Hora: ").append(LocalTime.now().truncatedTo(ChronoUnit.MINUTES)).append("\n");
+	    sb.append("---------------------------\n");
+	    sb.append("ESTADÍSTICAS GENERALES:\n");
+	    sb.append("- Total Doctores: ").append(Clinica.getInstance().getDoctores().size()).append("\n");
+	    sb.append("- Total Pacientes: ").append(Clinica.getInstance().getPacientes().size()).append("\n");
+	    sb.append("- Citas Registradas: ").append(Clinica.getInstance().getCitas().size()).append("\n");
+	    sb.append("- Vacunas en Stock: ").append(Clinica.getInstance().getVacunas().size()).append("\n");
+	    sb.append("- Enfermedades en Catálogo: ").append(Clinica.getInstance().getCatalogoEnfermedades().size()).append("\n");
+	    sb.append("---------------------------\n");
+	    sb.append("Respaldo realizado desde: ").append(ClienteRespaldo.getHost()).append(":").append(ClienteRespaldo.getPuerto());
 
-	// --- LÓGICA DE NOTIFICACIONES (Extraída de PrincipalAngel) [cite: 184-199] ---
+	    boolean exito = ClienteRespaldo.enviarRespaldo(archivoBinario, sb.toString());
+
+	    // Información para el usuario
+	    if (exito) {
+	        JOptionPane.showMessageDialog(this, 
+	            "Respaldo completado exitosamente en el puerto 7001.", 
+	            "Respaldo Exitoso", JOptionPane.INFORMATION_MESSAGE);
+	    } else {
+	        JOptionPane.showMessageDialog(this, 
+	            "Error al conectar con el servidor de respaldo.\n" +
+	            "Verifique que el Servidor esté escuchando en el puerto 7001.", 
+	            "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+	    }
+	}
+
+	// --- LÓGICA DE NOTIFICACIONES 
 	private void iniciarNotificacionesDoctor(String idUsuario) {
 		timerNotificacion = new Timer(60000, e -> verificarCitasProximas(idUsuario));
 		timerNotificacion.start();

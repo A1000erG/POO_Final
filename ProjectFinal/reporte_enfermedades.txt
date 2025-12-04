@@ -1,0 +1,12 @@
+=== REPORTE DE RESPALDO ===
+Fecha: 2025-12-03
+Hora: 23:23
+---------------------------
+ESTADÍSTICAS GENERALES:
+- Total Doctores: 1
+- Total Pacientes: 1
+- Citas Registradas: 1
+- Vacunas en Stock: 0
+- Enfermedades en Catálogo: 6
+---------------------------
+Respaldo realizado desde: 127.0.0.1:7001
