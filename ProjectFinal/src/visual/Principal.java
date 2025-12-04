@@ -18,6 +18,8 @@ import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -197,6 +199,7 @@ public class Principal extends JFrame {
 
 		JButton btnConsultas = new JButton("New button");
 		configurarBotonMenu(btnConsultas, mode == 0 ? "Registrar Cita" : "Nueva Cita", 271);
+		if(mode==1) btnConsultas.setVisible(false);
 		btnConsultas.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -559,7 +562,7 @@ public class Principal extends JFrame {
 
 	// ================= MÉTODOS AUXILIARES Y LÓGICA DE INTEGRACIÓN =================
 
-	// Lógica para el gráfico de Enfermedades (Restaurada de Clinica.txt con pequeñas mejoras) [cite: 78-81]
+	// Lógica para el gráfico de Enfermedades (Restaurada de Clinica.txt con pequeñas mejoras)
 	private void configurarGraficoEnfermedades() {
 		DefaultCategoryDataset enfermedadesDataset = new DefaultCategoryDataset();
 		//int maxEnfermedades = 5;
@@ -570,7 +573,7 @@ public class Principal extends JFrame {
 			int start = Math.max(0, count - 5);
 			for(int i = start; i < count; i++) {
 				Enfermedad e = clinic.getCatalogoEnfermedades().get(i);
-				enfermedadesDataset.addValue(1, "Pacientes", e.getNombre()); // Nota: Angel usaba un contador real, Clinica usaba 1 fijo. Mantenemos estructura Clinica visualmente.
+				enfermedadesDataset.addValue(1, "Pacientes", e.getNombre()); 
 			}
 
 			JFreeChart chartEnfermedades = ChartFactory.createBarChart("Pacientes por Enfermedad", "Enfermedades", "Cantidad", enfermedadesDataset, PlotOrientation.VERTICAL, false, true, false);
@@ -823,28 +826,46 @@ public class Principal extends JFrame {
 	}
 
 	private void verificarCitasProximas(String idUsuario) {
-		Doctor doctor = clinic.getDoctorPorUsuario(idUsuario);
-		if (doctor == null) return;
-		LocalDate hoy = LocalDate.now();
-		LocalTime ahora = LocalTime.now();
-		
-		for (Cita cita : clinic.getCitas()) {
-			// Adaptación de lógica a la clase Cita y Doctor de Clinica
-			if(cita.getDoctor().getIdDoctor() == doctor.getIdDoctor() && 
-			   cita.getFecha().isEqual(hoy) && 
-			   cita.getEstado().equalsIgnoreCase("Pendiente")) {
-				
-				long diferenciaMinutos = ChronoUnit.MINUTES.between(ahora, LocalTime.parse(cita.getHora()));
-				if(diferenciaMinutos >= 0 && diferenciaMinutos <= 10) {
-					JOptionPane.showMessageDialog(this, 
-							"RECORDATORIO: Tienes una cita con " + cita.getPaciente().getNombre() + 
-							" a las " + cita.getHora(), 
-							"Cita Próxima", JOptionPane.INFORMATION_MESSAGE);
-				}
-			}
-		}
-	}
+    Doctor doctor = clinic.getDoctorPorUsuario(idUsuario);
+    if (doctor == null) return;
+    LocalDate hoy = LocalDate.now();
+    LocalTime ahora = LocalTime.now();
+    
+    // DEFINIR EL FORMATO: "hh:mm a" maneja 12 horas con AM/PM
+    // Usamos Locale.US para asegurar que reconozca "AM" y "PM" correctamente
+    DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);
 
+    for (Cita cita : clinic.getCitas()) {
+        if(cita.getDoctor().getIdDoctor() == doctor.getIdDoctor() && 
+           cita.getFecha().isEqual(hoy) && 
+           cita.getEstado().equalsIgnoreCase("Pendiente")) {
+            
+            try {
+                // PARSEO SEGURO: Usamos el formato definido arriba
+                LocalTime horaCita = LocalTime.parse(cita.getHora(), formatoHora);
+                
+                long diferenciaMinutos = ChronoUnit.MINUTES.between(ahora, horaCita);
+                
+                // Verificamos si faltan entre 0 y 10 minutos
+                if(diferenciaMinutos >= 0 && diferenciaMinutos <= 10) {
+                    // Detener el timer temporalmente para que no spamee la alerta
+                    timerNotificacion.stop(); 
+                    
+                    JOptionPane.showMessageDialog(this, 
+                            "RECORDATORIO: Tienes una cita con " + cita.getPaciente().getNombre() + 
+                            " a las " + cita.getHora(), 
+                            "Cita Próxima", JOptionPane.INFORMATION_MESSAGE);
+                            
+                    // Reiniciar el timer después de cerrar la alerta
+                    timerNotificacion.restart();
+                }
+            } catch (Exception e) {
+                // Si hay una hora mal formateada en la base de datos, la ignoramos para no romper el programa
+                System.err.println("Error al parsear la hora de la cita: " + cita.getHora());
+            }
+        }
+    }
+}
 	// --- Helper para cargar imágenes de forma segura (Inspirado en PrincipalAngel) [cite: 264] ---
 	private ImageIcon cargarIcono(String path, int width, int height) {
 		ImageIcon icon = new ImageIcon(getClass().getResource(path));
