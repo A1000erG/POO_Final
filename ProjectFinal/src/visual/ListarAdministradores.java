@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -55,6 +56,7 @@ public class ListarAdministradores extends JDialog {
     private JTextField txtCargo;
     private JTextField txtUsuario;
     private JPasswordField txtContrasenia;
+    private JCheckBox chkMostrarPass; // Checkbox para ver contraseña
     private JLabel lblFoto;
     
     private JButton btnModificar;
@@ -149,7 +151,6 @@ public class ListarAdministradores extends JDialog {
 
         String[] headers = { "ID", "Nombre", "Cargo", "Estado" };
         
-        // CORRECCIÓN 1: Evitar edición por doble clic
         model = new DefaultTableModel() {
             private static final long serialVersionUID = 1L;
             @Override
@@ -165,20 +166,17 @@ public class ListarAdministradores extends JDialog {
         table.setRowHeight(35);
         table.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f));
         
-        // CORRECCIÓN 2: Llenar viewport para que el clic en vacío funcione
         table.setFillsViewportHeight(true); 
         
         table.getTableHeader().setBackground(new Color(4, 111, 67)); 
         table.getTableHeader().setForeground(Color.WHITE);
         table.getTableHeader().setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 14f));
         
-        // CORRECCIÓN 3: MouseListener para deseleccionar
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int index = table.rowAtPoint(e.getPoint());
                 if (index != -1) {
-                    // Clic en fila válida: cargar datos
                     String id = table.getValueAt(index, 0).toString();
                     String idNum = id.replace("A-", ""); 
                     try {
@@ -189,7 +187,6 @@ public class ListarAdministradores extends JDialog {
             }
             @Override
             public void mousePressed(MouseEvent e) {
-                // Clic en espacio vacío
                 if (table.rowAtPoint(e.getPoint()) == -1) {
                     table.clearSelection();
                     limpiarFormulario();
@@ -251,6 +248,7 @@ public class ListarAdministradores extends JDialog {
         createLabelAndInput(panelDetalle, "CARGO:", yStart + gap, txtCargo = new JTextField());
         createLabelAndInput(panelDetalle, "USUARIO:", yStart + gap * 2, txtUsuario = new JTextField());
         
+        // --- SECCIÓN CONTRASEÑA ---
         JLabel lblPass = new JLabel("CONTRASEÑA:");
         lblPass.setBounds(50, yStart + gap * 3, 300, 20);
         lblPass.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 13f));
@@ -258,10 +256,26 @@ public class ListarAdministradores extends JDialog {
         panelDetalle.add(lblPass);
 
         txtContrasenia = new JPasswordField();
-        txtContrasenia.setBounds(50, yStart + gap * 3 + 20, 300, 35);
+        // Reducir ancho para el botón "Mostrar"
+        txtContrasenia.setBounds(50, yStart + gap * 3 + 20, 220, 35);
         txtContrasenia.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
         txtContrasenia.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Regular.ttf", 15f));
         panelDetalle.add(txtContrasenia);
+
+        // CheckBox para ver/ocultar contraseña
+        chkMostrarPass = new JCheckBox("Mostrar");
+        chkMostrarPass.setBounds(280, yStart + gap * 3 + 20, 80, 35);
+        chkMostrarPass.setBackground(new Color(245, 245, 245));
+        chkMostrarPass.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 12f));
+        chkMostrarPass.setEnabled(false);
+        chkMostrarPass.addActionListener(e -> {
+            if (chkMostrarPass.isSelected()) {
+                txtContrasenia.setEchoChar((char) 0); // Mostrar
+            } else {
+                txtContrasenia.setEchoChar('•'); // Ocultar
+            }
+        });
+        panelDetalle.add(chkMostrarPass);
 
         txtUsuario.setEditable(false); 
         txtUsuario.setBackground(new Color(240, 240, 240));
@@ -443,9 +457,13 @@ public class ListarAdministradores extends JDialog {
             txtNombre.setEnabled(true);
             txtCargo.setEnabled(true);
             
-            // CORRECCIÓN: Como es panel de Admins, siempre visible y editable
+            // Habilitar contraseña y checkbox
             txtContrasenia.setEnabled(true);
-            txtContrasenia.setEchoChar((char)0); // Visible
+            chkMostrarPass.setEnabled(true);
+            
+            // Estado inicial: oculta
+            chkMostrarPass.setSelected(false);
+            txtContrasenia.setEchoChar('•');
             
             cargarFotoEnLabel(selectedAdmin.getRutaFoto());
             nuevaRutaFotoTemp = null;
@@ -473,6 +491,11 @@ public class ListarAdministradores extends JDialog {
         txtCargo.setEnabled(false);
         txtUsuario.setEnabled(false);
         txtContrasenia.setEnabled(false); 
+        
+        if (chkMostrarPass != null) {
+            chkMostrarPass.setEnabled(false);
+            chkMostrarPass.setSelected(false);
+        }
         
         cargarFotoEnLabel(null);
         btnModificar.setEnabled(false);
