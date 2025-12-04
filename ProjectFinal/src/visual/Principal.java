@@ -869,13 +869,14 @@ public class Principal extends JFrame {
 		
 		lblCntCitas = new JLabel("0"); 
 		actualizarContadorCitas(idUser); 
-		if(lblCntCitas.getText().equalsIgnoreCase("0")) panelNumber1.setBackground(new Color(211,211,211));
-		else panelNumber1.setBackground(paletaRojo);
+		//if(lblCntCitas.getText().equalsIgnoreCase("0")) panelNumber1.setBackground(new Color(211,211,211));
+		//else panelNumber1.setBackground(paletaRojo);
 		lblCntCitas.setFont(buttonFont);
 		lblCntCitas.setForeground(Color.WHITE);
 		lblCntCitas.setBounds(0,0,25,25);
 		lblCntCitas.setHorizontalAlignment(SwingConstants.CENTER);
 		lblCntCitas.setVerticalAlignment(SwingConstants.CENTER);
+		lblCntCitas.setOpaque(false);
 		panelNumber1.add(lblCntCitas);
 
 		JLabel lblCitaIcon = new JLabel(cargarIcono("/Imagenes/stethoscope.png", 120, 120));
@@ -883,17 +884,20 @@ public class Principal extends JFrame {
 		citasHoyPanel.add(lblCitaIcon);
 	}
 	
-	private JPanel bolitaNotificacion() {
+	private JPanel bolitaNotificacion() {		
 		JPanel panelNumber = new JPanel(){
 			@Override
 			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
 				Graphics2D g2 = (Graphics2D) g;
 				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 				g2.setColor(getBackground());
-				g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 25, 25);
+				g2.fillOval(0, 0, getWidth(), getHeight());
 			}
 		};
+		panelNumber.setOpaque(false);
 		panelNumber.setBounds(180, 10, 25, 25);
+		panelNumber.setBackground(paletaRojo);
 		panelNumber.setLayout(null);
 		return panelNumber;
 	}
