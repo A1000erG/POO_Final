@@ -95,7 +95,9 @@ public class Principal extends JFrame {
 	private static int mode;
 	private static String idUser;
 
-	// Timer para notificaciones (Integrado de PrincipalAngel) [cite: 160]
+	private JLabel lblCntCitas;
+	private Timer timerContadorCitas;
+	// Timer para notificaciones
 	private Timer timerNotificacion;
 
 	public static void main(String[] args) {
@@ -373,18 +375,21 @@ public class Principal extends JFrame {
 		lblRolUser.setFont(normalUse);
 		lblRolUser.setBounds(846, 62, 119, 14);
 		infoUserPanel.add(lblRolUser);
+		
+		String rutaImagen = imagenEncontrada(idUser, mode);
 
-		String dirImagen = imagenEncontrada(idUser);
-		ImageIcon imgUser;
-		if(dirImagen.equalsIgnoreCase("")) {
-			imgUser = new ImageIcon(getClass().getResource("/Imagenes/useResi.png"));
-		}else {
-			imgUser = new ImageIcon(idCod); // Nota: Esto parece depender de una lógica específica de carga por ID
+		ImageIcon iconoFinal = null;
+		if (!rutaImagen.isEmpty()) {
+		    iconoFinal = cargarIconoEscalado(rutaImagen, 80, 80);
 		}
-		Image imgEscalada = imgUser.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+		if (iconoFinal == null) {
+		    iconoFinal = cargarIconoEscalado("/Imagenes/useResi.png", 80, 80);
+		}
 		JLabel lblFotoUser = new JLabel("");
 		lblFotoUser.setBounds(1020, 11, 80, 80);
-		lblFotoUser.setIcon(new ImageIcon(imgEscalada));
+		if (iconoFinal != null) {
+		    lblFotoUser.setIcon(iconoFinal);
+		}
 		infoUserPanel.add(lblFotoUser);
 
 		//================================PANELES PARA DOCTORES====================================
@@ -580,9 +585,11 @@ public class Principal extends JFrame {
 		pacientesListPanel = crearPanelListado(57, "/Imagenes/pacientList.png", "Lista de pacientes", "Pacientes");
 		infoPanel.add(pacientesListPanel);
 
-		// --- INTEGRACIÓN: INICIAR NOTIFICACIONES DOCTOR [cite: 167, 184] ---
-		if(mode != 0) {
-			iniciarNotificacionesDoctor(idUser);
+		// --- INTEGRACIÓN: INICIAR NOTIFICACIONES DOCTOR 
+		if (mode != 0) {
+		    iniciarNotificacionesDoctor(idUser);
+		    timerContadorCitas = new Timer(2000, e -> actualizarContadorCitas(idUsuario));
+		    timerContadorCitas.start();
 		}
 	}
 
@@ -805,7 +812,7 @@ public class Principal extends JFrame {
 		};
 		
 		listEnfPanel.setBackground(Color.WHITE);
-		listEnfPanel.setBounds(90, 427, 280, 280);
+		listEnfPanel.setBounds(110, 427, 280, 250);
 		listEnfPanel.setVisible(mode != 0);
 		listEnfPanel.setLayout(null);
 		infoPanel.add(listEnfPanel);
@@ -819,7 +826,7 @@ public class Principal extends JFrame {
 
 		JLabel lblDesEnf = new JLabel("Enfermedades Controladas");
 		lblDesEnf.setFont(buttonFont);
-		lblDesEnf.setBounds(0, 250, 280, 14);
+		lblDesEnf.setBounds(0, 220, 280, 14);
 		lblDesEnf.setHorizontalAlignment(SwingConstants.CENTER);
 		listEnfPanel.add(lblDesEnf);
 		
@@ -846,7 +853,7 @@ public class Principal extends JFrame {
 			}
 		};
 		citasHoyPanel.setBackground(Color.WHITE);
-		citasHoyPanel.setBounds(750, 427, 280, 280);
+		citasHoyPanel.setBounds(730, 427, 280, 250);
 		citasHoyPanel.setVisible(mode != 0);
 		citasHoyPanel.setLayout(null);
 		infoPanel.add(citasHoyPanel);
@@ -856,19 +863,15 @@ public class Principal extends JFrame {
 		
 		JLabel lblDesCitas = new JLabel("Citas pendientes para hoy");
 		lblDesCitas.setFont(buttonFont);
-		lblDesCitas.setBounds(0, 250, 280, 14);
+		lblDesCitas.setBounds(0, 220, 280, 14);
 		lblDesCitas.setHorizontalAlignment(SwingConstants.CENTER);
 		citasHoyPanel.add(lblDesCitas);
 		
-		Integer cantCitasMed = 0;
-		for (Cita cita : Clinica.getInstance().getCitas()) {
-			if(cita.getFecha().equals(LocalDate.now()) && cita.getDoctor().getUsuario().equalsIgnoreCase(idUser)
-					&& cita.getEstado().equalsIgnoreCase("Pendiente")) cantCitasMed++;
-		}
-		JLabel lblCntCitas = new JLabel(cantCitasMed.toString());
+		lblCntCitas = new JLabel("0"); 
+		actualizarContadorCitas(idUser); 
+		if(lblCntCitas.getText().equalsIgnoreCase("0")) panelNumber1.setBackground(new Color(211,211,211));
+		else panelNumber1.setBackground(paletaRojo);
 		lblCntCitas.setFont(buttonFont);
-		if(cantCitasMed==0) panelNumber1.setBackground(new Color(211,211,211));
-		else panelNumber1.setBackground(new Color(220, 38, 38));
 		lblCntCitas.setForeground(Color.WHITE);
 		lblCntCitas.setBounds(0,0,25,25);
 		lblCntCitas.setHorizontalAlignment(SwingConstants.CENTER);
@@ -939,6 +942,26 @@ public class Principal extends JFrame {
 		timerNotificacion = new Timer(60000, e -> verificarCitasProximas(idUsuario));
 		timerNotificacion.start();
 	}
+	
+	private void actualizarContadorCitas(String idUser) {
+	    if (lblCntCitas == null) return;
+
+	    Integer cantCitasMed = 0;
+	    LocalDate hoy = LocalDate.now();
+	    
+	    // Tu lógica original de conteo
+	    for (Cita cita : Clinica.getInstance().getCitas()) {
+	        if (cita.getFecha().equals(hoy) && 
+	            cita.getDoctor().getUsuario().equalsIgnoreCase(idUser) && 
+	            cita.getEstado().equalsIgnoreCase("Pendiente")) {
+	            cantCitasMed++;
+	        }
+	    }
+	    
+	    // Actualizamos el texto de la etiqueta existente
+	    lblCntCitas.setText(cantCitasMed.toString());
+	    lblCntCitas.repaint(); // Forzamos el repintado por si acaso
+	}
 
 	private void verificarCitasProximas(String idUsuario) {
 		Doctor doctor = clinic.getDoctorPorUsuario(idUsuario);
@@ -981,7 +1004,7 @@ public class Principal extends JFrame {
 			}
 		}
 	}
-	// --- Helper para cargar imágenes de forma segura (Inspirado en PrincipalAngel) [cite: 264] ---
+	
 	private ImageIcon cargarIcono(String path, int width, int height) {
 		ImageIcon icon = new ImageIcon(getClass().getResource(path));
 		if (icon.getImageLoadStatus() == java.awt.MediaTracker.COMPLETE) {
@@ -990,26 +1013,56 @@ public class Principal extends JFrame {
 		return new ImageIcon();
 	}
 
-	private String imagenEncontrada(String id) {
-		File carpeta = new File("FotosAdmin");
-		File[] archivos = carpeta.listFiles();
-		boolean encontrada = false;
-		String ruta="";
-		int i=0;
-		if (archivos != null) {
-			while(!encontrada && i<archivos.length) {
-				if (archivos[i].isFile()) {
-					String nombreArchivo = archivos[i].getName();
-					if(nombreArchivo.equalsIgnoreCase(id+".png") 
-							|| nombreArchivo.equalsIgnoreCase(id+".jpg") 
-							|| nombreArchivo.equalsIgnoreCase(id+".jpeg")) {
-						encontrada = true;
-						ruta = "FotosAdmin/" + nombreArchivo;
-					}
-				}
-				i++;
-			}
-		}
-		return ruta;
+	private String imagenEncontrada(String idUsuario, int mode) {
+	    String ruta = "";
+	    String carpetaBase = (mode == 0) ? "FotosAdmin" : "FotosDoctores";
+	    String prefijo = (mode == 0) ? "A-" : "doctor_";
+	    
+	    String idFormateado = "000"; 
+	    
+	    if (mode == 0) {
+	        //Admin
+	        try {
+	           logico.Administrativo admin = logico.Clinica.getInstance().getAdministrativoPorUsuario(idUsuario);
+	           if (admin != null) idFormateado = String.format("%03d", admin.getIdAdmin());
+	        } catch (Exception e) {}
+	    } else {
+	    	//Doctor
+	        try {
+	           logico.Doctor doc = logico.Clinica.getInstance().getDoctorPorUsuario(idUsuario);
+	           if (doc != null) idFormateado = String.format("%03d", doc.getIdDoctor());
+	        } catch (Exception e) {}
+	    }
+
+	    String nombreBase = prefijo + idFormateado;
+	    
+	    String[] extensiones = {".png", ".jpg", ".jpeg"};
+	    for (String ext : extensiones) {
+	        File f = new File(carpetaBase + File.separator + nombreBase + ext);
+	        if (f.exists()) {
+	            return f.getPath(); 
+	        }
+	    }
+	    
+	    return ""; 
+	}
+	
+	// Método auxiliar para cargar y escalar imágenes
+	private ImageIcon cargarIconoEscalado(String ruta, int ancho, int alto) {
+	    java.net.URL url = getClass().getResource(ruta);
+	    if (url != null) {
+	        ImageIcon icono = new ImageIcon(url);
+	        Image img = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+	        return new ImageIcon(img);
+	    }
+	    
+	    File archivo = new File(ruta);
+	    if (archivo.exists()) {
+	        ImageIcon icono = new ImageIcon(archivo.getPath());
+	        Image img = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+	        return new ImageIcon(img);
+	    }
+
+	    return null; 
 	}
 }
