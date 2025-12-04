@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -55,6 +56,7 @@ public class ListarAdministradores extends JDialog {
     private JTextField txtCargo;
     private JTextField txtUsuario;
     private JPasswordField txtContrasenia;
+    private JCheckBox chkMostrarPass; // Checkbox para ver contraseña
     private JLabel lblFoto;
     
     private JButton btnModificar;
@@ -70,7 +72,7 @@ public class ListarAdministradores extends JDialog {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    ListarAdministradores dialog = new ListarAdministradores(/*null*/);
+                    ListarAdministradores dialog = new ListarAdministradores(null);
                     dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     dialog.setVisible(true);
                 } catch (Exception e) { e.printStackTrace(); }
@@ -79,9 +81,9 @@ public class ListarAdministradores extends JDialog {
     }
 
 
-    public ListarAdministradores(/*Personal usuarioLogueado*/) {
-        //this.usuarioActual = usuarioLogueado;
-        setTitle("Gesti�n de Administradores");
+    public ListarAdministradores(Personal usuarioLogueado) {
+        this.usuarioActual = usuarioLogueado;
+        setTitle("Gestión de Administradores");
         setModal(true);
         setBounds(100, 100, 1366, 768);
         setLocationRelativeTo(null);
@@ -148,13 +150,23 @@ public class ListarAdministradores extends JDialog {
         panelCentral.add(scrollPane);
 
         String[] headers = { "ID", "Nombre", "Cargo", "Estado" };
-        model = new DefaultTableModel();
+        
+        model = new DefaultTableModel() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; 
+            }
+        };
+        
         model.setColumnIdentifiers(headers);
         table = new JTable();
         table.setModel(model);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setRowHeight(35);
         table.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f));
+        
+        table.setFillsViewportHeight(true); 
         
         table.getTableHeader().setBackground(new Color(4, 111, 67)); 
         table.getTableHeader().setForeground(Color.WHITE);
@@ -163,7 +175,7 @@ public class ListarAdministradores extends JDialog {
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int index = table.getSelectedRow();
+                int index = table.rowAtPoint(e.getPoint());
                 if (index != -1) {
                     String id = table.getValueAt(index, 0).toString();
                     String idNum = id.replace("A-", ""); 
@@ -171,6 +183,13 @@ public class ListarAdministradores extends JDialog {
                         selectedAdmin = (Administrativo) buscarAdminPorId(Integer.parseInt(idNum));
                         cargarDatosAdmin();
                     } catch (NumberFormatException ex) { }
+                }
+            }
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (table.rowAtPoint(e.getPoint()) == -1) {
+                    table.clearSelection();
+                    limpiarFormulario();
                 }
             }
         });
@@ -229,6 +248,7 @@ public class ListarAdministradores extends JDialog {
         createLabelAndInput(panelDetalle, "CARGO:", yStart + gap, txtCargo = new JTextField());
         createLabelAndInput(panelDetalle, "USUARIO:", yStart + gap * 2, txtUsuario = new JTextField());
         
+        // --- SECCIÓN CONTRASEÑA ---
         JLabel lblPass = new JLabel("CONTRASEÑA:");
         lblPass.setBounds(50, yStart + gap * 3, 300, 20);
         lblPass.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 13f));
@@ -236,10 +256,26 @@ public class ListarAdministradores extends JDialog {
         panelDetalle.add(lblPass);
 
         txtContrasenia = new JPasswordField();
-        txtContrasenia.setBounds(50, yStart + gap * 3 + 20, 300, 35);
+        // Reducir ancho para el botón "Mostrar"
+        txtContrasenia.setBounds(50, yStart + gap * 3 + 20, 220, 35);
         txtContrasenia.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
         txtContrasenia.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Regular.ttf", 15f));
         panelDetalle.add(txtContrasenia);
+
+        // CheckBox para ver/ocultar contraseña
+        chkMostrarPass = new JCheckBox("Mostrar");
+        chkMostrarPass.setBounds(280, yStart + gap * 3 + 20, 80, 35);
+        chkMostrarPass.setBackground(new Color(245, 245, 245));
+        chkMostrarPass.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 12f));
+        chkMostrarPass.setEnabled(false);
+        chkMostrarPass.addActionListener(e -> {
+            if (chkMostrarPass.isSelected()) {
+                txtContrasenia.setEchoChar((char) 0); // Mostrar
+            } else {
+                txtContrasenia.setEchoChar('•'); // Ocultar
+            }
+        });
+        panelDetalle.add(chkMostrarPass);
 
         txtUsuario.setEditable(false); 
         txtUsuario.setBackground(new Color(240, 240, 240));
@@ -371,7 +407,6 @@ public class ListarAdministradores extends JDialog {
         hilo.start();
     }
 
-    // --- LÓGICA DE BÚSQUEDA MEJORADA ---
     private void loadAdmins(String filtro) {
         model.setRowCount(0);
         rows = new Object[model.getColumnCount()];
@@ -382,12 +417,6 @@ public class ListarAdministradores extends JDialog {
         for (Administrativo adm : lista) {
             String nombre = adm.getNombre().toLowerCase();
             String filtroMin = filtro.toLowerCase();
-            
-            // Lógica de búsqueda mejorada:
-            // 1. Por nombre
-            // 2. Por ID crudo ("1")
-            // 3. Por ID formateado ("001")
-            // 4. Por Código completo ("A-001")
             
             String idRaw = String.valueOf(adm.getId());
             String idFormatted = String.format("%03d", adm.getId());
@@ -428,17 +457,13 @@ public class ListarAdministradores extends JDialog {
             txtNombre.setEnabled(true);
             txtCargo.setEnabled(true);
             
-            // --- VALIDACIÓN DE SEGURIDAD ---
-            // Solo habilita la contraseña si el usuario logueado es un Administrativo
-            boolean esAdmin = (usuarioActual instanceof Administrativo);
-            txtContrasenia.setEnabled(esAdmin);
+            // Habilitar contraseña y checkbox
+            txtContrasenia.setEnabled(true);
+            chkMostrarPass.setEnabled(true);
             
-            // --- VISIBILIDAD DE CONTRASEÑA ---
-            if (esAdmin) {
-                txtContrasenia.setEchoChar((char)0); // Visible (texto plano) para quien puede editar
-            } else {
-                txtContrasenia.setEchoChar('�'); // Oculta para quien no tiene permiso
-            }
+            // Estado inicial: oculta
+            chkMostrarPass.setSelected(false);
+            txtContrasenia.setEchoChar('•');
             
             cargarFotoEnLabel(selectedAdmin.getRutaFoto());
             nuevaRutaFotoTemp = null;
@@ -466,6 +491,11 @@ public class ListarAdministradores extends JDialog {
         txtCargo.setEnabled(false);
         txtUsuario.setEnabled(false);
         txtContrasenia.setEnabled(false); 
+        
+        if (chkMostrarPass != null) {
+            chkMostrarPass.setEnabled(false);
+            chkMostrarPass.setSelected(false);
+        }
         
         cargarFotoEnLabel(null);
         btnModificar.setEnabled(false);
@@ -509,11 +539,7 @@ public class ListarAdministradores extends JDialog {
 
         selectedAdmin.setNombre(txtNombre.getText());
         selectedAdmin.setCargo(txtCargo.getText());
-        
-        // Solo guardamos contraseña si el campo estaba habilitado
-        if (txtContrasenia.isEnabled()) {
-            selectedAdmin.setContrasenia(pass); 
-        }
+        selectedAdmin.setContrasenia(pass); // Siempre guarda la contraseña
         
         if (nuevaRutaFotoTemp != null) {
             try {

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -38,7 +39,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 import Utilidades.FuenteUtil; 
-import logico.Administrativo;
 import logico.Clinica;
 import logico.Doctor;
 import logico.Personal;
@@ -57,6 +57,7 @@ public class ListarDoctores extends JDialog {
     private JTextField txtCupo;
     private JTextField txtUsuario;
     private JPasswordField txtContrasenia;
+    private JCheckBox chkMostrarPass; // Nuevo componente para ver contraseña
     private JLabel lblFoto;
     
     private JButton btnModificar;
@@ -72,7 +73,7 @@ public class ListarDoctores extends JDialog {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    ListarDoctores dialog = new ListarDoctores(/*null*/);
+                    ListarDoctores dialog = new ListarDoctores(null);
                     dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     dialog.setVisible(true);
                 } catch (Exception e) {
@@ -82,9 +83,10 @@ public class ListarDoctores extends JDialog {
         });
     }
 
-    public ListarDoctores(/*Personal usuarioLogueado*/) {
-        /*this.usuarioActual = usuarioLogueado;*/
-        setTitle("Gesti�n de Doctores");
+
+    public ListarDoctores(Personal usuarioLogueado) {
+        this.usuarioActual = usuarioLogueado;
+        setTitle("Gestión de Doctores");
         setModal(true);
         setBounds(100, 100, 1366, 768); 
         setLocationRelativeTo(null);
@@ -151,13 +153,23 @@ public class ListarDoctores extends JDialog {
         panelCentral.add(scrollPane);
 
         String[] headers = { "ID", "Nombre", "Especialidad", "Estado" };
-        model = new DefaultTableModel();
+        
+        model = new DefaultTableModel() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; 
+            }
+        };
+        
         model.setColumnIdentifiers(headers);
         table = new JTable();
         table.setModel(model);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setRowHeight(35);
         table.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f));
+        
+        table.setFillsViewportHeight(true); 
         
         table.getTableHeader().setBackground(new Color(4, 111, 67)); 
         table.getTableHeader().setForeground(Color.WHITE);
@@ -166,7 +178,7 @@ public class ListarDoctores extends JDialog {
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int index = table.getSelectedRow();
+                int index = table.rowAtPoint(e.getPoint());
                 if (index != -1) {
                     String id = table.getValueAt(index, 0).toString();
                     String idNum = id.replace("D-", ""); 
@@ -174,6 +186,13 @@ public class ListarDoctores extends JDialog {
                         selectedDoctor = (Doctor) buscarDoctorPorId(Integer.parseInt(idNum));
                         cargarDatosDoctor();
                     } catch (NumberFormatException ex) { }
+                }
+            }
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (table.rowAtPoint(e.getPoint()) == -1) {
+                    table.clearSelection();
+                    limpiarFormulario();
                 }
             }
         });
@@ -185,7 +204,6 @@ public class ListarDoctores extends JDialog {
         panelDetalle.setBackground(new Color(245, 245, 245));
         panelDetalle.setBorder(new LineBorder(new Color(220, 220, 220), 1, true));
         
-        // TAMAÑO AMPLIADO A 568px
         panelDetalle.setBounds(900, margenY, 400, 568);
         panelDetalle.setLayout(null);
         panelCentral.add(panelDetalle);
@@ -234,6 +252,7 @@ public class ListarDoctores extends JDialog {
         createLabelAndInput(panelDetalle, "CUPO DIARIO:", yStart + gap * 2, txtCupo = new JTextField());
         createLabelAndInput(panelDetalle, "USUARIO:", yStart + gap * 3, txtUsuario = new JTextField());
         
+        // --- SECCIÓN CONTRASEÑA ---
         JLabel lblPass = new JLabel("CONTRASEÑA:");
         lblPass.setBounds(50, yStart + gap * 4, 300, 20);
         lblPass.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 13f));
@@ -241,10 +260,26 @@ public class ListarDoctores extends JDialog {
         panelDetalle.add(lblPass);
 
         txtContrasenia = new JPasswordField();
-        txtContrasenia.setBounds(50, yStart + gap * 4 + 20, 300, 35);
+        // Reducimos el ancho a 220 para dar espacio al CheckBox
+        txtContrasenia.setBounds(50, yStart + gap * 4 + 20, 220, 35);
         txtContrasenia.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
         txtContrasenia.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Regular.ttf", 15f));
         panelDetalle.add(txtContrasenia);
+        
+        // CheckBox para ver/ocultar contraseña
+        chkMostrarPass = new JCheckBox("Mostrar");
+        chkMostrarPass.setBounds(280, yStart + gap * 4 + 20, 80, 35);
+        chkMostrarPass.setBackground(new Color(245, 245, 245));
+        chkMostrarPass.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 12f));
+        chkMostrarPass.setEnabled(false);
+        chkMostrarPass.addActionListener(e -> {
+            if (chkMostrarPass.isSelected()) {
+                txtContrasenia.setEchoChar((char) 0); // Mostrar
+            } else {
+                txtContrasenia.setEchoChar('•'); // Ocultar
+            }
+        });
+        panelDetalle.add(chkMostrarPass);
         
         txtUsuario.setEditable(false);
         txtUsuario.setBackground(new Color(240, 240, 240));
@@ -389,7 +424,6 @@ public class ListarDoctores extends JDialog {
             String nombre = doc.getNombre().toLowerCase();
             String filtroMin = filtro.toLowerCase();
             
-            // Comparación flexible: "1", "001", "D-001"
             String idRaw = String.valueOf(doc.getId());
             String idFormatted = String.format("%03d", doc.getId());
             String idFull = String.format("D-%03d", doc.getId()).toLowerCase();
@@ -431,17 +465,14 @@ public class ListarDoctores extends JDialog {
             txtEspecialidad.setEnabled(true);
             txtCupo.setEnabled(true);
             
-            // --- VALIDACIÓN DE SEGURIDAD ---
-            // Solo habilita la contraseña si el usuario logueado es un Administrativo
-            boolean esAdmin = (usuarioActual instanceof Administrativo);
-            txtContrasenia.setEnabled(esAdmin);
+            // CORRECCIÓN: Habilitamos siempre el campo y el checkbox
+            // para permitir ver y modificar la contraseña a quien tenga acceso a esta pantalla.
+            txtContrasenia.setEnabled(true);
+            chkMostrarPass.setEnabled(true);
             
-            // VISIBILIDAD: Solo texto plano si puede editar
-            if (esAdmin) {
-                txtContrasenia.setEchoChar((char)0); 
-            } else {
-                txtContrasenia.setEchoChar('�'); 
-            }
+            // Estado inicial: contraseña oculta
+            chkMostrarPass.setSelected(false);
+            txtContrasenia.setEchoChar('•');
             
             cargarFotoEnLabel(selectedDoctor.getRutaFoto());
             nuevaRutaFotoTemp = null; 
@@ -471,6 +502,12 @@ public class ListarDoctores extends JDialog {
         txtCupo.setEnabled(false);
         txtUsuario.setEnabled(false);
         txtContrasenia.setEnabled(false);
+        
+        // Deshabilitar CheckBox
+        if (chkMostrarPass != null) {
+            chkMostrarPass.setEnabled(false);
+            chkMostrarPass.setSelected(false);
+        }
         
         cargarFotoEnLabel(null);
         btnModificar.setEnabled(false);
@@ -517,7 +554,7 @@ public class ListarDoctores extends JDialog {
             selectedDoctor.setEspecialidad(txtEspecialidad.getText());
             selectedDoctor.setCupoDia(Integer.parseInt(txtCupo.getText()));
             
-            // Solo guardar contraseña si el campo estaba habilitado (es admin)
+            // Guardar contraseña siempre que esté habilitada (que ahora lo está)
             if (txtContrasenia.isEnabled()) {
                 selectedDoctor.setContrasenia(pass);
             }

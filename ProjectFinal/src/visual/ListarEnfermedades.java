@@ -133,10 +133,24 @@ public class ListarEnfermedades extends JDialog {
         panelCentral.add(scrollPane);
 
         String[] headers = { "ID", "Nombre Enfermedad" };
-        model = new DefaultTableModel();
+        
+        // CAMBIO 1: Modelo anónimo para desactivar edición
+        model = new DefaultTableModel() {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         model.setColumnIdentifiers(headers);
+        
         table = new JTable();
         table.setModel(model);
+        table.setFillsViewportHeight(true); // Mantenemos esto para que el fondo sea blanco y detectable
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setRowHeight(35);
         table.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f));
@@ -145,17 +159,24 @@ public class ListarEnfermedades extends JDialog {
         table.getTableHeader().setForeground(Color.WHITE);
         table.getTableHeader().setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 14f));
         
+        // CAMBIO 2: Lógica de deselección en espacio vacío
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int index = table.getSelectedRow();
-                if (index != -1) {
-                    String id = table.getValueAt(index, 0).toString();
-                    String idNum = id.replace("E-", ""); 
-                    try {
-                        selectedEnfermedad = buscarEnfermedadPorId(Integer.parseInt(idNum));
-                        cargarDatosEnfermedad();
-                    } catch (NumberFormatException ex) { }
+                // Verificar si el clic fue en una fila válida
+                if (table.rowAtPoint(e.getPoint()) == -1) {
+                    table.clearSelection();
+                    limpiarFormulario();
+                } else {
+                    int index = table.getSelectedRow();
+                    if (index != -1) {
+                        String id = table.getValueAt(index, 0).toString();
+                        String idNum = id.replace("E-", ""); 
+                        try {
+                            selectedEnfermedad = buscarEnfermedadPorId(Integer.parseInt(idNum));
+                            cargarDatosEnfermedad();
+                        } catch (NumberFormatException ex) { }
+                    }
                 }
             }
         });
@@ -242,7 +263,7 @@ public class ListarEnfermedades extends JDialog {
         };
         btnVolver.setOpaque(false);
         btnVolver.setLayout(null);
-        btnVolver.setBounds(40, 550, 70, 70); 
+        btnVolver.setBounds(40, 528, 70, 70); 
         btnVolver.setBackground(new Color(4, 111, 67)); 
 
         btnVolver.addMouseListener(new MouseAdapter() {

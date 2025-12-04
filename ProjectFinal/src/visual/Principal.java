@@ -31,6 +31,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.Timer;
 
 import org.jfree.chart.ChartFactory;
@@ -62,7 +63,7 @@ public class Principal extends JFrame {
 	private static Color paleteLightGrey = new Color(240, 245, 250);
 	private static Color paletaRojo = new Color(220, 38, 38);
 	private static Color paletaRojoOscuro = new Color(180, 0, 0);
-	
+
 	// Fuentes 
 	private static Font fuenteTituloGraph = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 22f);
 	private static Font fuenteEjesGraph = FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 14f);
@@ -78,7 +79,7 @@ public class Principal extends JFrame {
 	private static JPanel cantVacunasPanel;
 	private static JPanel cantCitasHoyPanel;
 	private static JPanel barGraphSickPanel;
-	
+
 	// Nuevo Panel para gráfico de vacunas (Integrado de PrincipalAngel) [cite: 158]
 	private static JPanel barGraphVacunaPanel;
 
@@ -86,11 +87,11 @@ public class Principal extends JFrame {
 	private static JPanel adminListPanel;	
 	private static JPanel vacunaListPanel;	
 	private static JPanel pacientesListPanel;
-	
+
 	private static Clinica clinic = Clinica.getInstance();
 	private JPanel bkgPanel;
 	private JLabel lblDoctor;
-	
+
 	// Timer para notificaciones (Integrado de PrincipalAngel) [cite: 160]
 	private Timer timerNotificacion;
 
@@ -109,9 +110,9 @@ public class Principal extends JFrame {
 	}
 
 	public Principal(int mode, String idUser) {
-		getToolkit().getScreenSize();
-		setResizable(false);
-		
+		setBounds(100, 100, 1366, 768);
+		setLocationRelativeTo(null);
+
 		setTitle("Compile Salud");
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -142,9 +143,9 @@ public class Principal extends JFrame {
 		bkgPanel.setBackground(paleteLightGrey);
 		contentPane.add(bkgPanel, BorderLayout.CENTER);
 		bkgPanel.setLayout(null);
-
+		 
 		infoPanel = new JPanel();
-		infoPanel.setSize(1121, 1080); // Aumentado el alto para acomodar el segundo gráfico
+		infoPanel.setSize(1121, 1080);
 		infoPanel.setLocation(240, 0);
 		infoPanel.setOpaque(false);
 		infoPanel.setLayout(null);
@@ -163,9 +164,9 @@ public class Principal extends JFrame {
 		optionPanel.add(lbLogo);
 
 		// ================= BOTONES DEL MENÚ LATERAL =================
-		
+
 		JButton btnRegAdmin = new JButton("New button");	
-		configurarBotonMenu(btnRegAdmin, mode == 0 ? "Registrar Admin" : "Citas", 177);
+		configurarBotonMenu(btnRegAdmin,"Registrar Admin", 177);
 		btnRegAdmin.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -179,6 +180,7 @@ public class Principal extends JFrame {
 				}
 			}
 		});
+		if(mode != 0) btnRegAdmin.setVisible(false);
 		optionPanel.add(btnRegAdmin);
 
 		JButton btnRegDoctor = new JButton("New button");
@@ -190,6 +192,13 @@ public class Principal extends JFrame {
 					try {
 						RegDoctor regDoctor = new RegDoctor(mode, idUser);
 						regDoctor.setVisible(true);
+					} catch (Exception e2) {
+						e2.printStackTrace();
+					}
+				}else {
+					try {
+						ListarCitas listCitas = new ListarCitas(Clinica.getInstance().getDoctorPorUsuario(idUser));
+						listCitas.setVisible(true);
 					} catch (Exception e2) {
 						e2.printStackTrace();
 					}
@@ -244,7 +253,7 @@ public class Principal extends JFrame {
 			}
 		});
 		optionPanel.add(btnListados);
-		
+
 		// --- INTEGRACIÓN: BOTÓN GESTIÓN DE RECURSOS  ---
 		// Solo visible para Admin (mode 0), situado debajo de Listados
 		JButton btnGestionRecursos = new JButton("Gestión Recursos");
@@ -262,16 +271,16 @@ public class Principal extends JFrame {
 			}
 		});
 		optionPanel.add(btnGestionRecursos);
-		
+
 		JButton btnRespaldo = new JButton("Respaldar Datos");
 		configurarBotonMenu(btnRespaldo, "Respaldar Datos", 459);
 		if (mode != 0) btnRespaldo.setVisible(false);
 
 		btnRespaldo.addMouseListener(new MouseAdapter() {
-		    @Override
-		    public void mouseClicked(MouseEvent e) {
-		        new Thread(() -> realizarRespaldoRemoto()).start();
-		    }
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				new Thread(() -> realizarRespaldoRemoto()).start();
+			}
 		});
 		optionPanel.add(btnRespaldo);
 
@@ -284,50 +293,50 @@ public class Principal extends JFrame {
 		btnCerrarSesion.setBorderPainted(false);
 		btnCerrarSesion.setFocusPainted(false);
 		btnCerrarSesion.addMouseListener(new MouseAdapter() {
-		    @Override
-		    public void mouseEntered(MouseEvent e) {
-		        btnCerrarSesion.setBackground(paletaRojoOscuro);
-		    }
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				btnCerrarSesion.setBackground(paletaRojoOscuro);
+			}
 
-		    @Override
-		    public void mouseExited(MouseEvent e) {
-		        btnCerrarSesion.setBackground(paletaRojo);
-		    }
+			@Override
+			public void mouseExited(MouseEvent e) {
+				btnCerrarSesion.setBackground(paletaRojo);
+			}
 
-		    @Override
-		    public void mouseClicked(MouseEvent e) {
-		        int opcion = JOptionPane.showConfirmDialog(null, 
-		        		"¿Estás seguro de que deseas salir?\n\n" +
-		        	            "• SI: Cerrar sesión y volver al login\n" +
-		        	            "• NO: Salir completamente de la aplicación\n" +
-		        	            "• CANCELAR: Volver a la aplicación", 
-		        	            "Confirmar Salida", 
-		        	            JOptionPane.YES_NO_CANCEL_OPTION, 
-		        	            JOptionPane.WARNING_MESSAGE);
-		        if(opcion == JOptionPane.YES_OPTION) {
-		            Clinica.getInstance().guardarDatosLocal();
-		            dispose();
-		            try { 
-		                new Login().setVisible(true); 
-		            } catch (Exception ex) { 
-		                ex.printStackTrace(); 
-		            } 
-		        }else if (opcion == JOptionPane.NO_OPTION) {
-	                Clinica.getInstance().guardarDatosLocal();
-	                dispose();
-		        }
-		    }
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int opcion = JOptionPane.showConfirmDialog(null, 
+						"¿Estás seguro de que deseas salir?\n\n" +
+								"• SI: Cerrar sesión y volver al login\n" +
+								"• NO: Salir completamente de la aplicación\n" +
+								"• CANCELAR: Volver a la aplicación", 
+								"Confirmar Salida", 
+								JOptionPane.YES_NO_CANCEL_OPTION, 
+								JOptionPane.WARNING_MESSAGE);
+				if(opcion == JOptionPane.YES_OPTION) {
+					Clinica.getInstance().guardarDatosLocal();
+					dispose();
+					try { 
+						new Login().setVisible(true); 
+					} catch (Exception ex) { 
+						ex.printStackTrace(); 
+					} 
+				}else if (opcion == JOptionPane.NO_OPTION) {
+					Clinica.getInstance().guardarDatosLocal();
+					dispose();
+				}
+			}
 		});
 		optionPanel.add(btnCerrarSesion);
 
 		// ================= INFO USER PANEL =================
-		
+
 		JPanel infoUserPanel = new JPanel(); 
 		infoUserPanel.setBackground(paleteDarkGreen);
 		infoUserPanel.setBounds(0, 0, 1131, 120);
 		infoPanel.add(infoUserPanel);
 		infoUserPanel.setLayout(null);
-		
+
 		String idCod = "";
 		String nombreUsuario = "";
 		if(mode==0) {
@@ -347,7 +356,7 @@ public class Principal extends JFrame {
 				} else { nombreUsuario = "Doctor"; }
 			}else nombreUsuario = "Doctor";
 		}
-		
+
 		JLabel lblNombreUser = new JLabel(nombreUsuario);
 		lblNombreUser.setForeground(Color.WHITE);
 		lblNombreUser.setFont(nameUser);
@@ -359,7 +368,7 @@ public class Principal extends JFrame {
 		lblRolUser.setFont(normalUse);
 		lblRolUser.setBounds(846, 62, 119, 14);
 		infoUserPanel.add(lblRolUser);
-		
+
 		String dirImagen = imagenEncontrada(idUser);
 		ImageIcon imgUser;
 		if(dirImagen.equalsIgnoreCase("")) {
@@ -374,7 +383,7 @@ public class Principal extends JFrame {
 		infoUserPanel.add(lblFotoUser);
 
 		//================================PANELES PARA DOCTORES====================================
-		
+
 		ImageIcon doctoraIcon = new ImageIcon(getClass().getResource("/Imagenes/doctora.png"));
 		Image doctoraRedim = doctoraIcon.getImage().getScaledInstance(230, 250, Image.SCALE_SMOOTH);
 		JLabel lblDoctora = new JLabel(new ImageIcon(doctoraRedim));
@@ -396,7 +405,7 @@ public class Principal extends JFrame {
 		welcomePanel.setBounds(57, 177, 1014, 200);
 		welcomePanel.setVisible(mode != 0);
 		welcomePanel.setLayout(null);
-		
+
 		ImageIcon bannerIcon = new ImageIcon(getClass().getResource("/Imagenes/doctorBanner.png"));
 		Image bannerEscalado = bannerIcon.getImage().getScaledInstance(1041, 200, Image.SCALE_SMOOTH);
 		JLabel lblBanner = new JLabel(bannerIcon) {
@@ -420,28 +429,27 @@ public class Principal extends JFrame {
 		crearPanelesInferioresDoctor(mode);
 
 		//===================================PANELES PARA USUARIOS ADMINISTRATIVOS=================================
-		
-		// 1. Panel Cantidad Enfermedades
-		cantEnfermPanel = crearPanelEstadistica(57, 177, "/Imagenes/thermometer.png", 
+		//Panel Cantidad Enfermedades
+		cantEnfermPanel = crearPanelEstadistica(57, 57, "/Imagenes/thermometer.png", 
 				"Enfermedades Controladas", Clinica.getInstance().getCatalogoEnfermedades().size(), mode);
 		infoPanel.add(cantEnfermPanel);
 
-		// 2. Panel Cantidad Vacunas
-		cantVacunasPanel = crearPanelEstadistica(414, 177, "/Imagenes/syringe.png", 
+		// Panel Cantidad Vacunas
+		cantVacunasPanel = crearPanelEstadistica(414, 57, "/Imagenes/syringe.png", 
 				"Vacunas Existentes", Clinica.getInstance().getVacunas().size(), mode);
 		infoPanel.add(cantVacunasPanel);
 
-		// 3. Panel Citas Hoy
+		//Panel Citas Hoy
 		Integer cantCitasHoy = 0;
 		LocalDate hoy = LocalDate.now();
 		for (Cita cita : Clinica.getInstance().getCitas()) {
-			if(cita.getFecha().isEqual(hoy)) cantCitasHoy++; // Corrección fecha [cite: 72]
+			if(cita.getFecha().isEqual(hoy)) cantCitasHoy++; 
 		}
-		cantCitasHoyPanel = crearPanelEstadistica(771, 177, "/Imagenes/stethoscope.png", 
+		cantCitasHoyPanel = crearPanelEstadistica(771, 577, "/Imagenes/stethoscope.png", 
 				"Citas para hoy", cantCitasHoy, mode);
 		infoPanel.add(cantCitasHoyPanel);
 
-		// 4. Gráfico de Enfermedades [cite: 74-82]
+		// 4. Gráfico de Enfermedades
 		barGraphSickPanel = new JPanel(){
 			private static final long serialVersionUID = 1L;
 			@Override
@@ -453,13 +461,13 @@ public class Principal extends JFrame {
 			}
 		};
 		barGraphSickPanel.setBackground(Color.WHITE);
-		barGraphSickPanel.setBounds(57, 355, 1014, 318);
+		barGraphSickPanel.setBounds(57, 235, 1014, 318);
 		barGraphSickPanel.setVisible(mode == 0);
 		infoPanel.add(barGraphSickPanel);
 		barGraphSickPanel.setLayout(null);
 
 		configurarGraficoEnfermedades(); // Lógica movida a método para limpieza
-		
+
 		// 5. --- INTEGRACIÓN: Gráfico de Vacunas (Nuevo) [cite: 158, 237, 303] ---
 		barGraphVacunaPanel = new JPanel(){
 			private static final long serialVersionUID = 1L;
@@ -472,15 +480,15 @@ public class Principal extends JFrame {
 			}
 		};
 		barGraphVacunaPanel.setBackground(Color.WHITE);
-		barGraphVacunaPanel.setBounds(57, 685, 1014, 318); // Posicionado debajo del primer gráfico
+		barGraphVacunaPanel.setBounds(57, 565, 1014, 318); // Posicionado debajo del primer gráfico
 		barGraphVacunaPanel.setVisible(mode == 0);
 		infoPanel.add(barGraphVacunaPanel);
 		barGraphVacunaPanel.setLayout(null);
-		
+
 		configurarGraficoVacunas(); // Nueva lógica traída de PrincipalAngel
 
 		//================PANELES PARA LISTADOS (Ocultos inicialmente)======================
-		
+
 		ImageIcon doctorIcon = new ImageIcon(getClass().getResource("/Imagenes/doctorPanel2.png"));
 		Image doctorRedim2 = doctorIcon.getImage().getScaledInstance(300, 286, Image.SCALE_SMOOTH);
 		lblDoctor = new JLabel(new ImageIcon(doctorRedim2));
@@ -503,13 +511,13 @@ public class Principal extends JFrame {
 		infoListPanel.setVisible(false);
 		infoListPanel.setLayout(null);
 		infoPanel.add(infoListPanel);
-		
+
 		JLabel lblTitlePanel = new JLabel("Panel de Gestión");
 		lblTitlePanel.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 28f));
 		lblTitlePanel.setForeground(Color.WHITE);
 		lblTitlePanel.setBounds(40, 30, 300, 30);
 		infoListPanel.add(lblTitlePanel);
-		
+
 		JLabel lblInfoPanel = new JLabel("Seleccione una categoría.");
 		lblInfoPanel.setFont(FuenteUtil.cargarFuente("/Fuentes/Roboto-Regular.ttf", 14f));
 		lblInfoPanel.setForeground(Color.WHITE);
@@ -517,15 +525,15 @@ public class Principal extends JFrame {
 		infoListPanel.add(lblInfoPanel);
 
 		JButton btnVolver = new JButton("Volver al Dashboard"){
-			 private static final long serialVersionUID = 1L;
-			 @Override
-			    protected void paintComponent(Graphics g) {
-			        Graphics2D g2 = (Graphics2D) g;
-			        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);			        
-			        g2.setColor(getBackground());
-			        g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
-			        super.paintComponent(g);
-			    }
+			private static final long serialVersionUID = 1L;
+			@Override
+			protected void paintComponent(Graphics g) {
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);			        
+				g2.setColor(getBackground());
+				g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
+				super.paintComponent(g);
+			}
 		};
 		btnVolver.setContentAreaFilled(false); 
 		btnVolver.setFocusPainted(false); 
@@ -557,16 +565,16 @@ public class Principal extends JFrame {
 		// Mantenemos la lógica visual de Clinica.txt pero encapsulada ligeramente
 		doctorsListPanel = crearPanelListado(827, "/Imagenes/doctorList.png", "Lista de doctores", "Doctores");
 		infoPanel.add(doctorsListPanel);
-		
+
 		adminListPanel = crearPanelListado(572, "/Imagenes/adminList.png", "Lista de administradores", "Administradores");
 		infoPanel.add(adminListPanel);
-		
+
 		vacunaListPanel = crearPanelListado(317, "/Imagenes/vacinList.png", "Lista de vacunas", "Vacunas");
 		infoPanel.add(vacunaListPanel);
-		
+
 		pacientesListPanel = crearPanelListado(57, "/Imagenes/pacientList.png", "Lista de pacientes", "Pacientes");
 		infoPanel.add(pacientesListPanel);
-		
+
 		// --- INTEGRACIÓN: INICIAR NOTIFICACIONES DOCTOR [cite: 167, 184] ---
 		if(mode != 0) {
 			iniciarNotificacionesDoctor(idUser);
@@ -580,7 +588,7 @@ public class Principal extends JFrame {
 		DefaultCategoryDataset enfermedadesDataset = new DefaultCategoryDataset();
 		//int maxEnfermedades = 5;
 		int count = clinic.getCatalogoEnfermedades().size();
-		
+
 		if(count > 0) {
 			// Lógica simplificada para tomar los últimos 5 o todos
 			int start = Math.max(0, count - 5);
@@ -609,7 +617,7 @@ public class Principal extends JFrame {
 				mapaConteo.put(vacuna.getNombre(), mapaConteo.getOrDefault(vacuna.getNombre(), 0) + 1);
 			}
 		}
-		
+
 		if (!mapaConteo.isEmpty()) {
 			for (Map.Entry<String, Integer> entry : mapaConteo.entrySet()) {
 				vacunaDataset.addValue(entry.getValue(), "Stock", entry.getKey());
@@ -639,7 +647,7 @@ public class Principal extends JFrame {
 		chart.getTitle().setFont(fuenteTituloGraph);
 		plot.getDomainAxis().setLabelFont(fuenteEjesGraph);
 		plot.getDomainAxis().setTickLabelFont(fuenteDatosGraph);
-		
+
 		ChartPanel chartPanel = new ChartPanel(chart);
 		chartPanel.setBounds(30, 5, 954, 308);
 		parent.add(chartPanel);
@@ -675,7 +683,7 @@ public class Principal extends JFrame {
 		lblCount.setFont(indicativeNumber);
 		lblCount.setBounds(10, 11, 80, 50);
 		panel.add(lblCount);
-		
+
 		return panel;
 	}
 
@@ -688,7 +696,7 @@ public class Principal extends JFrame {
 		btn.setBackground(paleteGreen);
 		btn.setBorderPainted(false);
 		btn.setFocusPainted(false);
-		
+
 		btn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) { btn.setBackground(paleteDarkGreen); }
@@ -704,7 +712,7 @@ public class Principal extends JFrame {
 		cantCitasHoyPanel.setVisible(!mostrar);
 		barGraphSickPanel.setVisible(!mostrar);
 		barGraphVacunaPanel.setVisible(!mostrar); // También ocultamos el nuevo gráfico
-		
+
 		infoListPanel.setVisible(mostrar);
 		adminListPanel.setVisible(mostrar);
 		vacunaListPanel.setVisible(mostrar);
@@ -747,10 +755,10 @@ public class Principal extends JFrame {
 				panel.setBackground(new Color(207, 207, 207));
 				try {
 					switch(tipo) {
-						case "Doctores": new ListarDoctores().setVisible(true); break;
-						case "Administradores": new ListarAdministradores().setVisible(true); break;
-						case "Vacunas": new ListarVacunas().setVisible(true); break;
-						case "Pacientes": new ListarPacientes().setVisible(true); break;
+					case "Doctores": new ListarDoctores(null).setVisible(true); break;
+					case "Administradores": new ListarAdministradores(null).setVisible(true); break;
+					case "Vacunas": new ListarVacunas().setVisible(true); break;
+					case "Pacientes": new ListarPacientes().setVisible(true); break;
 					}
 				} catch (Exception e2) {
 					e2.printStackTrace();
@@ -763,21 +771,21 @@ public class Principal extends JFrame {
 		iconLabel.setBounds(50, 20, 125, 125);
 		iconLabel.setHorizontalAlignment(JLabel.CENTER);
 		iconLabel.addMouseListener(eventoMouse);
-		
+
 		JLabel textLabel = new JLabel(text);
 		textLabel.setFont(normalUse);
 		textLabel.setForeground(paleteBeautyBlu);
 		textLabel.setBounds(20, 160, 185, 20);
 		textLabel.setHorizontalAlignment(JLabel.CENTER);
 		textLabel.addMouseListener(eventoMouse);
-		
+
 		panel.add(iconLabel);
 		panel.add(textLabel);
 		panel.addMouseListener(eventoMouse);
-		
+
 		return panel;
 	}
-	
+
 	private void crearPanelesInferioresDoctor(int mode) {
 		// Panel inferior izquierdo (Enfermedades)
 		JPanel listEnfPanel = new JPanel() {
@@ -790,27 +798,28 @@ public class Principal extends JFrame {
 				g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
 			}
 		};
+		
 		listEnfPanel.setBackground(Color.WHITE);
-		listEnfPanel.setBounds(57, 425, 487, 280);
+		listEnfPanel.setBounds(60, 427, 280, 280);
 		listEnfPanel.setVisible(mode != 0);
 		listEnfPanel.setLayout(null);
 		infoPanel.add(listEnfPanel);
 
-		JLabel lblEnfIcon = new JLabel(cargarIcono("/Imagenes/thermometer.png", 80, 80));
-		lblEnfIcon.setBounds(397,10,80,80);
+		JLabel lblEnfIcon = new JLabel(cargarIcono("/Imagenes/thermometer.png", 100, 100));
+		lblEnfIcon.setBounds(90,20,100,100);
 		listEnfPanel.add(lblEnfIcon);
 
 		JLabel lblDesEnf = new JLabel("Enfermedades Controladas");
 		lblDesEnf.setFont(normalUse);
-		lblDesEnf.setBounds(10, 105, 151, 14);
+		lblDesEnf.setBounds(10, 64, 152, 14);
 		listEnfPanel.add(lblDesEnf);
-		
+
 		Integer cantEnf = Clinica.getInstance().getCatalogoEnfermedades().size();
 		JLabel lblCEnf = new JLabel(cantEnf.toString());
 		lblCEnf.setFont(indicativeNumber);
 		lblCEnf.setBounds(10, 11, 80, 50);
 		listEnfPanel.add(lblCEnf);
-		
+
 		// Panel inferior derecho (Citas)
 		JPanel citasHoyPanel = new JPanel() {
 			private static final long serialVersionUID = 1L;
@@ -823,53 +832,67 @@ public class Principal extends JFrame {
 			}
 		};
 		citasHoyPanel.setBackground(Color.WHITE);
-		citasHoyPanel.setBounds(584, 425, 487, 280);
+		citasHoyPanel.setBounds(780, 427, 280, 280);
 		citasHoyPanel.setVisible(mode != 0);
 		citasHoyPanel.setLayout(null);
 		infoPanel.add(citasHoyPanel);
+		
+		JPanel panelNumber = new JPanel(){
+			@Override
+			protected void paintComponent(Graphics g) {
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.setColor(getBackground());
+				g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 25, 25);
+			}
+		};
+		panelNumber.setBounds(180, 10, 25, 25);
+		panelNumber.setBackground(new Color(220, 38, 38));
+		panelNumber.setLayout(null);
+		citasHoyPanel.add(panelNumber);
 
-		JLabel lblCitaIcon = new JLabel(cargarIcono("/Imagenes/stethoscope.png", 80, 80));
-		lblCitaIcon.setBounds(397,10,80,80);
+		JLabel lblCitaIcon = new JLabel(cargarIcono("/Imagenes/stethoscope.png", 100, 100));
+		lblCitaIcon.setBounds(90,20,100,100);
 		citasHoyPanel.add(lblCitaIcon);
 	}
-	
+
 	private void realizarRespaldoRemoto() {
-	    Clinica.getInstance().guardarDatosLocal();
-	    File archivoBinario = new File("clinica.dat");
-	    
-	    if (!archivoBinario.exists()) {
-	        JOptionPane.showMessageDialog(this, 
-	            "No se encontró el archivo de datos local (clinica.dat) para enviar.", 
-	            "Error de Archivo", JOptionPane.ERROR_MESSAGE);
-	        return;
-	    }
-	    StringBuilder sb = new StringBuilder();
-	    sb.append("=== REPORTE DE RESPALDO ===\n");
-	    sb.append("Fecha: ").append(LocalDate.now()).append("\n");
-	    sb.append("Hora: ").append(LocalTime.now().truncatedTo(ChronoUnit.MINUTES)).append("\n");
-	    sb.append("---------------------------\n");
-	    sb.append("ESTADÍSTICAS GENERALES:\n");
-	    sb.append("- Total Doctores: ").append(Clinica.getInstance().getDoctores().size()).append("\n");
-	    sb.append("- Total Pacientes: ").append(Clinica.getInstance().getPacientes().size()).append("\n");
-	    sb.append("- Citas Registradas: ").append(Clinica.getInstance().getCitas().size()).append("\n");
-	    sb.append("- Vacunas en Stock: ").append(Clinica.getInstance().getVacunas().size()).append("\n");
-	    sb.append("- Enfermedades en Catálogo: ").append(Clinica.getInstance().getCatalogoEnfermedades().size()).append("\n");
-	    sb.append("---------------------------\n");
-	    sb.append("Respaldo realizado desde: ").append(ClienteRespaldo.getHost()).append(":").append(ClienteRespaldo.getPuerto());
+		Clinica.getInstance().guardarDatosLocal();
+		File archivoBinario = new File("clinica.dat");
 
-	    boolean exito = ClienteRespaldo.enviarRespaldo(archivoBinario, sb.toString());
+		if (!archivoBinario.exists()) {
+			JOptionPane.showMessageDialog(this, 
+					"No se encontró el archivo de datos local (clinica.dat) para enviar.", 
+					"Error de Archivo", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("=== REPORTE DE RESPALDO ===\n");
+		sb.append("Fecha: ").append(LocalDate.now()).append("\n");
+		sb.append("Hora: ").append(LocalTime.now().truncatedTo(ChronoUnit.MINUTES)).append("\n");
+		sb.append("---------------------------\n");
+		sb.append("ESTADÍSTICAS GENERALES:\n");
+		sb.append("- Total Doctores: ").append(Clinica.getInstance().getDoctores().size()).append("\n");
+		sb.append("- Total Pacientes: ").append(Clinica.getInstance().getPacientes().size()).append("\n");
+		sb.append("- Citas Registradas: ").append(Clinica.getInstance().getCitas().size()).append("\n");
+		sb.append("- Vacunas en Stock: ").append(Clinica.getInstance().getVacunas().size()).append("\n");
+		sb.append("- Enfermedades en Catálogo: ").append(Clinica.getInstance().getCatalogoEnfermedades().size()).append("\n");
+		sb.append("---------------------------\n");
+		sb.append("Respaldo realizado desde: ").append(ClienteRespaldo.getHost()).append(":").append(ClienteRespaldo.getPuerto());
 
-	    // Información para el usuario
-	    if (exito) {
-	        JOptionPane.showMessageDialog(this, 
-	            "Respaldo completado exitosamente en el puerto 7001.", 
-	            "Respaldo Exitoso", JOptionPane.INFORMATION_MESSAGE);
-	    } else {
-	        JOptionPane.showMessageDialog(this, 
-	            "Error al conectar con el servidor de respaldo.\n" +
-	            "Verifique que el Servidor esté escuchando en el puerto 7001.", 
-	            "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-	    }
+		boolean exito = ClienteRespaldo.enviarRespaldo(archivoBinario, sb.toString());
+
+		// Información para el usuario
+		if (exito) {
+			JOptionPane.showMessageDialog(this, 
+					"Respaldo completado exitosamente en el puerto 7001.", 
+					"Respaldo Exitoso", JOptionPane.INFORMATION_MESSAGE);
+		} else {
+			JOptionPane.showMessageDialog(this, 
+					"Error al conectar con el servidor de respaldo.\n" +
+							"Verifique que el Servidor esté escuchando en el puerto 7001.", 
+							"Error de Conexión", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	// --- LÓGICA DE NOTIFICACIONES 
@@ -879,46 +902,46 @@ public class Principal extends JFrame {
 	}
 
 	private void verificarCitasProximas(String idUsuario) {
-    Doctor doctor = clinic.getDoctorPorUsuario(idUsuario);
-    if (doctor == null) return;
-    LocalDate hoy = LocalDate.now();
-    LocalTime ahora = LocalTime.now();
-    
-    // DEFINIR EL FORMATO: "hh:mm a" maneja 12 horas con AM/PM
-    // Usamos Locale.US para asegurar que reconozca "AM" y "PM" correctamente
-    DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);
+		Doctor doctor = clinic.getDoctorPorUsuario(idUsuario);
+		if (doctor == null) return;
+		LocalDate hoy = LocalDate.now();
+		LocalTime ahora = LocalTime.now();
 
-    for (Cita cita : clinic.getCitas()) {
-        if(cita.getDoctor().getIdDoctor() == doctor.getIdDoctor() && 
-           cita.getFecha().isEqual(hoy) && 
-           cita.getEstado().equalsIgnoreCase("Pendiente")) {
-            
-            try {
-                // PARSEO SEGURO: Usamos el formato definido arriba
-                LocalTime horaCita = LocalTime.parse(cita.getHora(), formatoHora);
-                
-                long diferenciaMinutos = ChronoUnit.MINUTES.between(ahora, horaCita);
-                
-                // Verificamos si faltan entre 0 y 10 minutos
-                if(diferenciaMinutos >= 0 && diferenciaMinutos <= 10) {
-                    // Detener el timer temporalmente para que no spamee la alerta
-                    timerNotificacion.stop(); 
-                    
-                    JOptionPane.showMessageDialog(this, 
-                            "RECORDATORIO: Tienes una cita con " + cita.getPaciente().getNombre() + 
-                            " a las " + cita.getHora(), 
-                            "Cita Próxima", JOptionPane.INFORMATION_MESSAGE);
-                            
-                    // Reiniciar el timer después de cerrar la alerta
-                    timerNotificacion.restart();
-                }
-            } catch (Exception e) {
-                // Si hay una hora mal formateada en la base de datos, la ignoramos para no romper el programa
-                System.err.println("Error al parsear la hora de la cita: " + cita.getHora());
-            }
-        }
-    }
-}
+		// DEFINIR EL FORMATO: "hh:mm a" maneja 12 horas con AM/PM
+		// Usamos Locale.US para asegurar que reconozca "AM" y "PM" correctamente
+		DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);
+
+		for (Cita cita : clinic.getCitas()) {
+			if(cita.getDoctor().getIdDoctor() == doctor.getIdDoctor() && 
+					cita.getFecha().isEqual(hoy) && 
+					cita.getEstado().equalsIgnoreCase("Pendiente")) {
+
+				try {
+					// PARSEO SEGURO: Usamos el formato definido arriba
+					LocalTime horaCita = LocalTime.parse(cita.getHora(), formatoHora);
+
+					long diferenciaMinutos = ChronoUnit.MINUTES.between(ahora, horaCita);
+
+					// Verificamos si faltan entre 0 y 10 minutos
+					if(diferenciaMinutos >= 0 && diferenciaMinutos <= 10) {
+						// Detener el timer temporalmente para que no spamee la alerta
+						timerNotificacion.stop(); 
+
+						JOptionPane.showMessageDialog(this, 
+								"RECORDATORIO: Tienes una cita con " + cita.getPaciente().getNombre() + 
+								" a las " + cita.getHora(), 
+								"Cita Próxima", JOptionPane.INFORMATION_MESSAGE);
+
+						// Reiniciar el timer después de cerrar la alerta
+						timerNotificacion.restart();
+					}
+				} catch (Exception e) {
+					// Si hay una hora mal formateada en la base de datos, la ignoramos para no romper el programa
+					System.err.println("Error al parsear la hora de la cita: " + cita.getHora());
+				}
+			}
+		}
+	}
 	// --- Helper para cargar imágenes de forma segura (Inspirado en PrincipalAngel) [cite: 264] ---
 	private ImageIcon cargarIcono(String path, int width, int height) {
 		ImageIcon icon = new ImageIcon(getClass().getResource(path));
@@ -947,7 +970,7 @@ public class Principal extends JFrame {
 				}
 				i++;
 			}
-        }
+		}
 		return ruta;
 	}
 }

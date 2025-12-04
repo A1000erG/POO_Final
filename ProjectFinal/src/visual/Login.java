@@ -19,7 +19,10 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import Utilidades.FuenteUtil; // Descomentado
+import logico.Administrativo;
 import logico.Clinica;
+
+import logico.Doctor;
 import logico.ServidorRespaldo;
 
 public class Login extends JFrame {
@@ -35,6 +38,11 @@ public class Login extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					// Iniciar servidor de respaldo en segundo plano
+	                ServidorRespaldo servidor = new ServidorRespaldo(7001);
+	                servidor.start();
+	                System.out.println("Sistema de respaldo activo en segundo plano (Puerto 7001)");
+	                
 					Login frame = new Login();
 					//frame.setUndecorated(true);
 					frame.setVisible(true);
@@ -224,18 +232,57 @@ public class Login extends JFrame {
 				timerError.restart();
 			} 
 			else {
+				// VERIFICAR SI EL USUARIO ESTÁ HABILITADO
+		        boolean usuarioHabilitado = false;
+		        String mensajeError = "";
+		        
 				if (tipoString.equals("Administrativo")) {
-					timerError.stop();
-					Principal ad = new Principal(0, usuario);
-					ad.setVisible(true);
-					this.dispose();
+					Administrativo admin = Clinica.getInstance().getAdministrativoPorUsuario(usuario);
+		            if (admin != null) {
+		                if (admin.isActivo()) {
+		                    usuarioHabilitado = true;
+		                } else {
+		                    mensajeError = "El administrativo está deshabilitado.";
+		                }
+		            }else {
+
+		                if (usuario.equals("admin") && pass.equals("admin")) {
+		                    usuarioHabilitado = true; // Permitir acceso al admin por defecto
+		                } else {
+		                    mensajeError = "Administrativo no encontrado.";
+		                }
+		            }
 					
 				} else if (tipoString.equals("Doctor")) {
-					timerError.stop();
-					Principal doc = new Principal(1, usuario);
-					doc.setVisible(true);
-					this.dispose();
+					Doctor doctor = Clinica.getInstance().getDoctorPorUsuario(usuario);
+		            if (doctor != null) {
+		                if (doctor.isActivo()) {
+		                    usuarioHabilitado = true;
+		                } else {
+		                    mensajeError = "El doctor está deshabilitado. Razón: " + 
+		                                  (doctor.getCausaDeshabilitacion() != null ? 
+		                                   doctor.getCausaDeshabilitacion() : "No especificada");
+		                }
+		            }
 				}
+				if (usuarioHabilitado) {
+		            timerError.stop();
+		            if (tipoString.equals("Administrativo")) {
+		                Principal ad = new Principal(0, usuario);
+		                ad.setVisible(true);
+		                this.dispose();
+		            } else if (tipoString.equals("Doctor")) {
+		                Principal doc = new Principal(1, usuario);
+		                doc.setVisible(true);
+		                this.dispose();
+		            }
+		        } else {
+		            if (mensajeError.isEmpty()) {
+		                mensajeError = "Usuario no encontrado o deshabilitado.";
+		            }
+		            lblError.setText(mensajeError);
+		            timerError.restart();
+		        }
 			}
 		});
 		
