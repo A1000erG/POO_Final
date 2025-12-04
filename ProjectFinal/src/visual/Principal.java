@@ -32,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
 import org.jfree.chart.ChartFactory;
@@ -91,6 +92,8 @@ public class Principal extends JFrame {
 	private static Clinica clinic = Clinica.getInstance();
 	private JPanel bkgPanel;
 	private JLabel lblDoctor;
+	private static int mode;
+	private static String idUser;
 
 	// Timer para notificaciones (Integrado de PrincipalAngel) [cite: 160]
 	private Timer timerNotificacion;
@@ -109,7 +112,9 @@ public class Principal extends JFrame {
 		});
 	}
 
-	public Principal(int mode, String idUser) {
+	public Principal(int modo, String idUsuario) {
+		mode=modo;
+		idUser=idUsuario;
 		setBounds(100, 100, 1366, 768);
 		setLocationRelativeTo(null);
 
@@ -430,12 +435,12 @@ public class Principal extends JFrame {
 
 		//===================================PANELES PARA USUARIOS ADMINISTRATIVOS=================================
 		//Panel Cantidad Enfermedades
-		cantEnfermPanel = crearPanelEstadistica(57, 57, "/Imagenes/thermometer.png", 
+		cantEnfermPanel = crearPanelEstadistica(57, 145, "/Imagenes/thermometer.png", 
 				"Enfermedades Controladas", Clinica.getInstance().getCatalogoEnfermedades().size(), mode);
 		infoPanel.add(cantEnfermPanel);
 
 		// Panel Cantidad Vacunas
-		cantVacunasPanel = crearPanelEstadistica(414, 57, "/Imagenes/syringe.png", 
+		cantVacunasPanel = crearPanelEstadistica(414, 145, "/Imagenes/syringe.png", 
 				"Vacunas Existentes", Clinica.getInstance().getVacunas().size(), mode);
 		infoPanel.add(cantVacunasPanel);
 
@@ -445,7 +450,7 @@ public class Principal extends JFrame {
 		for (Cita cita : Clinica.getInstance().getCitas()) {
 			if(cita.getFecha().isEqual(hoy)) cantCitasHoy++; 
 		}
-		cantCitasHoyPanel = crearPanelEstadistica(771, 577, "/Imagenes/stethoscope.png", 
+		cantCitasHoyPanel = crearPanelEstadistica(771, 145, "/Imagenes/stethoscope.png", 
 				"Citas para hoy", cantCitasHoy, mode);
 		infoPanel.add(cantCitasHoyPanel);
 
@@ -461,14 +466,14 @@ public class Principal extends JFrame {
 			}
 		};
 		barGraphSickPanel.setBackground(Color.WHITE);
-		barGraphSickPanel.setBounds(57, 235, 1014, 318);
+		barGraphSickPanel.setBounds(57, 300, 1014, 318);
 		barGraphSickPanel.setVisible(mode == 0);
 		infoPanel.add(barGraphSickPanel);
 		barGraphSickPanel.setLayout(null);
 
 		configurarGraficoEnfermedades(); // Lógica movida a método para limpieza
 
-		// 5. --- INTEGRACIÓN: Gráfico de Vacunas (Nuevo) [cite: 158, 237, 303] ---
+		/*
 		barGraphVacunaPanel = new JPanel(){
 			private static final long serialVersionUID = 1L;
 			@Override
@@ -485,7 +490,7 @@ public class Principal extends JFrame {
 		infoPanel.add(barGraphVacunaPanel);
 		barGraphVacunaPanel.setLayout(null);
 
-		configurarGraficoVacunas(); // Nueva lógica traída de PrincipalAngel
+		configurarGraficoVacunas(); */
 
 		//================PANELES PARA LISTADOS (Ocultos inicialmente)======================
 
@@ -711,7 +716,7 @@ public class Principal extends JFrame {
 		cantVacunasPanel.setVisible(!mostrar);
 		cantCitasHoyPanel.setVisible(!mostrar);
 		barGraphSickPanel.setVisible(!mostrar);
-		barGraphVacunaPanel.setVisible(!mostrar); // También ocultamos el nuevo gráfico
+		//barGraphVacunaPanel.setVisible(!mostrar); // También ocultamos el nuevo gráfico
 
 		infoListPanel.setVisible(mostrar);
 		adminListPanel.setVisible(mostrar);
@@ -800,25 +805,34 @@ public class Principal extends JFrame {
 		};
 		
 		listEnfPanel.setBackground(Color.WHITE);
-		listEnfPanel.setBounds(60, 427, 280, 280);
+		listEnfPanel.setBounds(90, 427, 280, 280);
 		listEnfPanel.setVisible(mode != 0);
 		listEnfPanel.setLayout(null);
 		infoPanel.add(listEnfPanel);
 
-		JLabel lblEnfIcon = new JLabel(cargarIcono("/Imagenes/thermometer.png", 100, 100));
-		lblEnfIcon.setBounds(90,20,100,100);
+		JPanel bolaCantEnf = bolitaNotificacion();
+		listEnfPanel.add(bolaCantEnf);
+		
+		JLabel lblEnfIcon = new JLabel(cargarIcono("/Imagenes/thermometer.png", 120, 120));
+		lblEnfIcon.setBounds(80,20,120,120);
 		listEnfPanel.add(lblEnfIcon);
 
 		JLabel lblDesEnf = new JLabel("Enfermedades Controladas");
-		lblDesEnf.setFont(normalUse);
-		lblDesEnf.setBounds(10, 64, 152, 14);
+		lblDesEnf.setFont(buttonFont);
+		lblDesEnf.setBounds(0, 250, 280, 14);
+		lblDesEnf.setHorizontalAlignment(SwingConstants.CENTER);
 		listEnfPanel.add(lblDesEnf);
-
+		
 		Integer cantEnf = Clinica.getInstance().getCatalogoEnfermedades().size();
+		if(cantEnf == 0)bolaCantEnf.setBackground(new Color(211,211,211));
+		else bolaCantEnf.setBackground(paletaRojo);
 		JLabel lblCEnf = new JLabel(cantEnf.toString());
-		lblCEnf.setFont(indicativeNumber);
-		lblCEnf.setBounds(10, 11, 80, 50);
-		listEnfPanel.add(lblCEnf);
+		lblCEnf.setFont(buttonFont);
+		lblCEnf.setForeground(Color.WHITE);
+		lblCEnf.setBounds(0, 0, 25, 25);
+		lblCEnf.setHorizontalAlignment(SwingConstants.CENTER);
+		lblCEnf.setVerticalAlignment(SwingConstants.CENTER);
+		bolaCantEnf.add(lblCEnf);
 
 		// Panel inferior derecho (Citas)
 		JPanel citasHoyPanel = new JPanel() {
@@ -832,11 +846,41 @@ public class Principal extends JFrame {
 			}
 		};
 		citasHoyPanel.setBackground(Color.WHITE);
-		citasHoyPanel.setBounds(780, 427, 280, 280);
+		citasHoyPanel.setBounds(750, 427, 280, 280);
 		citasHoyPanel.setVisible(mode != 0);
 		citasHoyPanel.setLayout(null);
 		infoPanel.add(citasHoyPanel);
 		
+		JPanel panelNumber1 = bolitaNotificacion();
+		citasHoyPanel.add(panelNumber1);
+		
+		JLabel lblDesCitas = new JLabel("Citas pendientes para hoy");
+		lblDesCitas.setFont(buttonFont);
+		lblDesCitas.setBounds(0, 250, 280, 14);
+		lblDesCitas.setHorizontalAlignment(SwingConstants.CENTER);
+		citasHoyPanel.add(lblDesCitas);
+		
+		Integer cantCitasMed = 0;
+		for (Cita cita : Clinica.getInstance().getCitas()) {
+			if(cita.getFecha().equals(LocalDate.now()) && cita.getDoctor().getUsuario().equalsIgnoreCase(idUser)
+					&& cita.getEstado().equalsIgnoreCase("Pendiente")) cantCitasMed++;
+		}
+		JLabel lblCntCitas = new JLabel(cantCitasMed.toString());
+		lblCntCitas.setFont(buttonFont);
+		if(cantCitasMed==0) panelNumber1.setBackground(new Color(211,211,211));
+		else panelNumber1.setBackground(new Color(220, 38, 38));
+		lblCntCitas.setForeground(Color.WHITE);
+		lblCntCitas.setBounds(0,0,25,25);
+		lblCntCitas.setHorizontalAlignment(SwingConstants.CENTER);
+		lblCntCitas.setVerticalAlignment(SwingConstants.CENTER);
+		panelNumber1.add(lblCntCitas);
+
+		JLabel lblCitaIcon = new JLabel(cargarIcono("/Imagenes/stethoscope.png", 120, 120));
+		lblCitaIcon.setBounds(80,20,120,120);
+		citasHoyPanel.add(lblCitaIcon);
+	}
+	
+	private JPanel bolitaNotificacion() {
 		JPanel panelNumber = new JPanel(){
 			@Override
 			protected void paintComponent(Graphics g) {
@@ -847,13 +891,8 @@ public class Principal extends JFrame {
 			}
 		};
 		panelNumber.setBounds(180, 10, 25, 25);
-		panelNumber.setBackground(new Color(220, 38, 38));
 		panelNumber.setLayout(null);
-		citasHoyPanel.add(panelNumber);
-
-		JLabel lblCitaIcon = new JLabel(cargarIcono("/Imagenes/stethoscope.png", 100, 100));
-		lblCitaIcon.setBounds(90,20,100,100);
-		citasHoyPanel.add(lblCitaIcon);
+		return panelNumber;
 	}
 
 	private void realizarRespaldoRemoto() {
