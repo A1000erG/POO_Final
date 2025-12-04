@@ -156,31 +156,44 @@ public class ListarCitas extends JDialog {
         panelCentral.add(scrollPane);
 
         String[] headers = { "ID", "Fecha", "Hora", "Paciente", "Doctor", "Estado" };
-        modeloTabla = new DefaultTableModel();
-        modeloTabla.setColumnIdentifiers(headers);
         
-        tablaCitas = new JTable(modeloTabla) {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			public boolean isCellEditable(int row, int column) {
-                return false; // Tabla NO editable, edición en panel lateral
+        // CORRECCIÓN 1: Modelo NO editable
+        modeloTabla = new DefaultTableModel() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; 
             }
         };
+        modeloTabla.setColumnIdentifiers(headers);
+        
+        tablaCitas = new JTable(modeloTabla);
         tablaCitas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablaCitas.setRowHeight(35);
         tablaCitas.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f));
+        
+        // CORRECCIÓN 2: Llenar viewport
+        tablaCitas.setFillsViewportHeight(true);
         
         tablaCitas.getTableHeader().setBackground(colorHeader);
         tablaCitas.getTableHeader().setForeground(Color.WHITE);
         tablaCitas.getTableHeader().setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 14f));
         
+        // CORRECCIÓN 3: Deseleccionar en vacío
         tablaCitas.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                cargarDetalleCita();
+                int index = tablaCitas.rowAtPoint(e.getPoint());
+                if (index != -1) {
+                    cargarDetalleCita();
+                }
+            }
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (tablaCitas.rowAtPoint(e.getPoint()) == -1) {
+                    tablaCitas.clearSelection();
+                    limpiarDetalle();
+                }
             }
         });
         scrollPane.setViewportView(tablaCitas);
@@ -214,7 +227,7 @@ public class ListarCitas extends JDialog {
         crearCampoDetalle(panelDetalle, "Doctor:", yStart + gap*2, txtDoctor = new JTextField());
         txtDoctor.setEnabled(false);
         
-        crearCampoDetalle(panelDetalle, "Fecha y Hora:", yStart + gap*3, txtFecha = new JTextField()); // Usamos uno para ambos visualmente o dos
+        crearCampoDetalle(panelDetalle, "Fecha y Hora:", yStart + gap*3, txtFecha = new JTextField()); 
         txtFecha.setEnabled(false);
 
         // Selector de Estado (Lo Amarillo en tu imagen)
@@ -283,12 +296,8 @@ public class ListarCitas extends JDialog {
 
     private void crearBotonVolver(JPanel panel) {
         JPanel btnVolver = new JPanel() {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
+            private static final long serialVersionUID = 1L;
+            @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

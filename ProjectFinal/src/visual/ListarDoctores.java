@@ -72,7 +72,7 @@ public class ListarDoctores extends JDialog {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    ListarDoctores dialog = new ListarDoctores(/*null*/);
+                    ListarDoctores dialog = new ListarDoctores(null);
                     dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     dialog.setVisible(true);
                 } catch (Exception e) {
@@ -82,8 +82,9 @@ public class ListarDoctores extends JDialog {
         });
     }
 
-    public ListarDoctores(/*Personal usuarioLogueado*/) {
-        /*this.usuarioActual = usuarioLogueado;*/
+
+    public ListarDoctores(Personal usuarioLogueado) {
+        this.usuarioActual = usuarioLogueado;
         setTitle("Gestión de Doctores");
         setModal(true);
         setBounds(100, 100, 1366, 768); 
@@ -151,7 +152,16 @@ public class ListarDoctores extends JDialog {
         panelCentral.add(scrollPane);
 
         String[] headers = { "ID", "Nombre", "Especialidad", "Estado" };
-        model = new DefaultTableModel();
+        
+        // CORRECCIÓN 1: Modelo NO editable
+        model = new DefaultTableModel() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; 
+            }
+        };
+        
         model.setColumnIdentifiers(headers);
         table = new JTable();
         table.setModel(model);
@@ -159,14 +169,18 @@ public class ListarDoctores extends JDialog {
         table.setRowHeight(35);
         table.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 14f));
         
+        // CORRECCIÓN 2: Llenar viewport
+        table.setFillsViewportHeight(true); 
+        
         table.getTableHeader().setBackground(new Color(4, 111, 67)); 
         table.getTableHeader().setForeground(Color.WHITE);
         table.getTableHeader().setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Bold.ttf", 14f));
         
+        // CORRECCIÓN 3: Deseleccionar en vacío
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int index = table.getSelectedRow();
+                int index = table.rowAtPoint(e.getPoint());
                 if (index != -1) {
                     String id = table.getValueAt(index, 0).toString();
                     String idNum = id.replace("D-", ""); 
@@ -174,6 +188,13 @@ public class ListarDoctores extends JDialog {
                         selectedDoctor = (Doctor) buscarDoctorPorId(Integer.parseInt(idNum));
                         cargarDatosDoctor();
                     } catch (NumberFormatException ex) { }
+                }
+            }
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (table.rowAtPoint(e.getPoint()) == -1) {
+                    table.clearSelection();
+                    limpiarFormulario();
                 }
             }
         });
@@ -185,7 +206,6 @@ public class ListarDoctores extends JDialog {
         panelDetalle.setBackground(new Color(245, 245, 245));
         panelDetalle.setBorder(new LineBorder(new Color(220, 220, 220), 1, true));
         
-        // TAMAÑO AMPLIADO A 568px
         panelDetalle.setBounds(900, margenY, 400, 568);
         panelDetalle.setLayout(null);
         panelCentral.add(panelDetalle);
@@ -389,7 +409,6 @@ public class ListarDoctores extends JDialog {
             String nombre = doc.getNombre().toLowerCase();
             String filtroMin = filtro.toLowerCase();
             
-            // Comparación flexible: "1", "001", "D-001"
             String idRaw = String.valueOf(doc.getId());
             String idFormatted = String.format("%03d", doc.getId());
             String idFull = String.format("D-%03d", doc.getId()).toLowerCase();
@@ -431,12 +450,10 @@ public class ListarDoctores extends JDialog {
             txtEspecialidad.setEnabled(true);
             txtCupo.setEnabled(true);
             
-            // --- VALIDACIÓN DE SEGURIDAD ---
-            // Solo habilita la contraseña si el usuario logueado es un Administrativo
+            // CORRECCIÓN: Validar si es admin para mostrar contraseñas
             boolean esAdmin = (usuarioActual instanceof Administrativo);
             txtContrasenia.setEnabled(esAdmin);
             
-            // VISIBILIDAD: Solo texto plano si puede editar
             if (esAdmin) {
                 txtContrasenia.setEchoChar((char)0); 
             } else {
@@ -517,7 +534,6 @@ public class ListarDoctores extends JDialog {
             selectedDoctor.setEspecialidad(txtEspecialidad.getText());
             selectedDoctor.setCupoDia(Integer.parseInt(txtCupo.getText()));
             
-            // Solo guardar contraseña si el campo estaba habilitado (es admin)
             if (txtContrasenia.isEnabled()) {
                 selectedDoctor.setContrasenia(pass);
             }
