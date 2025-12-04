@@ -40,6 +40,7 @@ public class Login extends JFrame {
 					// Iniciar servidor de respaldo en segundo plano
 	                ServidorRespaldo servidor = new ServidorRespaldo(7001);
 	                servidor.start();
+	                System.out.println("Sistema de respaldo activo en segundo plano (Puerto 7001)");
 	                
 					Login frame = new Login();
 					//frame.setUndecorated(true);
