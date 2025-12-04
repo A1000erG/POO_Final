@@ -17,8 +17,7 @@ public class Vacuna implements Serializable {
 	private int cantidadDisponible;
 	private String efectosAdversos;
 	private ViaAdministracion viaAdministracion;
-    // NUEVO CAMPO PARA HABILITAR/DESHABILITAR
-    private boolean activo;
+	private boolean activo;
 
 	public Vacuna() {
 		this.id = 0;
@@ -27,7 +26,7 @@ public class Vacuna implements Serializable {
 		this.cantidadDisponible = 0;
 		this.efectosAdversos = "";
 		this.viaAdministracion = null;
-        this.activo = true; // Por defecto activa
+		this.activo = true;
 	}
 
 	public Vacuna(String nombre, LocalDate fechaCaducidad, int cantidadDisponible, String efectosAdversos,
@@ -38,20 +37,17 @@ public class Vacuna implements Serializable {
 		this.cantidadDisponible = cantidadDisponible;
 		this.efectosAdversos = efectosAdversos;
 		this.viaAdministracion = via;
-        this.activo = true;
+		this.activo = true;
 	}
-    
-    // Getters y Setters originales...
 
-    public boolean isActivo() {
-        return activo;
-    }
+	public boolean isActivo() {
+		return activo;
+	}
 
-    public void setActivo(boolean activo) {
-        this.activo = activo;
-    }
+	public void setActivo(boolean activo) {
+		this.activo = activo;
+	}
 
-    // ... Resto de la clase igual ...
 	public int getId() {
 		return id;
 	}

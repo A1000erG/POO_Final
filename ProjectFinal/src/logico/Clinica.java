@@ -26,10 +26,8 @@ public class Clinica implements Serializable {
 	private ArrayList<Vacuna> vacunas;
 	private ArrayList<Solicitante> solicitantes;
 	private ArrayList<Administrativo> administrativos;
-    private ArrayList<String> solicitudesVacunas = new ArrayList<>();
+	private ArrayList<String> solicitudesVacunas = new ArrayList<>();
 
-
-	
 	private ArrayList<Enfermedad> catalogoEnfermedades;
 
 	private int proximoIdPaciente;
@@ -61,7 +59,7 @@ public class Clinica implements Serializable {
 		this.proximoIdDoctor = 1;
 		this.proximoIdAdmin = 1;
 		this.ultimoMensajeError = "";
-		
+
 		inicializarCatalogoEnfermedades();
 	}
 
@@ -86,10 +84,8 @@ public class Clinica implements Serializable {
 		return instance;
 	}
 
-	// --- Autenticación ---
-
 	public Personal login(String usuario, String contrasenia) {
-		
+
 		if (usuario.equals("admin") && contrasenia.equals("admin")) {
 			Administrativo adminTemp = new Administrativo();
 			adminTemp.setNombre("Super Admin");
@@ -115,34 +111,35 @@ public class Clinica implements Serializable {
 
 	public String loginTipo(String usuario, String password) {
 		Personal logueado = login(usuario, password);
-		if (logueado == null) return null;
-		if (logueado instanceof Doctor) return "Doctor";
-		if (logueado instanceof Administrativo) return "Administrativo";
+		if (logueado == null)
+			return null;
+		if (logueado instanceof Doctor)
+			return "Doctor";
+		if (logueado instanceof Administrativo)
+			return "Administrativo";
 		return "Desconocido";
 	}
-	
-	// --- Lógica Epidemiológica ---
-	
+
 	public boolean verificarUltimaConsultaVigilada(Paciente paciente) {
-		if (paciente == null) return false;
+		if (paciente == null)
+			return false;
 		ArrayList<Consulta> historial = paciente.getHistorialClinico();
-		if (historial == null || historial.isEmpty()) return false;
-		
+		if (historial == null || historial.isEmpty())
+			return false;
+
 		Consulta ultimaConsulta = historial.get(historial.size() - 1);
-		// Actualización: Verificar lista de diagnósticos
 		if (ultimaConsulta.getDiagnosticos() != null) {
 			for (Diagnostico d : ultimaConsulta.getDiagnosticos()) {
-				if(d.requiereNotificacion()) return true;
+				if (d.requiereNotificacion())
+					return true;
 			}
 		}
 		return false;
 	}
 
-	// --- Métodos CRUD Básicos ---
-	
-	 public void insertarEnfermedad(Enfermedad enfermedad) {
-	     catalogoEnfermedades.add(enfermedad);
-	 }
+	public void insertarEnfermedad(Enfermedad enfermedad) {
+		catalogoEnfermedades.add(enfermedad);
+	}
 
 	public void registrarDoctor(Doctor doctor) {
 		doctor.setIdDoctor(this.proximoIdDoctor);
@@ -193,20 +190,12 @@ public class Clinica implements Serializable {
 		return nuevoPaciente;
 	}
 
-	// --- Gestión de Citas ---
-	
-    /*
-    Función: getSolicitudesVacunas
-    Argumentos: Ninguno.
-    Objetivo: Obtener la lista de solicitudes de vacunas pendientes.
-    Retorno: (ArrayList<String>): Lista de mensajes de solicitud.
-	 */
-	 public ArrayList<String> getSolicitudesVacunas() {
-	     if (solicitudesVacunas == null) {
-	         solicitudesVacunas = new ArrayList<>();
-	     }
-	     return solicitudesVacunas;
-	 }
+	public ArrayList<String> getSolicitudesVacunas() {
+		if (solicitudesVacunas == null) {
+			solicitudesVacunas = new ArrayList<>();
+		}
+		return solicitudesVacunas;
+	}
 
 	public boolean programarCita(Paciente paciente, Doctor doctor, LocalDate fecha, String hora) {
 		if (paciente == null || doctor == null || fecha == null || hora == null) {
@@ -280,15 +269,11 @@ public class Clinica implements Serializable {
 			consulta.getCitaAsociada().setEstado("Realizada");
 		}
 	}
-	
-	// =========================================================================
-	//  MÉTODOS DE COMPATIBILIDAD AÑADIDOS PARA SOPORTE VISUAL (RegConsulta / ListarCitas)
-	// =========================================================================
-	
+
 	public void insertarConsulta(Consulta consulta) {
 		registrarConsulta(consulta);
 	}
-	
+
 	public Cita buscarCitaPorId(String idStr) {
 		try {
 			int id = Integer.parseInt(idStr);
@@ -302,7 +287,7 @@ public class Clinica implements Serializable {
 		}
 		return null;
 	}
-	
+
 	public Enfermedad buscarEnfermedadPorNombre(String nombre) {
 		for (Enfermedad enf : catalogoEnfermedades) {
 			if (enf.getNombre().equalsIgnoreCase(nombre)) {
@@ -311,10 +296,6 @@ public class Clinica implements Serializable {
 		}
 		return null;
 	}
-	
-	// =========================================================================
-
-	// --- Persistencia y Archivos ---
 
 	public boolean guardarDatos() {
 		guardarDatosLocal();
@@ -342,14 +323,15 @@ public class Clinica implements Serializable {
 	private static Clinica cargarDatos() {
 		try {
 			File archivo = new File(ARCHIVO_DATOS);
-			if (!archivo.exists()) return null;
+			if (!archivo.exists())
+				return null;
 
 			FileInputStream archivoEntrada = new FileInputStream(archivo);
 			ObjectInputStream flujoEntrada = new ObjectInputStream(archivoEntrada);
 			Clinica instancia = (Clinica) flujoEntrada.readObject();
 			flujoEntrada.close();
 			archivoEntrada.close();
-			
+
 			if (instancia.catalogoEnfermedades == null) {
 				instancia.catalogoEnfermedades = new ArrayList<Enfermedad>();
 				instancia.inicializarCatalogoEnfermedades();
@@ -360,15 +342,16 @@ public class Clinica implements Serializable {
 		}
 	}
 
-	// --- Registro Avanzado con Fotos ---
-	
 	public boolean existeUsuario(String usuario) {
-		if (usuario == null) return false;
+		if (usuario == null)
+			return false;
 		for (Doctor d : doctores) {
-			if (d.getUsuario() != null && d.getUsuario().equalsIgnoreCase(usuario)) return true;
+			if (d.getUsuario() != null && d.getUsuario().equalsIgnoreCase(usuario))
+				return true;
 		}
 		for (Administrativo a : administrativos) {
-			if (a.getUsuario() != null && a.getUsuario().equalsIgnoreCase(usuario)) return true;
+			if (a.getUsuario() != null && a.getUsuario().equalsIgnoreCase(usuario))
+				return true;
 		}
 		return false;
 	}
@@ -385,7 +368,8 @@ public class Clinica implements Serializable {
 		int cupoDia;
 		try {
 			cupoDia = Integer.parseInt(cupoTexto.trim());
-			if (cupoDia <= 0) throw new NumberFormatException();
+			if (cupoDia <= 0)
+				throw new NumberFormatException();
 		} catch (NumberFormatException e) {
 			ultimoMensajeError = "El cupo por día debe ser un número entero positivo.";
 			return false;
@@ -401,17 +385,18 @@ public class Clinica implements Serializable {
 		if (rutaFotoOriginal != null && !rutaFotoOriginal.trim().isEmpty()) {
 			try {
 				File carpeta = new File("FotosDoctores");
-				if (!carpeta.exists()) carpeta.mkdirs();
-				
+				if (!carpeta.exists())
+					carpeta.mkdirs();
+
 				int idParaFoto = this.proximoIdDoctor;
 				String extension = obtenerExtension(rutaFotoOriginal);
 				String nombreArchivo = String.format("doctor_%03d%s", idParaFoto, extension);
 				File destino = new File(carpeta, nombreArchivo);
-				
+
 				Path origenPath = Paths.get(rutaFotoOriginal);
 				Path destinoPath = destino.toPath();
 				Files.copy(origenPath, destinoPath, StandardCopyOption.REPLACE_EXISTING);
-				
+
 				nuevo.setRutaFoto(destino.getPath());
 			} catch (Exception e) {
 				this.ultimoMensajeError = "Doctor registrado, pero error al guardar la foto.";
@@ -438,21 +423,21 @@ public class Clinica implements Serializable {
 
 		Administrativo nuevo = new Administrativo(usuario, contrasenia, nombre, cargo);
 
-		// --- MANEJO DE FOTO PARA ADMIN ---
 		if (rutaFotoOriginal != null && !rutaFotoOriginal.trim().isEmpty()) {
 			try {
-				File carpeta = new File("FotosAdmin"); // Carpeta dedicada
-				if (!carpeta.exists()) carpeta.mkdirs(); // Crear si no existe
-				
+				File carpeta = new File("FotosAdmin");
+				if (!carpeta.exists())
+					carpeta.mkdirs();
+
 				int idParaFoto = this.proximoIdAdmin;
 				String extension = obtenerExtension(rutaFotoOriginal);
 				String nombreArchivo = String.format("A-%03d%s", idParaFoto, extension);
 				File destino = new File(carpeta, nombreArchivo);
-				
+
 				Path origenPath = Paths.get(rutaFotoOriginal);
 				Path destinoPath = destino.toPath();
 				Files.copy(origenPath, destinoPath, StandardCopyOption.REPLACE_EXISTING);
-				
+
 				nuevo.setRutaFoto(destino.getPath());
 			} catch (Exception e) {
 				this.ultimoMensajeError = "Administrador registrado, pero error al guardar la foto.";
@@ -466,11 +451,10 @@ public class Clinica implements Serializable {
 
 	private String obtenerExtension(String ruta) {
 		int punto = ruta.lastIndexOf('.');
-		if (punto == -1) return "";
+		if (punto == -1)
+			return "";
 		return ruta.substring(punto);
 	}
-
-	// --- Getters y Auxiliares ---
 
 	public static boolean esFechaPasada(LocalDate fecha) {
 		return fecha.isBefore(LocalDate.now());
@@ -478,42 +462,87 @@ public class Clinica implements Serializable {
 
 	public Paciente getPacientePorCedula(String cedula) {
 		for (Paciente p : pacientes) {
-			if (p.getCedula().equals(cedula)) return p;
+			if (p.getCedula().equals(cedula))
+				return p;
 		}
 		return null;
 	}
 
 	public Doctor getDoctorPorUsuario(String usuario) {
 		for (Doctor d : doctores) {
-			if (d.getUsuario().equals(usuario)) return d;
+			if (d.getUsuario().equals(usuario))
+				return d;
 		}
 		return null;
 	}
 
 	public Administrativo getAdministrativoPorUsuario(String usuario) {
 		for (Administrativo admin : administrativos) {
-			if (admin.getUsuario().equals(usuario)) return admin;
+			if (admin.getUsuario().equals(usuario))
+				return admin;
 		}
 		return null;
 	}
-	
-	public int getProximoIdDoctor() { return proximoIdDoctor; }
-	public int getProximoIdAdmin() { return proximoIdAdmin; }
-	public String getUltimoMensajeError() { return ultimoMensajeError; }
 
-	public ArrayList<Doctor> getDoctores() { return doctores; }
-	public ArrayList<Paciente> getPacientes() { return pacientes; }
-	public ArrayList<Cita> getCitas() { return citas; }
-	public ArrayList<Consulta> getConsultas() { return consultas; }
-	public ArrayList<Vacuna> getVacunas() { return vacunas; }
-	public ArrayList<Solicitante> getSolicitantes() { return solicitantes; }
-	public ArrayList<Administrativo> getAdministrativos() { return administrativos; }
-	public ArrayList<Enfermedad> getCatalogoEnfermedades() { return catalogoEnfermedades; }
-	
-	public void setProximoIdPaciente(int proximoIdPaciente) { this.proximoIdPaciente = proximoIdPaciente; }
-	public void setProximoIdCita(int proximoIdCita) { this.proximoIdCita = proximoIdCita; }
-	public void setProximoIdConsulta(int proximoIdConsulta) { this.proximoIdConsulta = proximoIdConsulta; }
-	public void setProximoIdVacuna(int proximoIdVacuna) { this.proximoIdVacuna = proximoIdVacuna; }
+	public int getProximoIdDoctor() {
+		return proximoIdDoctor;
+	}
+
+	public int getProximoIdAdmin() {
+		return proximoIdAdmin;
+	}
+
+	public String getUltimoMensajeError() {
+		return ultimoMensajeError;
+	}
+
+	public ArrayList<Doctor> getDoctores() {
+		return doctores;
+	}
+
+	public ArrayList<Paciente> getPacientes() {
+		return pacientes;
+	}
+
+	public ArrayList<Cita> getCitas() {
+		return citas;
+	}
+
+	public ArrayList<Consulta> getConsultas() {
+		return consultas;
+	}
+
+	public ArrayList<Vacuna> getVacunas() {
+		return vacunas;
+	}
+
+	public ArrayList<Solicitante> getSolicitantes() {
+		return solicitantes;
+	}
+
+	public ArrayList<Administrativo> getAdministrativos() {
+		return administrativos;
+	}
+
+	public ArrayList<Enfermedad> getCatalogoEnfermedades() {
+		return catalogoEnfermedades;
+	}
+
+	public void setProximoIdPaciente(int proximoIdPaciente) {
+		this.proximoIdPaciente = proximoIdPaciente;
+	}
+
+	public void setProximoIdCita(int proximoIdCita) {
+		this.proximoIdCita = proximoIdCita;
+	}
+
+	public void setProximoIdConsulta(int proximoIdConsulta) {
+		this.proximoIdConsulta = proximoIdConsulta;
+	}
+
+	public void setProximoIdVacuna(int proximoIdVacuna) {
+		this.proximoIdVacuna = proximoIdVacuna;
+	}
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
@@ -588,8 +617,12 @@ public class Clinica implements Serializable {
 	}
 
 	public void limpiarSolicitudes() {
-        if (solicitudesVacunas != null) {
-            solicitudesVacunas.clear();
-        }
+		if (solicitudesVacunas != null) {
+			solicitudesVacunas.clear();
+		}
+	}
+
+	public void setSolicitudesVacunas(ArrayList<String> solicitudesVacunas) {
+		this.solicitudesVacunas = solicitudesVacunas;
 	}
 }

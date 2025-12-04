@@ -46,16 +46,13 @@ public class RegCita extends JFrame {
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     
-    // Componentes Paciente/Solicitante
     private JFormattedTextField txtCedula;
     private JTextField txtNombre;
     private JFormattedTextField txtTelefono;
-    // CAMBIO: Usamos JDateChooser en lugar de JSpinner
     private JDateChooser dchFechaNacimiento; 
     private JButton btnBuscarPaciente;
     private JLabel lblTituloSeccionIzquierda; 
     
-    // Componentes Cita
     private JComboBox<String> cbxDoctor;
     private JDateChooser dateChooserCita;
     private JLabel lblDisponibilidad; 
@@ -63,7 +60,6 @@ public class RegCita extends JFrame {
     private Paciente pacienteActual = null;
     private boolean esNuevoRegistro = false; 
     
-    // Colores
     private Color verdePrincipal = new Color(4, 111, 67);
     private Color grisFondo = new Color(245, 245, 245);
 
@@ -92,7 +88,6 @@ public class RegCita extends JFrame {
         contentPane.setLayout(new BorderLayout(0, 0));
         setContentPane(contentPane);
 
-        // --- 1. PANEL SUPERIOR (HEADER) ---
         JPanel panelSuperior = new JPanel();
         panelSuperior.setBackground(verdePrincipal);
         panelSuperior.setLayout(null);
@@ -111,15 +106,10 @@ public class RegCita extends JFrame {
         lblTitulo.setBounds(150, 45, 600, 50);
         panelSuperior.add(lblTitulo);
 
-        // --- 2. PANEL CENTRAL (CONTENIDO) ---
         JPanel panelContenido = new JPanel();
         panelContenido.setBackground(Color.WHITE);
         panelContenido.setLayout(null);
         contentPane.add(panelContenido, BorderLayout.CENTER);
-        
-        // ========================================================================
-        // SECCIÓN IZQUIERDA: DATOS DEL PACIENTE / SOLICITANTE
-        // ========================================================================
         
         JPanel panelIzquierdo = new JPanel();
         panelIzquierdo.setBackground(grisFondo);
@@ -134,7 +124,6 @@ public class RegCita extends JFrame {
         lblTituloSeccionIzquierda.setBounds(30, 20, 350, 30);
         panelIzquierdo.add(lblTituloSeccionIzquierda);
         
-        // Cédula y Búsqueda
         crearLabel(panelIzquierdo, "CÉDULA:", 70);
         try {
             MaskFormatter cedulaMask = new MaskFormatter("###-#######-#");
@@ -155,12 +144,10 @@ public class RegCita extends JFrame {
         btnBuscarPaciente.addActionListener(e -> buscarPaciente());
         panelIzquierdo.add(btnBuscarPaciente);
         
-        // Nombre
         crearLabel(panelIzquierdo, "NOMBRE COMPLETO:", 150);
         txtNombre = crearInput(panelIzquierdo, 180);
         txtNombre.setEnabled(false); 
         
-        // Teléfono con máscara
         crearLabel(panelIzquierdo, "TELÉFONO:", 230);
         try {
             MaskFormatter telMask = new MaskFormatter("(###) ###-####");
@@ -173,24 +160,17 @@ public class RegCita extends JFrame {
             panelIzquierdo.add(txtTelefono);
         } catch (ParseException e) { e.printStackTrace(); }
         
-        // Fecha Nacimiento (CAMBIO: JDateChooser)
         crearLabel(panelIzquierdo, "FECHA DE NACIMIENTO:", 310);
         dchFechaNacimiento = new JDateChooser();
         dchFechaNacimiento.setBounds(30, 340, 430, 35);
-        dchFechaNacimiento.setDateFormatString("dd/MM/yyyy"); // Formato visual
+        dchFechaNacimiento.setDateFormatString("dd/MM/yyyy");
         dchFechaNacimiento.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Regular.ttf", 15f));
         
-        // --- SOLUCIÓN: Limitar la fecha máxima a la fecha actual ---
         dchFechaNacimiento.setMaxSelectableDate(new Date());
         
-        // Opcional: Establecer un borde similar a los otros campos si se desea
         dchFechaNacimiento.getCalendarButton().setBackground(Color.WHITE);
         dchFechaNacimiento.setEnabled(false); 
         panelIzquierdo.add(dchFechaNacimiento);
-
-        // ========================================================================
-        // SECCIÓN DERECHA: DATOS DE LA CITA
-        // ========================================================================
         
         JPanel panelDerecho = new JPanel();
         panelDerecho.setBackground(grisFondo);
@@ -205,14 +185,12 @@ public class RegCita extends JFrame {
         lblTituloCita.setBounds(30, 20, 300, 30);
         panelDerecho.add(lblTituloCita);
         
-        // Selección de Doctor
         crearLabel(panelDerecho, "DOCTOR:", 70);
         cbxDoctor = new JComboBox<String>();
         cbxDoctor.setBounds(30, 100, 430, 35);
         cbxDoctor.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Regular.ttf", 14f));
         cbxDoctor.setBackground(Color.WHITE);
         
-        // Evento para actualizar disponibilidad al cambiar doctor
         cbxDoctor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 actualizarDisponibilidad();
@@ -220,21 +198,18 @@ public class RegCita extends JFrame {
         });
         panelDerecho.add(cbxDoctor);
         
-        // Label de Disponibilidad (Debajo del combo)
         lblDisponibilidad = new JLabel("");
         lblDisponibilidad.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Regular.ttf", 13f));
         lblDisponibilidad.setForeground(new Color(100, 100, 100));
         lblDisponibilidad.setBounds(30, 140, 430, 20);
         panelDerecho.add(lblDisponibilidad);
         
-        // Fecha Cita (JDateChooser)
         crearLabel(panelDerecho, "FECHA DE LA CITA:", 170);
         dateChooserCita = new JDateChooser();
         dateChooserCita.setBounds(30, 200, 430, 35);
         dateChooserCita.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Regular.ttf", 14f));
         dateChooserCita.setMinSelectableDate(new Date()); 
         
-        // Evento para actualizar disponibilidad al cambiar fecha
         dateChooserCita.getDateEditor().addPropertyChangeListener(
             new PropertyChangeListener() {
                 @Override
@@ -248,9 +223,7 @@ public class RegCita extends JFrame {
         panelDerecho.add(dateChooserCita);
         
         cargarDoctores(); 
-        
-        // --- BOTONES DE ACCIÓN ---
-        
+                
         JButton btnRegistrar = new JButton("PROGRAMAR CITA");
         btnRegistrar.setBounds(467, 511, 366, 50);
         btnRegistrar.setBackground(new Color(22, 163, 74));
@@ -260,12 +233,9 @@ public class RegCita extends JFrame {
         btnRegistrar.addActionListener(e -> registrarCita());
         panelContenido.add(btnRegistrar);
         
-        // Botón Volver
         crearBotonVolver(panelContenido);
     }
-    
-    // ---------------- MÉTODOS LÓGICOS ----------------
-    
+        
     private void cargarDoctores() {
         ArrayList<Doctor> doctores = Clinica.getInstance().getDoctores();
         cbxDoctor.removeAllItems();
@@ -277,14 +247,12 @@ public class RegCita extends JFrame {
         }
     }
     
-    // Método para calcular y mostrar disponibilidad en tiempo real
     private void actualizarDisponibilidad() {
         if (cbxDoctor.getSelectedIndex() <= 0 || dateChooserCita.getDate() == null) {
             lblDisponibilidad.setText("");
             return;
         }
         
-        // 1. Obtener Doctor
         String docStr = (String) cbxDoctor.getSelectedItem();
         int idDoc = Integer.parseInt(docStr.split(" - ")[0]);
         Doctor doctorSeleccionado = null;
@@ -297,11 +265,9 @@ public class RegCita extends JFrame {
         
         if (doctorSeleccionado == null) return;
         
-        // 2. Obtener Fecha
         Date fechaDate = dateChooserCita.getDate();
         LocalDate fechaLocal = fechaDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         
-        // 3. Contar citas existentes
         int citasHoy = 0;
         for (Cita c : Clinica.getInstance().getCitas()) {
             if (c.getDoctor().equals(doctorSeleccionado) && 
@@ -311,21 +277,19 @@ public class RegCita extends JFrame {
             }
         }
         
-        // 4. Mostrar información
         int cupoTotal = doctorSeleccionado.getCupoDia();
         int restantes = cupoTotal - citasHoy;
         
         String texto = "Disponibilidad para el " + fechaLocal + ": " + restantes + " de " + cupoTotal + " turnos.";
         lblDisponibilidad.setText(texto);
         
-        // Cambiar color si está lleno
         if (restantes <= 0) {
-            lblDisponibilidad.setForeground(new Color(220, 38, 38)); // Rojo
+            lblDisponibilidad.setForeground(new Color(220, 38, 38));
             lblDisponibilidad.setText(texto + " (AGOTADO)");
         } else if (restantes <= 2) {
-            lblDisponibilidad.setForeground(new Color(230, 140, 0)); // Naranja (Poco cupo)
+            lblDisponibilidad.setForeground(new Color(230, 140, 0));
         } else {
-            lblDisponibilidad.setForeground(new Color(22, 163, 74)); // Verde
+            lblDisponibilidad.setForeground(new Color(22, 163, 74));
         }
     }
     
@@ -338,11 +302,9 @@ public class RegCita extends JFrame {
             return;
         }
         
-        // 1. Buscar en Pacientes
         Paciente p = Clinica.getInstance().getPacientePorCedula(cedula);
         
         if (p != null) {
-            // ES PACIENTE REGISTRADO
             pacienteActual = p;
             esNuevoRegistro = false;
             
@@ -352,7 +314,6 @@ public class RegCita extends JFrame {
             
             if (p.getFechaNacimiento() != null) {
                 Date date = Date.from(p.getFechaNacimiento().atStartOfDay(ZoneId.systemDefault()).toInstant());
-                // CAMBIO: Establecer fecha en JDateChooser
                 dchFechaNacimiento.setDate(date);
             }
             
@@ -360,7 +321,6 @@ public class RegCita extends JFrame {
             JOptionPane.showMessageDialog(this, "Paciente encontrado en el sistema.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             
         } else {
-            // NO ES PACIENTE -> ES SOLICITANTE
             pacienteActual = null;
             esNuevoRegistro = true;
             
@@ -377,7 +337,6 @@ public class RegCita extends JFrame {
     private void registrarCita() {
         String cedulaLimpia = txtCedula.getText().replace("-", "").replace("_", "").trim();
         
-        // CAMBIO: Validar usando dchFechaNacimiento.getDate()
         if(cedulaLimpia.isEmpty() || txtNombre.getText().isEmpty() || cbxDoctor.getSelectedIndex() <= 0 || dateChooserCita.getDate() == null || dchFechaNacimiento.getDate() == null) {
             JOptionPane.showMessageDialog(this, "Por favor complete todos los campos obligatorios.", "Error", JOptionPane.WARNING_MESSAGE);
             return;
@@ -389,7 +348,6 @@ public class RegCita extends JFrame {
             nuevoPaciente.setNombre(txtNombre.getText());
             nuevoPaciente.setTelefono(txtTelefono.getText());
             
-            // CAMBIO: Obtener fecha desde JDateChooser
             Date fechaNacDate = dchFechaNacimiento.getDate();
             LocalDate fechaNacLocal = fechaNacDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             nuevoPaciente.setFechaNacimiento(fechaNacLocal);
@@ -426,19 +384,15 @@ public class RegCita extends JFrame {
     private void bloquearCamposIzquierdos(boolean bloquear) {
         txtNombre.setEnabled(!bloquear);
         txtTelefono.setEnabled(!bloquear);
-        // CAMBIO: Habilitar/Deshabilitar JDateChooser
         dchFechaNacimiento.setEnabled(!bloquear);
     }
     
     private void limpiarCamposIzquierdos() {
         txtNombre.setText("");
         txtTelefono.setText("");
-        // CAMBIO: Resetear JDateChooser a null o fecha actual
         dchFechaNacimiento.setDate(new Date());
     }
-    
-    // ---------------- AUXILIARES VISUALES ----------------
-    
+        
     private void crearLabel(JPanel panel, String texto, int y) {
         JLabel lbl = new JLabel(texto);
         lbl.setFont(FuenteUtil.cargarFuenteBold("/Fuentes/Roboto-Light.ttf", 12f));

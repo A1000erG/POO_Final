@@ -5,94 +5,93 @@ import java.time.LocalDate;
 
 public abstract class Persona implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private String cedula;
-    private String nombre;
-    private char sexo;
-    private LocalDate fechaNacimiento;
-    private String telefono;
-    
-    // --- NUEVOS CAMPOS DE ESTADO (Sin foto) ---
-    private boolean activo;
-    private String causaDeshabilitacion;
-    // Se eliminó rutaFoto de aquí porque Paciente no la usa.
-    // Doctor y Admin la heredan de Personal.
+	private static final long serialVersionUID = 1L;
+	private String cedula;
+	private String nombre;
+	private char sexo;
+	private LocalDate fechaNacimiento;
+	private String telefono;
 
-    public Persona() {
-        this.cedula = null;
-        this.nombre = null;
-        this.sexo = ' ';
-        this.fechaNacimiento = null;
-        this.telefono = null;
-        this.activo = true;
-        this.causaDeshabilitacion = "";
-    }
+	private boolean activo;
+	private String causaDeshabilitacion;
 
-    public Persona(String cedula, String nombre, char sexo, LocalDate fechaNacimiento, String telefono) {
-        this.cedula = cedula;
-        this.nombre = nombre;
-        this.sexo = sexo;
-        this.fechaNacimiento = fechaNacimiento;
-        this.telefono = telefono;
-        this.activo = true;
-        this.causaDeshabilitacion = "";
-    }
+	public Persona() {
+		this.cedula = null;
+		this.nombre = null;
+		this.sexo = ' ';
+		this.fechaNacimiento = null;
+		this.telefono = null;
+		this.activo = true;
+		this.causaDeshabilitacion = "";
+	}
 
-    public String getCedula() {
-        return cedula;
-    }
+	public Persona(String cedula, String nombre, char sexo, LocalDate fechaNacimiento, String telefono) {
+		this.cedula = cedula;
+		this.nombre = nombre;
+		this.sexo = sexo;
+		this.fechaNacimiento = fechaNacimiento;
+		this.telefono = telefono;
+		this.activo = true;
+		this.causaDeshabilitacion = "";
+	}
 
-    public void setCedula(String cedula) {
-        this.cedula = cedula;
-    }
+	public String getCedula() {
+		return cedula;
+	}
 
-    public String getNombre() {
-        return nombre;
-    }
+	public void setCedula(String cedula) {
+		this.cedula = cedula;
+	}
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+	public String getNombre() {
+		return nombre;
+	}
 
-    public char getSexo() {
-        return sexo;
-    }
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 
-    public void setSexo(char sexo) {
-        this.sexo = sexo;
-    }
+	public char getSexo() {
+		return sexo;
+	}
 
-    public LocalDate getFechaNacimiento() {
-        return fechaNacimiento;
-    }
+	public void setSexo(char sexo) {
+		this.sexo = sexo;
+	}
 
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
-    }
+	public LocalDate getFechaNacimiento() {
+		return fechaNacimiento;
+	}
 
-    public String getTelefono() {
-        return telefono;
-    }
+	public void setFechaNacimiento(LocalDate fechaNacimiento) {
+		this.fechaNacimiento = fechaNacimiento;
+	}
 
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
+	public String getTelefono() {
+		return telefono;
+	}
 
-    // --- GETTERS Y SETTERS DE ESTADO ---
+	public void setTelefono(String telefono) {
+		this.telefono = telefono;
+	}
 
-    public boolean isActivo() {
-        return activo;
-    }
+	public boolean isActivo() {
+		return activo;
+	}
 
-    public void setActivo(boolean activo) {
-        this.activo = activo;
-    }
+	public void setActivo(boolean activo) {
+		this.activo = activo;
+	}
 
-    public String getCausaDeshabilitacion() {
-        return causaDeshabilitacion;
-    }
+	public String getCausaDeshabilitacion() {
+		return causaDeshabilitacion;
+	}
 
-    public void setCausaDeshabilitacion(String causaDeshabilitacion) {
-        this.causaDeshabilitacion = causaDeshabilitacion;
-    }
+	public void setCausaDeshabilitacion(String causaDeshabilitacion) {
+		this.causaDeshabilitacion = causaDeshabilitacion;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 }

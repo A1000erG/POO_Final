@@ -16,12 +16,6 @@ public class Administrativo extends Personal {
 		this.rutaFoto = null;
 	}
 
-	/*
-	 * Función: Administrativo (Constructor) Argumentos: (String) usuario: Login.
-	 * (String) contrasenia: Password. (String) nombre: Nombre real. (String) cargo:
-	 * Puesto (ej. Secretario, Gerente). Objetivo: Crear un administrativo. Retorno:
-	 * (Ninguno): Constructor.
-	 */
 	public Administrativo(String usuario, String contrasenia, String nombre, String cargo) {
 		super(usuario, contrasenia);
 		this.idAdmin = 0;

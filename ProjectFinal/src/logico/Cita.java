@@ -24,9 +24,9 @@ public class Cita implements Serializable {
 	}
 
 	/*
-	 * Funci�n: Cita (Constructor) Argumentos: (LocalDate) fecha: D�a de la cita.
-	 * (String) hora: Hora en texto. (Paciente) paciente: Quien asiste. (Doctor)
-	 * doctor: Quien atiende. Objetivo: Crear una reserva de cita. Retorno:
+	 * Funci�n: Cita (Constructor) Argumentos: (LocalDate) fecha: D�a de la
+	 * cita. (String) hora: Hora en texto. (Paciente) paciente: Quien asiste.
+	 * (Doctor) doctor: Quien atiende. Objetivo: Crear una reserva de cita. Retorno:
 	 * (Ninguno).
 	 */
 	public Cita(LocalDate fecha, String hora, Paciente paciente, Doctor doctor) {

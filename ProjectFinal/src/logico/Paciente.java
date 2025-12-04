@@ -9,26 +9,22 @@ public class Paciente extends Persona {
 	private int idPaciente;
 	private ArrayList<Consulta> historialClinico;
 	private ArrayList<Vacuna> vacunasAplicadas;
-	//private String tipoSangre;
-	//private Float peso;
-	//private Float estatura;
-	//private Float IMC;
+	private String tipoSangre;
+	private Float peso;
+	private Float estatura;
+	private Float IMC;
 
 	public Paciente() {
 		super();
 		this.idPaciente = 0;
 		this.historialClinico = new ArrayList<Consulta>();
 		this.vacunasAplicadas = new ArrayList<Vacuna>();
-		//this.peso=0.0f;
-		//this.estatura=0.0f;
-		//this.tipoSangre="O+";
-		//this.IMC=0.0f;
+		this.peso = 0.0f;
+		this.estatura = 0.0f;
+		this.tipoSangre = "O+";
+		this.IMC = 0.0f;
 	}
 
-	/*
-	 * Función: getHistorialClinico Argumentos: Ninguno. Objetivo: Obtener la lista
-	 * de consultas pasadas. Retorno: (ArrayList<Consulta>): La lista de consultas.
-	 */
 	public ArrayList<Consulta> getHistorialClinico() {
 		return historialClinico;
 	}
@@ -41,7 +37,7 @@ public class Paciente extends Persona {
 		this.idPaciente = idPaciente;
 	}
 
-	/*public String getTipoSangre() {
+	public String getTipoSangre() {
 		return tipoSangre;
 	}
 
@@ -71,7 +67,7 @@ public class Paciente extends Persona {
 
 	public void setIMC(Float iMC) {
 		IMC = iMC;
-	}*/
+	}
 
 	public void setHistorialClinico(ArrayList<Consulta> historialClinico) {
 		this.historialClinico = historialClinico;
@@ -85,11 +81,6 @@ public class Paciente extends Persona {
 		this.vacunasAplicadas = vacunasAplicadas;
 	}
 
-	/*
-	 * Función: equals Argumentos: (Object) obj: Objeto a verificar. Objetivo:
-	 * Comparar pacientes por Cédula (Regla de Negocio). Retorno: (boolean):
-	 * Verdadero si tienen la misma cédula.
-	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

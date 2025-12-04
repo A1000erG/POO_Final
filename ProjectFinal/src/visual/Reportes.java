@@ -58,7 +58,6 @@ public class Reportes extends JDialog {
         contentPane.setLayout(new BorderLayout(0, 0));
         setContentPane(contentPane);
 
-        // ------------------ HEADER -------------------
         JPanel panelSuperior = new JPanel();
         panelSuperior.setBackground(colorHeader);
         panelSuperior.setLayout(null);
@@ -78,7 +77,6 @@ public class Reportes extends JDialog {
         
         crearBotonVolver(panelSuperior);
 
-        // ------------------ CONTENIDO -------------------
         JPanel panelCentral = new JPanel();
         panelCentral.setBackground(Color.WHITE);
         panelCentral.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -176,8 +174,6 @@ public class Reportes extends JDialog {
             }
         }
 
-        // Si está vacío, no añadir nada al dataset para que JFreeChart no escale raro
-        // O añadir un valor 'dummy' controlado si se desea mostrar la estructura vacía
         if (!conteo.isEmpty()) {
             for (Map.Entry<String, Integer> entry : conteo.entrySet()) {
                 dataset.addValue(entry.getValue(), "Diagnósticos", entry.getKey());
@@ -251,10 +247,9 @@ public class Reportes extends JDialog {
             plot.setOutlineVisible(false);
             plot.setRangeGridlinePaint(new Color(220, 220, 220));
             
-            // --- CORRECCIÓN DE EJES (Números Enteros) ---
             NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-            rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits()); // Forzar enteros
-            rangeAxis.setAutoRangeIncludesZero(true); // Asegurar que empiece en 0
+            rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+            rangeAxis.setAutoRangeIncludesZero(true);
             
             BarRenderer r = (BarRenderer) plot.getRenderer();
             r.setSeriesPaint(0, colorAzulData);
@@ -267,14 +262,13 @@ public class Reportes extends JDialog {
             plot.setOutlineVisible(false);
             plot.setShadowPaint(null);
             
-            // Configurar mensaje de "Sin Datos" para el PieChart si está vacío
             plot.setNoDataMessage("No hay datos para mostrar");
             plot.setNoDataMessageFont(new Font("SansSerif", Font.PLAIN, 18));
             plot.setNoDataMessagePaint(Color.GRAY);
             
-            plot.setSectionPaint("Pendientes", new Color(255, 193, 7)); // Amarillo
-            plot.setSectionPaint("Realizadas", new Color(76, 175, 80)); // Verde
-            plot.setSectionPaint("Canceladas/Rechazadas", new Color(244, 67, 54)); // Rojo
+            plot.setSectionPaint("Pendientes", new Color(255, 193, 7));
+            plot.setSectionPaint("Realizadas", new Color(76, 175, 80));
+            plot.setSectionPaint("Canceladas/Rechazadas", new Color(244, 67, 54));
         }
     }
 }

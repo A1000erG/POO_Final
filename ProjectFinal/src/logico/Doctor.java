@@ -21,28 +21,18 @@ public class Doctor extends Personal {
 	}
 
 	public Doctor(String usuario, String contrasenia, String nombre, String especialidad, int cupoDia) {
-		super(usuario, contrasenia); // Llama al constructor de Personal
-		this.idDoctor = 0; // El ID será asignado por la Clínica
+		super(usuario, contrasenia);
+		this.idDoctor = 0;
 		this.nombre = nombre;
 		this.especialidad = especialidad;
 		this.cupoDia = cupoDia;
 	}
 
-	/*
-	 * Función: getId (Implementación) Argumentos: Ninguno. Objetivo: Obtener el ID
-	 * único del doctor (implementa el método abstracto de Personal). Retorno:
-	 * (int): El ID del doctor.
-	 */
 	@Override
 	public int getId() {
 		return this.idDoctor;
 	}
 
-	/*
-	 * Función: getNombre (Implementación) Argumentos: Ninguno. Objetivo: Obtener el
-	 * nombre del doctor (implementa el método abstracto de Personal). Retorno:
-	 * (String): El nombre del doctor.
-	 */
 	@Override
 	public String getNombre() {
 		return nombre;
@@ -84,11 +74,6 @@ public class Doctor extends Personal {
 		this.rutaFoto = rutaFoto;
 	}
 
-	/*
-	 * Función: equals Argumentos: (Object) obj: El objeto a comparar. Objetivo:
-	 * Compara si dos doctores son iguales basándose en su ID de Doctor. Retorno:
-	 * (boolean): true si son iguales, false si no.
-	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -96,14 +81,9 @@ public class Doctor extends Personal {
 		if (obj == null || getClass() != obj.getClass())
 			return false;
 		Doctor doctor = (Doctor) obj;
-		// La comparación más robusta es por ID único.
 		return idDoctor == doctor.idDoctor && idDoctor != 0;
 	}
 
-	/*
-	 * Función: hashCode Argumentos: Ninguno. Objetivo: Generar un código hash
-	 * basado en el ID del Doctor. Retorno: (int): El código hash.
-	 */
 	@Override
 	public int hashCode() {
 		return Objects.hash(idDoctor);
