@@ -117,7 +117,8 @@ public class Principal extends JFrame {
 	public Principal(int modo, String idUsuario) {
 		mode=modo;
 		idUser=idUsuario;
-		setBounds(100, 100, 1366, 768);
+		setBounds(100, 100, 1280, 720);
+		//setBounds(100, 100, 1366, 768);
 		setLocationRelativeTo(null);
 
 		setTitle("Compile Salud");
@@ -440,12 +441,14 @@ public class Principal extends JFrame {
 
 		//===================================PANELES PARA USUARIOS ADMINISTRATIVOS=================================
 		//Panel Cantidad Enfermedades
-		cantEnfermPanel = crearPanelEstadistica(57, 145, "/Imagenes/thermometer.png", 
+		//x=57, y=145
+		cantEnfermPanel = crearPanelEstadistica(57, 150, "/Imagenes/thermometer.png", 
 				"Enfermedades Controladas", Clinica.getInstance().getCatalogoEnfermedades().size(), mode);
 		infoPanel.add(cantEnfermPanel);
 
 		// Panel Cantidad Vacunas
-		cantVacunasPanel = crearPanelEstadistica(414, 145, "/Imagenes/syringe.png", 
+		//x= 771, y= 145
+		cantVacunasPanel = crearPanelEstadistica(414, 150, "/Imagenes/syringe.png", 
 				"Vacunas Existentes", Clinica.getInstance().getVacunas().size(), mode);
 		infoPanel.add(cantVacunasPanel);
 
@@ -455,7 +458,8 @@ public class Principal extends JFrame {
 		for (Cita cita : Clinica.getInstance().getCitas()) {
 			if(cita.getFecha().isEqual(hoy)) cantCitasHoy++; 
 		}
-		cantCitasHoyPanel = crearPanelEstadistica(771, 145, "/Imagenes/stethoscope.png", 
+		//x= 771, y= 145
+		cantCitasHoyPanel = crearPanelEstadistica(771, 150, "/Imagenes/stethoscope.png", 
 				"Citas para hoy", cantCitasHoy, mode);
 		infoPanel.add(cantCitasHoyPanel);
 
@@ -471,7 +475,8 @@ public class Principal extends JFrame {
 			}
 		};
 		barGraphSickPanel.setBackground(Color.WHITE);
-		barGraphSickPanel.setBounds(57, 300, 1014, 318);
+		//barGraphSickPanel.setBounds(57, 300, 1014, 318);
+		barGraphSickPanel.setBounds(57, 340, 1014, 318);
 		barGraphSickPanel.setVisible(mode == 0);
 		infoPanel.add(barGraphSickPanel);
 		barGraphSickPanel.setLayout(null);
