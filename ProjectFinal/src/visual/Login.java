@@ -22,6 +22,7 @@ import Utilidades.FuenteUtil; // Descomentado
 import logico.Administrativo;
 import logico.Clinica;
 import logico.Doctor;
+import logico.ServidorRespaldo;
 
 public class Login extends JFrame {
 
@@ -36,6 +37,10 @@ public class Login extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					// Iniciar servidor de respaldo en segundo plano
+	                ServidorRespaldo servidor = new ServidorRespaldo(7001);
+	                servidor.start();
+	                
 					Login frame = new Login();
 					//frame.setUndecorated(true);
 					frame.setVisible(true);
